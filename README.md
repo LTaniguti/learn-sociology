@@ -46,7 +46,7 @@ Portions of the content are adapted from [*Introduction to Sociology 3e*](https:
 Current focus:
 
 - [x] Define the concept-node schema and tag taxonomy
-- [ ] Select the initial set of ~40–60 seed concepts
+- [x] Select the initial set of ~40–60 seed concepts
 - [ ] Draft sample nodes to validate the schema
 - [ ] Sketch the proof-of-concept designs for navigation modes 1 and 2
 
