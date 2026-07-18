@@ -4,7 +4,7 @@ summary: An interactionist theory holding that deviance is not inherent in an ac
 parent: deviance
 prerequisites: [deviance, symbolic-interactionism]
 related: [social-control, strain-theory, social-construction-of-reality]
-tags: [level/micro, type/theory, subfield/deviance, paradigm/interactionism]
+tags: [discipline/sociology, level/micro, type/theory, subfield/deviance, paradigm/interactionism]
 difficulty: intermediate
 thinkers: [Howard Becker, Edwin Lemert]
 adapted_from: "OpenStax Introduction to Sociology 3e, Section 7.2"

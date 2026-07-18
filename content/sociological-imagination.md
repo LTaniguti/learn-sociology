@@ -4,7 +4,7 @@ summary: C. Wright Mills's term for the ability to see the connection between pe
 parent: sociology
 prerequisites: [sociology]
 related: [levels-of-analysis, society, social-change]
-tags: [level/macro, type/concept, subfield/foundations]
+tags: [discipline/sociology, level/macro, type/concept, subfield/foundations]
 difficulty: intro
 thinkers: [C. Wright Mills]
 adapted_from: "OpenStax Introduction to Sociology 3e, Section 1.1"

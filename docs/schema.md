@@ -20,7 +20,7 @@ Every unit of content in this platform is a **concept node**: a single Markdown 
 | `parent` | node ID | yes (`null` for the root only) | **Powers Mode 2**, the hierarchy chart. Exactly one parent per node keeps the hierarchy a true tree. Matches the Parent column in `docs/concept-list.md`. The parent is usually also a prerequisite, but the fields serve different modes and stay separate. |
 | `prerequisites` | list of node IDs | yes (may be empty) | Dependency arrows for learners and build checks: lets Mode 1 verify that course order never places a concept before its prerequisites, and supplies cross-cutting edges that the Mode 2 tree (built from `parent`) deliberately excludes. |
 | `related` | list of node IDs | no | **Powers Mode 3**, the concept network: non-hierarchical "these ideas connect" edges. Distinct from prerequisites — relation is not dependence. |
-| `tags` | list (from `docs/taxonomy.md`) | yes | Powers filtering and the tag-based network view; tag counts drive node centrality in force-directed layouts. Values must come from the controlled taxonomy (Stage 0 step 4) — free-form tags fragment the graph. |
+| `tags` | list (from `docs/taxonomy.md`) | yes | Powers filtering and the tag-based network view; tag counts drive node centrality in force-directed layouts. Values must come from the controlled taxonomy (Stage 0 step 4) — free-form tags fragment the graph. Every node carries exactly one `discipline/` tag (currently always `discipline/sociology`), scoping the node for future multi-discipline expansion. |
 | `difficulty` | `intro` \| `intermediate` \| `advanced` | yes | Lets learners self-filter and lets graph views visually distinguish depth. Three values only; finer scales invite endless debate. |
 | `thinkers` | list of names | no | Seeds **Mode 4**, the sociologist network, later. Cheap to record now, expensive to backfill. |
 | `adapted_from` | string (source + section) | when applicable | **License compliance.** CC BY 4.0 requires attribution to travel with the material, not just live in `LICENSE-CONTENT.md`. Format: `"OpenStax Introduction to Sociology 3e, Section 1.2"`. If a node draws on two sections, comma-separate them within the string. Omit only for fully original nodes. |
@@ -47,6 +47,25 @@ modules:
 ```
 
 The platform renders Mode 1 by walking this file in order. A build check can verify that no node appears before its `prerequisites` — the manifest and the frontmatter keep each other honest.
+
+## Discipline scoping and future expansion
+
+Every node is scoped to one primary discipline via a `discipline/` tag
+(currently the only value is `discipline/sociology`). This keeps the door
+open to adjacent social sciences — anthropology, political science,
+economics, psychology — without schema changes: expansion means adding
+values to the taxonomy, not fields to the frontmatter, preserving design
+principle 3's field budget.
+
+Two rules follow:
+
+- **One primary discipline per node.** A concept relevant to several
+  disciplines (e.g., social capital) still gets exactly one home, keeping
+  Mode 2's hierarchy a true tree.
+- **Cross-discipline edges are derived, not stored.** When two nodes
+  connected via `related` carry different `discipline/` tags, the platform
+  can render that edge in a distinct style. No dedicated field is
+  required — graph views compute it from data that already exists.
 
 ## Body structure
 
@@ -75,7 +94,7 @@ summary: C. Wright Mills's term for the ability to see the connection between pe
 parent: sociology
 prerequisites: [sociology]
 related: [levels-of-analysis, society, social-change]
-tags: [level/macro, type/concept, subfield/foundations]
+tags: [discipline/sociology, level/macro, type/concept, subfield/foundations]
 difficulty: intro
 thinkers: [C. Wright Mills]
 adapted_from: "OpenStax Introduction to Sociology 3e, Section 1.1"

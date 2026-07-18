@@ -4,7 +4,7 @@ summary: The shared rules and expectations that guide behavior in a society, ran
 parent: culture
 prerequisites: [culture, values-and-beliefs]
 related: [deviance, social-control, subcultures-and-countercultures, symbols-and-language]
-tags: [level/macro, type/concept, subfield/culture]
+tags: [discipline/sociology, level/macro, type/concept, subfield/culture]
 difficulty: intro
 thinkers: [William Graham Sumner]
 adapted_from: "OpenStax Introduction to Sociology 3e, Section 3.2"

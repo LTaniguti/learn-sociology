@@ -9,14 +9,26 @@ This is the controlled vocabulary for the `tags` field in node frontmatter (see 
 Tags are written as `category/value`, all lowercase kebab-case:
 
 ```yaml
-tags: [level/macro, subfield/foundations, type/theory]
+tags: [discipline/sociology, level/macro, subfield/foundations, type/theory]
 ```
 
 The `category/` prefix keeps values unambiguous (`conflict` could be a paradigm or a topic; `paradigm/conflict` cannot be misread) and lets the platform group filters by category automatically.
 
 ## Categories
 
-### 1. `level/` — level of analysis (required, exactly one)
+### 1. `discipline/` — primary discipline (required, exactly one)
+
+Scopes every node to one home discipline, enabling future expansion into
+adjacent social sciences without schema changes. Interdisciplinary
+relevance is expressed through `related` edges to nodes in other
+disciplines, which the platform renders distinctly — a node never carries
+two discipline tags.
+
+| Tag | Meaning |
+|---|---|
+| `discipline/sociology` | The founding and currently sole discipline of the platform |
+
+### 2. `level/` — level of analysis (required, exactly one)
 
 Every node gets exactly one. If a concept genuinely spans levels, tag the level at which it is *taught* in this node.
 
@@ -26,7 +38,7 @@ Every node gets exactly one. If a concept genuinely spans levels, tag the level 
 | `level/meso` | Groups, organizations, communities, institutions in the middle range |
 | `level/macro` | Whole societies, large-scale structures, historical change |
 
-### 2. `type/` — what kind of node this is (required, exactly one)
+### 3. `type/` — what kind of node this is (required, exactly one)
 
 | Tag | Meaning |
 |---|---|
@@ -34,7 +46,7 @@ Every node gets exactly one. If a concept genuinely spans levels, tag the level 
 | `type/theory` | An explanatory framework or named theory (e.g., labeling theory) |
 | `type/method` | A research method or methodological idea (e.g., surveys, ethnography) |
 
-### 3. `paradigm/` — theoretical paradigm (optional, zero or more)
+### 4. `paradigm/` — theoretical paradigm (optional, zero or more)
 
 Tag only when the concept **belongs to** a paradigm — i.e., it originates in or is primarily meaningful within one. Do not tag merely because a paradigm *has an opinion* about the concept; that belongs in the node body's Perspectives section. Most concepts will carry no paradigm tag, which is correct and keeps these tags meaningful.
 
@@ -44,7 +56,7 @@ Tag only when the concept **belongs to** a paradigm — i.e., it originates in o
 | `paradigm/conflict` | Conflict theory and its descendants (Marx, Weber-influenced, feminist conflict approaches) |
 | `paradigm/interactionism` | Symbolic interactionism and micro-interpretive approaches (Mead, Goffman) |
 
-### 4. `subfield/` — topical subfield (required, one or more)
+### 5. `subfield/` — topical subfield (required, one or more)
 
 Values mirror the chapter structure of OpenStax *Introduction to Sociology 3e*, so every seed concept has an obvious home and the taxonomy stays auditable against the source text.
 
@@ -70,7 +82,7 @@ Values mirror the chapter structure of OpenStax *Introduction to Sociology 3e*, 
 
 ## Rules of use
 
-1. **Every node:** exactly one `level/`, exactly one `type/`, at least one `subfield/`, and `paradigm/` only when the concept belongs to a paradigm.
+1. **Every node:** exactly one `discipline/`, exactly one `level/`, exactly one `type/`, at least one `subfield/`, and `paradigm/` only when the concept belongs to a paradigm.
 2. **Two subfields maximum.** If a node seems to need three, it is probably two concepts and should be split.
 3. **New values require a pull request to this file first**, with a one-line justification. Tags never appear in a node before they exist here.
 4. **Values are added, not renamed.** Like node slugs, tag values are contracts — renaming one is a breaking change across every node that uses it.
