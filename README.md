@@ -41,14 +41,14 @@ Portions of the content are adapted from [*Introduction to Sociology 3e*](https:
 
 ## Status
 
-**Early scoping — not yet usable.**
+**Design phase closed; PoC build is next**
 
 Current focus:
 
 - [x] Define the concept-node schema and tag taxonomy
 - [x] Select the initial set of ~40–60 seed concepts
-- [ ] Draft sample nodes to validate the schema
-- [ ] Sketch the proof-of-concept designs for navigation modes 1 and 2
+- [x] Draft sample nodes to validate the schema
+- [x] Sketch the proof-of-concept designs for navigation modes 1 and 2
 
 Contributions will be very welcome once the framework is further defined. In the meantime, feel free to open an issue with ideas, feedback, or interest in contributing.
 
