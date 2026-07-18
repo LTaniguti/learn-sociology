@@ -1,0 +1,288 @@
+/* ============================================================
+   learn-sociology · Design Tokens
+   Direction: "Open Commons" (dark)
+   Every visual value used in the Course, Hierarchy, and Node
+   screens is defined here. Screens must not hard-code any value
+   that is not represented below.
+   ============================================================ */
+
+:root {
+
+  /* ----------------------------------------------------------
+     1. FONT FAMILIES  (both SIL Open Font License — see direction.md)
+     ---------------------------------------------------------- */
+  --font-serif: "Spectral", Georgia, "Times New Roman", serif;      /* reading + display */
+  --font-mono:  "IBM Plex Mono", ui-monospace, "SFMono-Regular",
+                "Menlo", "Consolas", monospace;                      /* metadata / labels / repo texture */
+
+  /* ----------------------------------------------------------
+     2. CORE PALETTE  (warm ink-on-dark "commons" surface)
+     ---------------------------------------------------------- */
+  --color-canvas:            #100c08;  /* app background behind panels */
+  --color-surface:           #191512;  /* primary panel / card surface */
+  --color-surface-raised:    #211b14;  /* top bar, tree nodes, preview card */
+  --color-surface-sunken:    #1d1710;  /* sidebar + right rail background */
+  --color-surface-hover:     #241d15;  /* hover fill on rows, tabs, cards */
+  --color-surface-selected:  #2c241b;  /* active mode tab background */
+  --color-surface-current:   #2a2015;  /* current lesson row background */
+
+  /* Borders */
+  --color-border:            #352d23;  /* default 1px divider / panel edge */
+  --color-border-subtle:     #2c2419;  /* hairline between related-list rows */
+  --color-border-faint:      #241d13;  /* hairline between tree rows */
+  --color-border-input:      #3a3128;  /* search box, prereq/next controls */
+  --color-border-accent:     #7a5a2e;  /* dim-orange edge: current, draft, badges */
+  --color-edge:              #4a3f30;  /* tree connector stroke (inactive) */
+  --color-edge-active:       #7a5a2e;  /* tree connector stroke (path to open node) */
+
+  /* Text */
+  --color-text-strong:       #f4ecdd;  /* h1 / titles */
+  --color-text-heading:      #f0e7d8;  /* wordmark, sidebar module title */
+  --color-text-body:         #d4c8b6;  /* body paragraphs */
+  --color-text-lede:         #c9bda9;  /* summary / lede */
+  --color-text-related:      #e6dccb;  /* related-concept link label */
+  --color-text-muted:        #8a7d68;  /* section eyebrows, captions, meta */
+  --color-text-faint:        #6f6555;  /* placeholder, low-priority meta */
+  --color-text-disabled:     #5f5647;  /* disabled tabs, reserved-region note */
+  --color-text-meta-warm:    #c6a877;  /* mono metadata w/ warmth (tags, attrib) */
+  --color-text-upcoming:     #9a8f7c;  /* upcoming (not-yet-done) lesson label */
+
+  /* Accent (brand primary — orange) */
+  --color-accent:            #e08a3c;  /* primary accent: current node, links, CTAs */
+  --color-accent-hover:      #f0a862;  /* link / row hover */
+  --color-accent-strong:     #e8b072;  /* draft banner bold text */
+  --color-accent-wash:       rgba(224,138,60,0.07); /* draft banner fill */
+  --color-accent-ring:       rgba(224,138,60,0.22); /* inset ring on "home" perspective card */
+
+  /* Links */
+  --color-link:              #e08a3c;
+  --color-link-hover:        #f0a862;
+  --color-selection:         rgba(224,138,60,0.30);
+
+  /* ----------------------------------------------------------
+     3. SEMANTIC — LESSON PROGRESS STATES  (device-local; no accounts)
+     ---------------------------------------------------------- */
+  --state-complete-mark:     #7fbf87;  /* green check glyph on completed lesson */
+  --state-complete-label:    #6f8a68;  /* "complete" caption */
+  --state-complete-bg:       #20281f;  /* completed prereq chip fill */
+  --state-complete-border:   #3a4a34;  /* completed prereq chip edge */
+  --state-complete-text:     #cdd8c6;  /* completed prereq chip label */
+
+  --state-current-bar:       #e08a3c;  /* 3px left bar on current lesson */
+  --state-current-bg:        #2a2015;  /* current lesson row fill */
+  --state-current-text:      #f4ecdd;  /* current lesson label */
+
+  --state-upcoming-mark:     #5f5647;  /* hollow ○ on upcoming lesson */
+  --state-upcoming-text:     #9a8f7c;  /* upcoming lesson label */
+
+  --state-unmet-mark:        #c98a5a;  /* ○ on unmet prerequisite */
+  --state-unmet-bg:          #2a201a;  /* unmet prereq chip fill */
+  --state-unmet-border:      #4a3a30;  /* unmet prereq chip edge */
+  --state-unmet-text:        #d8c8ba;  /* unmet prereq chip label */
+  --state-unmet-label:       #a07a55;  /* "incomplete →" caption */
+
+  /* ----------------------------------------------------------
+     4. SEMANTIC — DRAFT / STATUS BANNER  (required element)
+     ---------------------------------------------------------- */
+  --status-draft-border:     #7a5a2e;  /* dashed edge */
+  --status-draft-bg:         rgba(224,138,60,0.07);
+  --status-draft-icon:       #e08a3c;
+  --status-draft-text:       #c6a877;
+  --status-draft-strong:     #e8b072;
+
+  /* ----------------------------------------------------------
+     5. SEMANTIC — DIFFICULTY BADGES  (intro / intermediate / advanced)
+     ---------------------------------------------------------- */
+  --diff-intro-text:         #8a7d68;
+  --diff-intro-border:       #3a3128;
+  --diff-intermediate-text:  #e08a3c;
+  --diff-intermediate-border:#7a5a2e;
+  --diff-advanced-text:      #c0603f;  /* clay red — not shown in mockups, defined here */
+  --diff-advanced-border:    #5c3420;
+
+  /* ----------------------------------------------------------
+     6. SEMANTIC — PARADIGM COLOURS  ("classic" palette; tweakable)
+        Reused system-wide: Perspectives accents, related-concept
+        colour tags, and tree paradigm dots.
+     ---------------------------------------------------------- */
+  --paradigm-functionalism:  #6fae9f;  /* teal  */
+  --paradigm-conflict:       #c77b9a;  /* rose  */
+  --paradigm-interactionism: #e08a3c;  /* amber (== brand accent) */
+
+  /* Alternate palettes (see Tweaks: paradigmPalette) — trio order = func,conflict,inter
+     rust : #b98a5a #c0603f #e2933f
+     jewel: #4f9ec0 #a06fc0 #e0a85c
+     muted: #8a9a86 #ad8a8f #c6a877 */
+
+  /* Perspectives card surfaces (per paradigm, subtly tinted) */
+  --paradigm-func-surface:   #1b211e;
+  --paradigm-conflict-surface:#211c1f;
+  --paradigm-inter-surface:  #241d15;
+
+  /* ----------------------------------------------------------
+     7. SEMANTIC — DISABLED MODE TABS  (Network / Sociologists)
+     ---------------------------------------------------------- */
+  --tab-disabled-text:       #5f5647;
+  --tab-active-bg:           #2c241b;
+  --tab-active-text:         #ece4d8;
+  --tab-idle-text:           #b8ab97;
+
+  /* ----------------------------------------------------------
+     8. SEMANTIC — TREE / HIERARCHY CANVAS
+     ---------------------------------------------------------- */
+  --tree-canvas-bg:          #161109;  /* node-&-edge canvas background */
+  --tree-dot:                #241d13;  /* dotted grid dot on canvas */
+  --tree-node-bg:            #211b14;  /* collapsed / leaf node fill */
+  --tree-node-border:        #3a3128;  /* node edge */
+  --tree-node-open-bg:       #2a2015;  /* expanded parent / root fill */
+  --tree-node-open-border:   #7a5a2e;  /* expanded parent / root edge */
+  --tree-badge-text:         #8a7d68;  /* "+5" descendant-count badge */
+  --tree-badge-border:       #3a3128;
+
+  /* ----------------------------------------------------------
+     9. PROGRESS INDICATOR
+     ---------------------------------------------------------- */
+  --progress-track:          #2c2419;
+  --progress-fill:           #e08a3c;
+
+  /* ----------------------------------------------------------
+     10. TYPE SCALE
+         role: font-family | size | line-height | weight | tracking
+     ---------------------------------------------------------- */
+
+  /* Page title (h1) */
+  --type-title-family:       var(--font-serif);
+  --type-title-size:         38px;   /* course view uses 34px; mobile 28px */
+  --type-title-size-sm:      34px;
+  --type-title-size-mobile:  28px;
+  --type-title-line:         1.05;
+  --type-title-weight:       700;
+
+  /* Serif section heading (e.g. "Perspectives") */
+  --type-h2-serif-family:    var(--font-serif);
+  --type-h2-serif-size:      22px;
+  --type-h2-serif-line:      1.2;
+  --type-h2-serif-weight:    600;
+
+  /* Mono section heading (Definition / In depth / Examples) */
+  --type-h2-mono-family:     var(--font-mono);
+  --type-h2-mono-size:       12px;
+  --type-h2-mono-line:       1.3;
+  --type-h2-mono-weight:     600;
+  --type-h2-mono-tracking:   0.12em;
+  --type-h2-mono-transform:  uppercase;
+
+  /* Lede / summary */
+  --type-lede-family:        var(--font-serif);
+  --type-lede-size:          19px;   /* mobile 16px */
+  --type-lede-line:          1.55;
+  --type-lede-weight:        300;
+
+  /* Body */
+  --type-body-family:        var(--font-serif);
+  --type-body-size:          16.5px; /* rail/related 15.5px; mobile 15px */
+  --type-body-line:          1.72;
+  --type-body-weight:        400;
+
+  /* Related-concept link */
+  --type-related-family:     var(--font-serif);
+  --type-related-size:       15.5px;
+  --type-related-line:       1.4;
+  --type-related-weight:     400;
+
+  /* Breadcrumb */
+  --type-breadcrumb-family:  var(--font-mono);
+  --type-breadcrumb-size:    11.5px;
+  --type-breadcrumb-line:    1.4;
+  --type-breadcrumb-weight:  400;
+  --type-breadcrumb-tracking:0.04em;
+
+  /* Rail / group eyebrow label */
+  --type-eyebrow-family:     var(--font-mono);
+  --type-eyebrow-size:       11px;
+  --type-eyebrow-weight:     500;
+  --type-eyebrow-tracking:   0.08em;
+  --type-eyebrow-transform:  uppercase;
+
+  /* Badge (difficulty, status, HOME) */
+  --type-badge-family:       var(--font-mono);
+  --type-badge-size:         10.5px;
+  --type-badge-weight:       500;
+  --type-badge-tracking:     0.05em;
+  --type-badge-transform:    uppercase;
+
+  /* Caption / fine meta */
+  --type-caption-family:     var(--font-mono);
+  --type-caption-size:       10px;
+  --type-caption-line:       1.6;
+  --type-caption-weight:     400;
+
+  /* Tag chip */
+  --type-tag-family:         var(--font-mono);
+  --type-tag-size:           11px;
+  --type-tag-weight:         400;
+
+  /* Wordmark */
+  --type-wordmark-family:    var(--font-serif);
+  --type-wordmark-size:      18px;
+  --type-wordmark-weight:    700;
+
+  /* ----------------------------------------------------------
+     11. SPACING SCALE  (4px base)
+     ---------------------------------------------------------- */
+  --space-0:  0;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  30px;
+  --space-8:  34px;
+  --space-9:  40px;
+  --space-10: 44px;
+
+  /* Common composite paddings */
+  --pad-panel:      30px 40px 34px;  /* node main column */
+  --pad-rail:       30px 24px;       /* right rail */
+  --pad-card:       16px;            /* perspectives / preview cards */
+  --topbar-height:  58px;
+
+  /* ----------------------------------------------------------
+     12. RADII
+     ---------------------------------------------------------- */
+  --radius-xs:   4px;   /* tag chips, small swatches */
+  --radius-sm:   5px;   /* tabs, tree badges */
+  --radius-md:   6px;   /* chips, cards */
+  --radius-lg:   8px;   /* callouts, controls, preview card */
+  --radius-xl:   10px;  /* main panels */
+  --radius-pill: 20px;  /* difficulty badge, search box */
+  --radius-phone:44px;  /* mobile device frame */
+
+  /* ----------------------------------------------------------
+     13. BORDER WIDTHS
+     ---------------------------------------------------------- */
+  --border-thin:   1px;  /* default dividers, panel edges */
+  --border-med:    2px;  /* focus ring, prereq mark stroke */
+  --border-accent: 3px;  /* Perspectives card top / current-lesson left bar */
+
+  /* ----------------------------------------------------------
+     14. SHADOWS
+     ---------------------------------------------------------- */
+  --shadow-panel: 0 30px 80px -40px rgba(0,0,0,0.90);  /* main screen panels */
+  --shadow-pop:   0 18px 44px -18px rgba(0,0,0,0.85);  /* hover preview card */
+  --shadow-inter: 0 8px 24px -12px rgba(224,138,60,0.40); /* interactionism "home" glow */
+
+  /* ----------------------------------------------------------
+     15. FOCUS  (defined here — not shown in mockups)
+     ---------------------------------------------------------- */
+  --focus-ring-color: #e08a3c;
+  --focus-ring-width: 2px;
+  --focus-ring-offset:2px;
+  --focus-ring:       0 0 0 var(--focus-ring-width) var(--focus-ring-color);
+
+  /* ----------------------------------------------------------
+     16. MOTION
+     ---------------------------------------------------------- */
+  --transition-fast: 0.15s ease;   /* hover arrow / row tint */
+}
