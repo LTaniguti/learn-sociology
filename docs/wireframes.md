@@ -2,6 +2,8 @@
 
 **Status:** v0.1 — Stage 0, Step 7 (final Stage 0 deliverable). These are low-fidelity wireframes: they fix *structure, information placement, and schema traceability*, not visual style. Colors, typography, and spacing are deliberately absent and will be decided during the PoC build.
 
+High-fidelity designs derived from these wireframes live in docs/design/
+
 Three frames live in `docs/wireframes/`:
 
 | Frame | File | What it shows |
