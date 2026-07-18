@@ -1,0 +1,157 @@
+<svg viewBox="0 0 1200 860" xmlns="http://www.w3.org/2000/svg" font-family="system-ui, -apple-system, sans-serif">
+  <style>
+    .frame { fill: #ffffff; stroke: #444; stroke-width: 2; }
+    .box { fill: #f3f3f3; stroke: #999; }
+    .boxlight { fill: #fafafa; stroke: #bbb; }
+    .active { fill: #dedede; stroke: #555; }
+    .node { fill: #f3f3f3; stroke: #777; rx: 4; }
+    .txt { fill: #333; }
+    .muted { fill: #888; }
+    .edge { stroke: #999; stroke-width: 1.5; fill: none; }
+    .ann { fill: #4a6fa5; font-size: 12px; font-style: italic; }
+    .annline { stroke: #4a6fa5; stroke-width: 1.2; stroke-dasharray: 4 3; fill: none; }
+    .disabled { fill: #aaa; }
+    .badge { fill: #e4e4e4; stroke: #999; }
+  </style>
+
+  <text x="20" y="26" font-size="16" font-weight="700" class="txt">FRAME 2 — Mode 2: Concept hierarchy (low-fidelity wireframe)</text>
+
+  <!-- Browser frame -->
+  <rect x="20" y="40" width="880" height="800" class="frame"/>
+
+  <!-- Top bar -->
+  <rect x="20" y="40" width="880" height="52" class="box"/>
+  <text x="36" y="72" font-size="15" font-weight="700" class="txt">learn-sociology</text>
+  <rect x="200" y="52" width="86" height="28" rx="4" class="boxlight"/>
+  <text x="243" y="71" font-size="13" text-anchor="middle" class="txt">Course</text>
+  <rect x="292" y="52" width="86" height="28" rx="4" class="active"/>
+  <text x="335" y="71" font-size="13" text-anchor="middle" class="txt" font-weight="600">Hierarchy</text>
+  <rect x="384" y="52" width="86" height="28" rx="4" class="boxlight"/>
+  <text x="427" y="71" font-size="13" text-anchor="middle" class="disabled">Network</text>
+  <rect x="476" y="52" width="98" height="28" rx="4" class="boxlight"/>
+  <text x="525" y="71" font-size="13" text-anchor="middle" class="disabled">Sociologists</text>
+  <rect x="700" y="52" width="180" height="28" rx="14" class="boxlight"/>
+  <text x="716" y="71" font-size="12" class="muted">Search title / summary…</text>
+
+  <!-- Canvas controls -->
+  <rect x="36" y="106" width="94" height="24" rx="4" class="boxlight"/>
+  <text x="83" y="123" font-size="11.5" text-anchor="middle" class="txt">Expand all</text>
+  <rect x="136" y="106" width="98" height="24" rx="4" class="boxlight"/>
+  <text x="185" y="123" font-size="11.5" text-anchor="middle" class="txt">Collapse all</text>
+  <rect x="828" y="106" width="26" height="24" rx="4" class="boxlight"/>
+  <text x="841" y="123" font-size="13" text-anchor="middle" class="txt">+</text>
+  <rect x="858" y="106" width="26" height="24" rx="4" class="boxlight"/>
+  <text x="871" y="123" font-size="13" text-anchor="middle" class="txt">−</text>
+
+  <!-- Root -->
+  <rect x="50" y="430" width="150" height="34" class="node"/>
+  <text x="125" y="452" font-size="13" font-weight="700" text-anchor="middle" class="txt">Sociology  −</text>
+
+  <!-- Edges root -> level 1 (spine) -->
+  <path class="edge" d="M200 447 H 240"/>
+  <path class="edge" d="M240 175 V 745"/>
+
+  <!-- Level 1 children -->
+  <path class="edge" d="M240 175 H 280"/>
+  <rect x="280" y="158" width="230" height="32" class="node"/>
+  <text x="292" y="179" font-size="12.5" class="txt">The Sociological Imagination</text>
+
+  <path class="edge" d="M240 232 H 280"/>
+  <rect x="280" y="215" width="230" height="32" class="node"/>
+  <text x="292" y="236" font-size="12.5" class="txt">Levels of Analysis</text>
+
+  <path class="edge" d="M240 289 H 280"/>
+  <rect x="280" y="272" width="230" height="32" class="active"/>
+  <text x="292" y="293" font-size="12.5" font-weight="600" class="txt">Theoretical Paradigms  −</text>
+
+  <path class="edge" d="M240 403 H 280"/>
+  <rect x="280" y="386" width="230" height="32" class="node"/>
+  <text x="292" y="407" font-size="12.5" class="txt">Sociological Research</text>
+  <rect x="516" y="392" width="34" height="20" rx="10" class="badge"/>
+  <text x="533" y="406" font-size="11" text-anchor="middle" class="muted">+5</text>
+
+  <path class="edge" d="M240 460 H 280"/>
+  <rect x="280" y="443" width="230" height="32" class="node"/>
+  <text x="292" y="464" font-size="12.5" class="txt">Culture</text>
+  <rect x="516" y="449" width="34" height="20" rx="10" class="badge"/>
+  <text x="533" y="463" font-size="11" text-anchor="middle" class="muted">+6</text>
+
+  <path class="edge" d="M240 517 H 280"/>
+  <rect x="280" y="500" width="230" height="32" class="node"/>
+  <text x="292" y="521" font-size="12.5" class="txt">Society</text>
+  <rect x="516" y="506" width="34" height="20" rx="10" class="badge"/>
+  <text x="533" y="520" font-size="11" text-anchor="middle" class="muted">+8</text>
+
+  <path class="edge" d="M240 574 H 280"/>
+  <rect x="280" y="557" width="230" height="32" class="node"/>
+  <text x="292" y="578" font-size="12.5" class="txt">Socialization</text>
+  <rect x="516" y="563" width="34" height="20" rx="10" class="badge"/>
+  <text x="533" y="577" font-size="11" text-anchor="middle" class="muted">+4</text>
+
+  <path class="edge" d="M240 631 H 280"/>
+  <rect x="280" y="614" width="230" height="32" class="node"/>
+  <text x="292" y="635" font-size="12.5" class="txt">Deviance</text>
+  <rect x="516" y="620" width="34" height="20" rx="10" class="badge"/>
+  <text x="533" y="634" font-size="11" text-anchor="middle" class="muted">+5</text>
+
+  <path class="edge" d="M240 688 H 280"/>
+  <rect x="280" y="671" width="230" height="32" class="node"/>
+  <text x="292" y="692" font-size="12.5" class="txt">Social Stratification</text>
+  <rect x="516" y="677" width="34" height="20" rx="10" class="badge"/>
+  <text x="533" y="691" font-size="11" text-anchor="middle" class="muted">+6</text>
+
+  <path class="edge" d="M240 745 H 280"/>
+  <rect x="280" y="728" width="230" height="32" class="node"/>
+  <text x="292" y="749" font-size="12.5" class="txt">Social Change</text>
+  <rect x="516" y="734" width="34" height="20" rx="10" class="badge"/>
+  <text x="533" y="748" font-size="11" text-anchor="middle" class="muted">+3</text>
+
+  <!-- Expanded branch: theoretical paradigms -->
+  <path class="edge" d="M510 288 H 560"/>
+  <path class="edge" d="M560 250 V 326"/>
+  <path class="edge" d="M560 250 H 596"/>
+  <rect x="596" y="233" width="220" height="32" class="node"/>
+  <text x="608" y="254" font-size="12.5" class="txt">Structural Functionalism</text>
+  <path class="edge" d="M560 288 H 596"/>
+  <rect x="596" y="271" width="220" height="32" class="node"/>
+  <text x="608" y="292" font-size="12.5" class="txt">Conflict Theory</text>
+  <path class="edge" d="M560 326 H 596"/>
+  <rect x="596" y="309" width="220" height="32" class="node"/>
+  <text x="608" y="330" font-size="12.5" class="txt">Symbolic Interactionism</text>
+
+  <!-- Hover preview card -->
+  <rect x="540" y="120" width="330" height="94" rx="6" fill="#ffffff" stroke="#666" stroke-width="1.5"/>
+  <path class="edge" d="M510 172 C 525 168, 530 160, 540 156"/>
+  <text x="554" y="142" font-size="12.5" font-weight="700" class="txt">The Sociological Imagination</text>
+  <text x="554" y="160" font-size="11.5" class="muted">C. Wright Mills's term for seeing the link between</text>
+  <text x="554" y="175" font-size="11.5" class="muted">personal experience and larger social forces.</text>
+  <rect x="554" y="184" width="42" height="18" rx="9" class="badge"/>
+  <text x="575" y="197" font-size="10" text-anchor="middle" class="muted">intro</text>
+  <rect x="600" y="184" width="88" height="18" rx="9" class="badge"/>
+  <text x="644" y="197" font-size="10" text-anchor="middle" class="muted">level/macro …</text>
+  <text x="866" y="198" font-size="11.5" text-anchor="end" class="txt" font-weight="600">Open lesson →</text>
+
+  <!-- Annotations -->
+  <path class="annline" d="M225 447 C 230 500, 910 560, 930 560"/>
+  <text x="935" y="540" class="ann">Tree edges come from ONE source:</text>
+  <text x="935" y="556" class="ann">the `parent` field (schema v0.2).</text>
+  <text x="935" y="572" class="ann">One parent per node = a true tree.</text>
+  <text x="935" y="588" class="ann">`prerequisites` / `related` edges are</text>
+  <text x="935" y="604" class="ann">deliberately NOT drawn (Mode 3).</text>
+
+  <path class="annline" d="M550 460 C 700 470, 910 450, 930 440"/>
+  <text x="935" y="420" class="ann">Collapsed node: “+” and descendant</text>
+  <text x="935" y="436" class="ann">count, so branch weight is visible.</text>
+  <text x="935" y="452" class="ann">(Counts here are illustrative.)</text>
+
+  <path class="annline" d="M872 160 C 900 170, 920 180, 930 190"/>
+  <text x="935" y="200" class="ann">Hover preview = `summary`,</text>
+  <text x="935" y="216" class="ann">`difficulty`, `tags`. Click opens the</text>
+  <text x="935" y="232" class="ann">node page (Frame 3). Touch: first</text>
+  <text x="935" y="248" class="ann">tap opens card, second opens lesson.</text>
+
+  <path class="annline" d="M700 330 C 800 360, 910 320, 930 310"/>
+  <text x="935" y="290" class="ann">Expanded branch shown as worked</text>
+  <text x="935" y="306" class="ann">example — titles and structure match</text>
+  <text x="935" y="322" class="ann">docs/concept-list.md exactly.</text>
+</svg>
