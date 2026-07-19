@@ -23,7 +23,16 @@ export default async function Shell({
   return (
     <header className="shell">
       <Link href="/" className="shell-home">
-        learn-sociology
+        {/* Plain <img>: the export is unoptimized anyway, and next/image would
+            add a wrapper for no gain. `basePath` is not applied to raw src
+            attributes, hence the literal prefix (must match next.config.ts). */}
+        {/* eslint-disable-next-line @next/next/no-img-element -- static
+            export with images.unoptimized; next/image adds nothing here. */}
+        <img
+          src="/learn-sociology/logo-lockup.svg"
+          alt="learn-sociology"
+          className="shell-logo"
+        />
       </Link>
       <nav className="shell-tabs" aria-label="Mode switcher">
         <Link

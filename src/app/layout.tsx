@@ -28,6 +28,14 @@ export const metadata: Metadata = {
   title: "learn-sociology",
   description:
     "An open, concept-node approach to learning sociology — course, hierarchy, network, and sociologists views over one shared content graph.",
+  // Real favicons from the design session (Step 2.10) — replaces the Next
+  // scaffold icon. Metadata URLs get basePath applied automatically.
+  icons: {
+    icon: [
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+    ],
+  },
 };
 
 export default function RootLayout({

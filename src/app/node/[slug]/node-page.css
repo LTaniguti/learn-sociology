@@ -26,6 +26,12 @@
   color: var(--color-text-strong);
 }
 
+.shell-logo {
+  display: block;
+  height: 28px;
+  width: auto;
+}
+
 .shell-tabs {
   display: flex;
   gap: var(--space-1);
