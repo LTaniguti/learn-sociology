@@ -5,7 +5,7 @@ parent: social-groups
 prerequisites: [social-groups, social-institutions]
 related: []
 tags: [discipline/sociology, level/meso, type/concept, subfield/interaction]
-difficulty: intro
+difficulty: impossible
 thinkers: [Max Weber]
 status: stub
 ---
