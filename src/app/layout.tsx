@@ -53,7 +53,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spectral.variable} ${plexMono.variable}`}>
+    // suppressHydrationWarning is scoped to this element's attributes and is
+    // required by the boot script below: it sets data-theme before React
+    // hydrates, so the client tree legitimately differs from the static HTML.
+    // Without it every midnight/light load logs a hydration mismatch.
+    <html
+      lang="en"
+      className={`${spectral.variable} ${plexMono.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         {/* Pre-paint theme boot (Step 3.1). MUST be an inline, blocking script
             in <head>: this is a static export, so any read of localStorage
