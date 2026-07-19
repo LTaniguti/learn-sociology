@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../tokens.css">
+  <link rel="stylesheet" href="../theme-light.css">
+  <style>
+    body { margin: 0; }
+  </style>
+</helmet>
+
+<div data-theme="light" style="background:var(--color-canvas);min-height:1080px;width:1920px;font-family:var(--font-serif);color:var(--color-text-body);display:flex;flex-direction:column;">
+
+  <!-- Top bar -->
+  <div style="height:var(--topbar-height);flex-shrink:0;background:var(--color-surface-raised);border-bottom:var(--border-thin) solid var(--color-border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;">
+    <div style="display:flex;align-items:center;gap:28px;">
+      <div style="font-family:var(--font-serif);font-size:var(--type-wordmark-size);font-weight:var(--type-wordmark-weight);color:var(--color-text-heading);">learn-sociology</div>
+      <div style="display:flex;gap:4px;">
+        <div style="background:var(--tab-active-bg);color:var(--tab-active-text);font-family:var(--font-mono);font-size:var(--type-tab-size);padding:6px 14px;border-radius:var(--radius-sm);">Course</div>
+        <div style="color:var(--tab-idle-text);font-family:var(--font-mono);font-size:var(--type-tab-size);padding:6px 14px;">Hierarchy</div>
+        <div style="color:var(--tab-disabled-text);font-family:var(--font-mono);font-size:var(--type-tab-size);padding:6px 14px;">Network</div>
+        <div style="color:var(--tab-disabled-text);font-family:var(--font-mono);font-size:var(--type-tab-size);padding:6px 14px;">Sociologists</div>
+      </div>
+    </div>
+    <div style="background:var(--color-surface-sunken);border:var(--border-thin) solid var(--color-border-input);border-radius:var(--radius-pill);padding:6px 16px;font-family:var(--font-mono);font-size:var(--type-search-size);color:var(--color-text-faint);">Search the commons…</div>
+  </div>
+
+  <!-- Body -->
+  <div style="flex:1;display:flex;">
+
+    <!-- Sidebar -->
+    <div style="width:260px;flex-shrink:0;background:var(--color-surface-sunken);border-right:var(--border-thin) solid var(--color-border);padding:24px 16px;">
+      <div style="font-family:var(--font-mono);font-size:var(--type-module-size);letter-spacing:0.08em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:10px;">Module 3 · Classical Theory</div>
+      <div style="display:flex;flex-direction:column;gap:2px;">
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;font-family:var(--font-serif);font-size:var(--type-lesson-size);color:var(--state-complete-text);"><span style="color:var(--state-complete-mark);">✓</span> Durkheim &amp; Anomie</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;font-family:var(--font-serif);font-size:var(--type-lesson-size);color:var(--state-complete-text);"><span style="color:var(--state-complete-mark);">✓</span> Mechanical vs. Organic Solidarity</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-left:var(--border-accent) solid var(--state-current-bar);background:var(--state-current-bg);font-family:var(--font-serif);font-size:var(--type-lesson-size);color:var(--state-current-text);font-weight:600;">Social Facts</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;font-family:var(--font-serif);font-size:var(--type-lesson-size);color:var(--state-upcoming-text);"><span style="color:var(--state-upcoming-mark);">○</span> Division of Labour</div>
+        <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;font-family:var(--font-serif);font-size:var(--type-lesson-size);color:var(--state-upcoming-text);"><span style="color:var(--state-upcoming-mark);">○</span> Suicide (1897)</div>
+      </div>
+    </div>
+
+    <!-- Main panel -->
+    <div style="flex:1;background:var(--color-surface);box-shadow:var(--shadow-panel);border-radius:var(--radius-xl);margin:24px;padding:var(--pad-panel);max-width:660px;">
+
+      <!-- Draft banner -->
+      <div style="border:var(--border-thin) dashed var(--status-draft-border);background:var(--status-draft-bg);border-radius:var(--radius-lg);padding:10px 14px;display:flex;align-items:center;gap:8px;margin-bottom:24px;">
+        <span style="color:var(--status-draft-icon);">◐</span>
+        <span style="font-family:var(--font-mono);font-size:var(--type-banner-size);color:var(--status-draft-text);">This lesson is <strong style="color:var(--status-draft-strong);">in draft</strong> — content may change before review.</span>
+      </div>
+
+      <!-- Breadcrumb -->
+      <div style="font-family:var(--font-mono);font-size:var(--type-breadcrumb-size);letter-spacing:var(--type-breadcrumb-tracking);color:var(--color-text-faint);margin-bottom:12px;">
+        Course / Classical Theory / <span style="color:var(--color-link);">Social Facts</span>
+      </div>
+
+      <!-- Title -->
+      <h1 style="font-family:var(--type-title-family);font-size:var(--type-title-size);line-height:var(--type-title-line);font-weight:var(--type-title-weight);color:var(--color-text-strong);margin:0 0 6px;">Social Facts</h1>
+
+      <!-- Badges -->
+      <div style="display:flex;gap:8px;margin-bottom:18px;">
+        <div style="font-family:var(--font-mono);font-size:var(--type-badge-size);letter-spacing:var(--type-badge-tracking);text-transform:uppercase;color:var(--diff-intermediate-text);border:var(--border-thin) solid var(--diff-intermediate-border);border-radius:var(--radius-pill);padding:4px 10px;">Intermediate</div>
+        <div style="display:flex;align-items:center;gap:5px;font-family:var(--font-mono);font-size:var(--type-badge-size);color:var(--color-text-muted);"><span style="width:var(--paradigm-dot-size);height:var(--paradigm-dot-size);border-radius:50%;background:var(--paradigm-functionalism);display:inline-block;"></span>Functionalism</div>
+      </div>
+
+      <!-- Lede -->
+      <p style="font-family:var(--type-lede-family);font-size:var(--type-lede-size);line-height:var(--type-lede-line);font-weight:var(--type-lede-weight);color:var(--color-text-lede);margin:0 0 22px;">Durkheim's foundational claim: society exerts real, external constraint on individuals — patterns of behavior that exist independent of any one person's will.</p>
+
+      <!-- Body -->
+      <p style="font-family:var(--type-body-family);font-size:var(--type-body-size);line-height:var(--type-body-line);color:var(--color-text-body);margin:0 0 16px;">A <em style="font-style:italic;">social fact</em>, for Durkheim, is any way of acting — fixed or not — capable of exercising external constraint over the individual. Ways of feeling and acting, external to the individual, endowed with coercive power by virtue of which they control them.</p>
+      <p style="font-family:var(--type-body-family);font-size:var(--type-body-size);line-height:var(--type-body-line);color:var(--color-text-body);margin:0 0 30px;">This is the methodological pivot of <em style="font-style:italic;">The Rules of Sociological Method</em> (1895): sociology should treat social facts as things, studied through observable, external evidence rather than individual psychology.</p>
+
+      <!-- Perspectives -->
+      <h2 style="font-family:var(--type-h2-serif-family);font-size:var(--type-h2-serif-size);line-height:var(--type-h2-serif-line);font-weight:var(--type-h2-serif-weight);color:var(--color-text-heading);margin:0 0 14px;">Perspectives</h2>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:30px;">
+        <div style="background:var(--paradigm-func-surface);border-top:var(--border-accent) solid var(--paradigm-functionalism);border-radius:var(--radius-lg);padding:var(--pad-card);">
+          <div style="font-family:var(--font-mono);font-size:var(--type-eyebrow-size);letter-spacing:var(--type-eyebrow-tracking);text-transform:uppercase;color:var(--paradigm-functionalism);margin-bottom:8px;">Functionalism</div>
+          <div style="font-family:var(--font-serif);font-size:14.5px;line-height:1.6;color:var(--color-text-body);">Social facts persist because they perform a function for social cohesion — order is explained by what holds a system together.</div>
+        </div>
+        <div style="background:var(--paradigm-conflict-surface);border-top:var(--border-accent) solid var(--paradigm-conflict);border-radius:var(--radius-lg);padding:var(--pad-card);">
+          <div style="font-family:var(--font-mono);font-size:var(--type-eyebrow-size);letter-spacing:var(--type-eyebrow-tracking);text-transform:uppercase;color:var(--paradigm-conflict);margin-bottom:8px;">Conflict</div>
+          <div style="font-family:var(--font-serif);font-size:14.5px;line-height:1.6;color:var(--color-text-body);">Constraint isn't neutral — social facts often encode whose interests are protected, and who bears the cost of "order."</div>
+        </div>
+        <div style="background:var(--paradigm-inter-surface);border-top:var(--border-accent) solid var(--paradigm-interactionism);border-radius:var(--radius-lg);padding:var(--pad-card);box-shadow:var(--shadow-inter);">
+          <div style="font-family:var(--font-mono);font-size:var(--type-eyebrow-size);letter-spacing:var(--type-eyebrow-tracking);text-transform:uppercase;color:var(--paradigm-interactionism);margin-bottom:8px;">Interactionism</div>
+          <div style="font-family:var(--font-serif);font-size:14.5px;line-height:1.6;color:var(--color-text-body);">Even "external" facts are reproduced moment to moment through everyday interaction — constraint is enacted, not just inherited.</div>
+        </div>
+      </div>
+
+      <!-- Related -->
+      <h2 style="font-family:var(--type-h2-mono-family);font-size:var(--type-h2-mono-size);letter-spacing:var(--type-h2-mono-tracking);text-transform:var(--type-h2-mono-transform);font-weight:var(--type-h2-mono-weight);color:var(--color-text-muted);margin:0 0 12px;">Related Concepts</h2>
+      <div style="display:flex;flex-direction:column;gap:1px;">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:var(--border-thin) solid var(--color-border-subtle);">
+          <span style="width:var(--related-swatch-w);height:var(--related-swatch-h);background:var(--paradigm-functionalism);border-radius:2px;display:inline-block;"></span>
+          <span style="font-family:var(--type-related-family);font-size:var(--type-related-size);color:var(--color-text-related);">Mechanical &amp; Organic Solidarity</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 0;">
+          <span style="width:var(--related-swatch-w);height:var(--related-swatch-h);background:var(--paradigm-conflict);border-radius:2px;display:inline-block;"></span>
+          <span style="font-family:var(--type-related-family);font-size:var(--type-related-size);color:var(--color-text-related);">Anomie</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right rail -->
+    <div style="width:288px;flex-shrink:0;background:var(--color-surface-sunken);border-left:var(--border-thin) solid var(--color-border);padding:var(--pad-rail);display:flex;flex-direction:column;gap:26px;">
+
+      <!-- Mini tree locator -->
+      <div>
+        <div style="font-family:var(--font-mono);font-size:var(--type-eyebrow-size);letter-spacing:var(--type-eyebrow-tracking);text-transform:uppercase;color:var(--color-text-muted);margin-bottom:10px;">In the map</div>
+        <div style="background:var(--tree-canvas-bg);border-radius:var(--radius-md);padding:14px;display:flex;flex-direction:column;gap:6px;">
+          <div style="background:var(--tree-node-bg);border:var(--border-thin) solid var(--tree-node-border);border-radius:var(--radius-sm);padding:6px 10px;font-family:var(--font-mono);font-size:var(--type-node-label-size);color:var(--color-text-body);">Classical Theory</div>
+          <div style="background:var(--tree-node-open-bg);border:var(--border-thin) solid var(--tree-node-open-border);border-radius:var(--radius-sm);padding:6px 10px;margin-left:16px;font-family:var(--font-mono);font-size:var(--type-node-label-size);color:var(--color-text-strong);">Social Facts</div>
+        </div>
+      </div>
+
+      <!-- Preview card (hover state, --shadow-pop) -->
+      <div style="background:var(--color-surface-raised);border-radius:var(--radius-lg);padding:var(--pad-card);box-shadow:var(--shadow-pop);">
+        <div style="font-family:var(--font-mono);font-size:var(--type-prevnext-label-size);letter-spacing:0.05em;text-transform:uppercase;color:var(--color-text-faint);margin-bottom:6px;">Next</div>
+        <div style="font-family:var(--font-serif);font-size:var(--type-prevnext-title-size);color:var(--color-text-strong);">Division of Labour</div>
+      </div>
+
+      <!-- Prereqs -->
+      <div>
+        <div style="font-family:var(--font-mono);font-size:var(--type-eyebrow-size);letter-spacing:var(--type-eyebrow-tracking);text-transform:uppercase;color:var(--color-text-muted);margin-bottom:10px;">Prerequisites</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <div style="background:var(--state-complete-bg);border:var(--border-thin) solid var(--state-complete-border);border-radius:var(--radius-md);padding:5px 10px;font-family:var(--font-mono);font-size:var(--type-tag-size);color:var(--state-complete-text);">Anomie ✓</div>
+          <div style="background:var(--state-unmet-bg);border:var(--border-thin) solid var(--state-unmet-border);border-radius:var(--radius-md);padding:5px 10px;font-family:var(--font-mono);font-size:var(--type-tag-size);color:var(--state-unmet-text);">Positivism ○</div>
+        </div>
+      </div>
+
+      <!-- Tags -->
+      <div>
+        <div style="font-family:var(--font-mono);font-size:var(--type-eyebrow-size);letter-spacing:var(--type-eyebrow-tracking);text-transform:uppercase;color:var(--color-text-muted);margin-bottom:10px;">Tags</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;">
+          <div style="background:var(--color-surface-hover);border-radius:var(--radius-xs);padding:4px 9px;font-family:var(--font-mono);font-size:var(--type-tag-size);color:var(--color-text-meta-warm);">durkheim</div>
+          <div style="background:var(--color-surface-hover);border-radius:var(--radius-xs);padding:4px 9px;font-family:var(--font-mono);font-size:var(--type-tag-size);color:var(--color-text-meta-warm);">structuralism</div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div>
+        <div style="font-family:var(--font-mono);font-size:var(--type-eyebrow-size);letter-spacing:var(--type-eyebrow-tracking);text-transform:uppercase;color:var(--color-text-muted);margin-bottom:10px;">Module Progress</div>
+        <div style="height:6px;background:var(--progress-track);border-radius:var(--radius-pill);overflow:hidden;">
+          <div style="width:40%;height:100%;background:var(--progress-fill);"></div>
+        </div>
+      </div>
+
+      <!-- Attribution footer -->
+      <div style="margin-top:auto;font-family:var(--font-mono);font-size:var(--type-caption-size);line-height:var(--type-caption-line);color:var(--color-text-faint);">CC BY 4.0 — content adapted from open sociology sources.</div>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+</body>
+</html>
