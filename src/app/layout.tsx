@@ -3,6 +3,14 @@ import { Spectral, IBM_Plex_Mono } from "next/font/google";
 // The design tokens live in docs/design/ (single source, no copy to drift);
 // a relative import from outside src/ is valid for global CSS here.
 import "../../docs/design/tokens.css";
+// Theme overrides (Step 3.1). Each file is a single [data-theme="…"] block
+// that re-declares existing token names — no new variables, no component ever
+// names a theme. Imported after tokens.css so the overrides win by order.
+// No data-theme attribute = the shipped Open Commons dark; there is
+// deliberately no prefers-color-scheme behaviour (the default is the default
+// regardless of OS setting).
+import "../../docs/design/theme-midnight.css";
+import "../../docs/design/theme-light.css";
 import "./globals.css";
 
 // Amendment to direction.md's sourcing note: next/font downloads at build
