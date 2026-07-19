@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "lint:content": "node scripts/lint-content.mjs"
   },
   "dependencies": {
     "next": "16.2.10",
@@ -19,6 +20,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "js-yaml": "^5.2.1",
     "typescript": "^5"
   }
 }
