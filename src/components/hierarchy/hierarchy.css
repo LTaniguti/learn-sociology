@@ -1,0 +1,116 @@
+/* Frame 2 structural styles — minimal layout only; visual polish is 2.9.
+   Root at the left edge, depth growing rightward via list indentation. */
+
+.hierarchy-page {
+  padding: 1rem 2rem 4rem;
+}
+
+.hierarchy-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.hierarchy-zoom {
+  margin-left: auto;
+  display: flex;
+  gap: 0.25rem;
+}
+
+.hierarchy-zoom [aria-pressed="true"] {
+  font-weight: bold;
+}
+
+.hierarchy-canvas {
+  font-size: calc(1rem * var(--hierarchy-scale, 1));
+}
+
+.hierarchy-tree,
+.hnode-children {
+  list-style: none;
+}
+
+.hnode-children {
+  padding-left: 1.75em;
+}
+
+.hnode-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+  padding: 0.15em 0;
+}
+
+.hnode-toggle {
+  width: 1.5em;
+  flex: none;
+  font: inherit;
+  text-align: center;
+}
+
+.hnode-leaf {
+  opacity: 0.5;
+}
+
+.hnode-self {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+}
+
+.hnode-title {
+  font: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  text-decoration: underline dotted;
+}
+
+.hnode-count {
+  font-size: 0.85em;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+.hnode-highlighted > .hnode-row .hnode-title {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Preview card: hidden until hover/focus (desktop) or click-pin (all pointer
+   types — first tap opens it on touch). */
+.hnode-card {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 10;
+  width: 22em;
+  max-width: 80vw;
+  padding: 0.75em;
+  border: 1px solid currentColor;
+  background: var(--background);
+}
+
+.hnode-self:hover > .hnode-card,
+.hnode-self:focus-within > .hnode-card,
+.hnode-card.hnode-card-pinned {
+  display: block;
+}
+
+.hnode-card-summary {
+  margin-bottom: 0.5em;
+}
+
+.hnode-card .tag-chips {
+  margin-top: 0.5em;
+}
+
+.hnode-card-lesson {
+  display: inline-block;
+  margin-top: 0.5em;
+  text-decoration: underline;
+}
