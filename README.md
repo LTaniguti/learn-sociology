@@ -1,64 +1,56 @@
 # learn-sociology
 
-[![deploy](https://github.com/LTaniguti/learn-sociology/actions/workflows/deploy.yml/badge.svg)](https://github.com/LTaniguti/learn-sociology/actions/workflows/deploy.yml)
+An open-source, graph-navigable platform for self-learning sociology.
 
-An open-source, graph-navigable platform for self-learning Sociology.
+**Live proof of concept:** https://ltaniguti.github.io/learn-sociology/
 
-**Live at:** <https://ltaniguti.github.io/learn-sociology/>
+## What this is
 
-## About
+Most sociology courses are linear: one syllabus, one order, one voice. This project treats introductory sociology as what it actually is — a connected graph of concepts with multiple valid paths through it, and multiple theoretical lenses on every topic.
 
-Sociology has no shortage of online courses, but almost all of them are linear: a fixed sequence of lessons you follow from start to finish. This project explores a different approach — treating the discipline as a *network of interconnected concepts* that learners can navigate in whatever way suits them, whether that's a traditional course order, a top-down concept hierarchy, or free exploration through the links between ideas.
-
-The goal is a platform that is:
-
-- **Free and open source** — all content and code are openly licensed and publicly developed.
-- **Graph-navigable** — concepts, theories, and thinkers are connected, and those connections are first-class navigation tools rather than an afterthought.
-- **Multi-perspective by design** — sociology's major paradigms (functionalism, conflict theory, symbolic interactionism) are competing lenses, and contested topics are presented through each of them rather than flattened into a single narrative.
-- **Community-extensible** — the long-term aim is a framework that others can expand, with content contributions handled through ordinary pull requests.
+Every lesson is a Markdown file with YAML frontmatter in this repository. The repo **is** the database: the site is statically generated from these files, contributions are pull requests, and every change is lint-checked in CI before it can deploy.
 
 ## Navigation modes
 
-The final version of the platform is intended to provide four navigational modes for course content:
+| Mode | View | Status |
+|---|---|---|
+| 1 | **Course** — a linear, university-style path with progress tracking | Live |
+| 2 | **Hierarchy** — a collapsible concept tree from core to niche | Live |
+| 3 | **Network** — a navigable graph of how concepts interrelate | Planned |
+| 4 | **Sociologists** — a citation-weighted network of thinkers and their work | Planned |
 
-1. **Course order** — an ordered structure, reminiscent of introductory university courses, for learners who want a guided path.
-2. **Concept hierarchy** — a collapsible map formatted similarly to a hierarchy chart, where core concepts branch out into progressively more niche ones.
-3. **Concept network** — a navigable network of concepts and theories that visualizes how they interconnect and relate to each other, with broadly applicable ideas near the center and specialized ones toward the periphery.
-4. **Sociologist network** — a navigable network of sociologists that visualizes the scale of their contributions and how their work is interconnected.
-
-The initial proof of concept targets modes 1 and 2. Mode 3 is expected to emerge largely from the same underlying tag and link data, and mode 4 is planned last.
+The two planned modes appear in the interface as visible, disabled tabs on purpose: the roadmap is part of the project's identity.
 
 ## How it works
 
-Content lives in this repository as plain Markdown files with YAML frontmatter — one file per **concept node**. Each node defines a concept's name, definition, prerequisites, tags, related theorists, and curated external resources. The site is generated from these files, and the graph views are derived from the prerequisite and tag relationships between nodes.
-
-This means the repository itself is the content database: contributing a lesson, fixing an error, or proposing a new connection is just a pull request.
-
-```
-content/   Lesson / concept-node markdown files
-docs/      Design documents and the concept-node schema
-```
-
-## Content sources
-
-Portions of the content are adapted from [*Introduction to Sociology 3e*](https://openstax.org/details/books/introduction-sociology-3e) by OpenStax (Rice University), licensed under CC BY 4.0. Adapted material is restructured and rewritten to fit the concept-node format, and files that draw on OpenStax material identify this in their frontmatter. See [LICENSE-CONTENT.md](LICENSE-CONTENT.md) for full attribution details.
+- **Content:** `/content` holds one Markdown file per concept node (53 seed concepts across 11 modules, drawn from OpenStax *Introduction to Sociology 3e*). `content/course.yaml` defines the Mode 1 sequence. `docs/schema.md` and `docs/taxonomy.md` define the frontmatter contract and tag vocabulary.
+- **Validation:** `npm run lint:content` checks every node (slugs, parents, prerequisites, tags, status, ordering). It runs on every push and pull request, and a failing lint blocks deployment.
+- **Site:** Next.js static export, deployed to GitHub Pages by Actions on every merge to `main`. Progress and preferences are device-local (`localStorage`) — there are no accounts and no tracking.
+- **Design:** the visual system ("Open Commons") lives in `docs/design/` — direction, tokens, and component specs. Every visual value in the app is a token; the token file itself is imported as live code.
+- **Discussion:** each lesson embeds a Giscus thread backed by this repo's GitHub Discussions.
+- **Multi-perspective by design:** contested topics present sociology's paradigms side by side rather than flattening them into one narrative. This is a design principle, not an afterthought.
 
 ## Status
 
-**PoC deployed** — the site is live at <https://ltaniguti.github.io/learn-sociology/>, with navigation modes 1 (course order) and 2 (concept hierarchy) usable end to end. Every merge to `main` is lint-checked, built, and auto-published by GitHub Actions.
+The proof of concept is live with Modes 1 and 2. The current focus is **content**: replacing stub nodes with full published lessons.
 
-- [x] Define the concept-node schema and tag taxonomy
-- [x] Select the initial set of ~40–60 seed concepts
-- [x] Draft sample nodes to validate the schema
-- [x] Build and deploy the proof of concept for navigation modes 1 and 2
+## Roadmap
 
-All 53 concept nodes currently exist as stubs (`status: stub`) with complete metadata — the graph structure is fully navigable, but the articles remain to be written. Each stub is an article waiting for an author: see [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow. Issues with ideas or feedback are also very welcome.
+Near term:
+- Content push — stub nodes → published lessons (the PoC exit criterion)
+- Structured "Perspectives" rendering — paradigm columns driven by content-pipeline hooks
 
-## License
+Further out:
+- Mode 3: concept network view (graph visualization), including a node-and-edge canvas upgrade for the Hierarchy view
+- Theme switcher — current dark as default, plus an alternate dark and a light theme
+- A testing/QA system for course content quality
+- Mode 4: sociologist profiles and citation network
+- Token-matched custom Giscus theme
 
-This project uses a dual license:
+## Contributing
 
-- **Code** is licensed under the [MIT License](LICENSE.md).
-- **Content** (everything in `content/`, including lesson text, concept-node data, and accompanying images) is licensed under [CC BY 4.0](LICENSE-CONTENT.md).
+Contributions are welcome — see `CONTRIBUTING.md`. Lessons are Markdown files; proposing one is a pull request, and the content linter will tell you if the frontmatter is off.
 
-By contributing to this repository, you agree that your contributions are licensed under these same terms.
+## Licensing
+
+Dual-licensed: **code** under MIT ([LICENSE](LICENSE.md)), **content** under CC BY 4.0 ([LICENSE-CONTENT.md](LICENSE-CONTENT.md)). Portions of the content are adapted from *Introduction to Sociology 3e* by OpenStax (Rice University), CC BY 4.0 — see the content license for full attribution.
