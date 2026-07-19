@@ -29,7 +29,11 @@
 .shell-logo {
   display: block;
   height: 28px;
+  /* Explicit ratio from the 232x32 viewBox — an inline <svg> has no intrinsic
+     size to derive `width: auto` from the way the <img> did. */
+  aspect-ratio: 232 / 32;
   width: auto;
+  overflow: visible;
 }
 
 .shell-tabs {
@@ -109,6 +113,47 @@
 
 .shell-search-input:focus-visible {
   box-shadow: none; /* the pill wrapper carries the ring via :focus-within */
+}
+
+/* Theme switcher (Step 3.1) — segmented control at the bar's far right.
+   No components.md spec yet; values improvised from the tab + control
+   patterns and listed in the 3.1 report for back-filling. */
+.themectl {
+  display: flex;
+  align-items: center;
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+}
+
+.themectl-seg {
+  font-family: var(--font-mono);
+  font-size: var(--type-control-size);
+  color: var(--color-text-muted);
+  background: none;
+  border: none;
+  padding: var(--space-2) var(--space-2);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+/* Same hover as .shell-tab: surface tint, text unchanged. */
+.themectl-seg:hover {
+  background: var(--color-surface-hover);
+}
+
+/* Rule 3 — exactly one amber treatment: text colour, no underline, no fill. */
+.themectl-seg-active,
+.themectl-seg-active:hover {
+  color: var(--color-accent);
+  background: none;
+}
+
+/* The global ring is drawn with box-shadow, which neighbouring segments would
+   otherwise paint over. */
+.themectl-seg:focus-visible {
+  position: relative;
+  z-index: 1;
+  border-radius: var(--radius-sm);
 }
 
 /* Search results popover (Step 2.10) */
@@ -714,6 +759,30 @@ html[data-textsize="lg"] {
   }
 }
 
+/* The theme control (3.1) widened the bar's natural content past the tablet
+   range. Below ~1060px one row can no longer hold logo + tabs + search +
+   control, and `overflow-x: hidden` on <body> would clip the control out of
+   reach rather than scroll to it — so the bar wraps to a second row instead.
+   Previously these rules lived in the 640px block; the control raised the
+   threshold, it did not change the behaviour. */
+@media (max-width: 1060px) {
+  .shell {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: var(--topbar-height);
+    gap: var(--space-2) var(--space-3);
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .shell-home {
+    white-space: nowrap;
+  }
+
+  .shell-tabs {
+    flex-wrap: wrap;
+  }
+}
+
 @media (max-width: 640px) {
   .node-main {
     padding: var(--space-5) var(--space-4) var(--space-6);
@@ -729,22 +798,6 @@ html[data-textsize="lg"] {
   html {
     --type-lede-size: var(--type-lede-size-mobile);
     --type-body-size: var(--type-body-size-mobile);
-  }
-
-  .shell {
-    flex-wrap: wrap;
-    height: auto;
-    min-height: var(--topbar-height);
-    gap: var(--space-2) var(--space-3);
-    padding: var(--space-2) var(--space-3);
-  }
-
-  .shell-home {
-    white-space: nowrap;
-  }
-
-  .shell-tabs {
-    flex-wrap: wrap;
   }
 
   .shell-search {
