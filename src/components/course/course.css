@@ -4,6 +4,47 @@
   flex: 1;
   display: grid;
   grid-template-columns: 288px minmax(0, 1fr);
+  transition: grid-template-columns var(--transition-fast);
+}
+
+/* Collapsed sidebar (Step 2.10): the column animates to a slim rail holding
+   only the toggle, and the content column recenters. */
+.course-layout:has(.syllabus-collapsed) {
+  grid-template-columns: var(--rail-collapsed-width) minmax(0, 1fr);
+}
+
+.syllabus-toggle {
+  align-self: flex-end;
+  margin-bottom: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--type-control-size);
+  color: var(--color-text-muted);
+  background: none;
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.syllabus-toggle:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-meta-warm);
+}
+
+.syllabus-collapsed {
+  padding: var(--space-6) var(--space-2);
+  overflow: hidden;
+}
+
+.syllabus-collapsed .syllabus-toggle {
+  align-self: center;
+}
+
+/* Removed from layout and from the accessibility tree — no focus trap. */
+.syllabus-collapsed .syllabus-nav,
+.syllabus-collapsed .syllabus-footer {
+  display: none;
 }
 
 /* ============================================================
@@ -269,10 +310,24 @@ a.prev-next-card:hover .prev-next-title {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .course-layout:has(.syllabus-collapsed) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .syllabus {
     order: 2;
     border-right: none;
     border-top: var(--border-thin) solid var(--color-border);
+  }
+
+  /* Collapse is a desktop affordance — stacked, the syllabus is always shown. */
+  .syllabus-toggle {
+    display: none;
+  }
+
+  .syllabus-collapsed .syllabus-nav,
+  .syllabus-collapsed .syllabus-footer {
+    display: block;
   }
 
   .prev-next {

@@ -286,6 +286,7 @@
   --pad-rail:       30px 24px;       /* right rail */
   --pad-card:       16px;            /* perspectives / preview cards */
   --topbar-height:  58px;
+  --rail-collapsed-width: 52px;      /* collapsed course sidebar (added 2.10) */
 
   /* ----------------------------------------------------------
      12. RADII
