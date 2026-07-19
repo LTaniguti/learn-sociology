@@ -20,7 +20,10 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "gray-matter": "^4.0.3",
     "js-yaml": "^5.2.1",
+    "remark": "^15.0.1",
+    "remark-html": "^16.0.1",
     "typescript": "^5"
   }
 }
