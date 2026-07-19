@@ -334,7 +334,9 @@
   font-weight: var(--type-h2-mono-weight);
   letter-spacing: var(--type-h2-mono-tracking);
   text-transform: var(--type-h2-mono-transform);
-  color: var(--color-accent);
+  /* Muted, not amber: direction rule 3 reserves amber for wayfinding. The
+     hi-fi PNGs render these eyebrows amber; the spec (--type-eyebrow-*) wins. */
+  color: var(--color-text-muted);
   border-bottom: var(--border-thin) solid var(--color-border);
   padding-bottom: var(--space-3);
   margin: var(--space-8) 0 var(--space-5);
