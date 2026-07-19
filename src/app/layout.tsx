@@ -29,11 +29,12 @@ export const metadata: Metadata = {
   description:
     "An open, concept-node approach to learning sociology — course, hierarchy, network, and sociologists views over one shared content graph.",
   // Real favicons from the design session (Step 2.10) — replaces the Next
-  // scaffold icon. Metadata URLs get basePath applied automatically.
+  // scaffold icon. Metadata icon URLs are emitted verbatim — basePath is NOT
+  // applied — so the prefix is literal here (must match next.config.ts).
   icons: {
     icon: [
-      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/learn-sociology/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/learn-sociology/favicon-16.png", sizes: "16x16", type: "image/png" },
     ],
   },
 };
