@@ -13,6 +13,15 @@ html {
   color-scheme: dark;
 }
 
+/* The one thing the theme files can't carry: color-scheme is a real property,
+   not a token, so it can't live in a token-override block. Both dark themes
+   keep the declaration above; only light flips it, so UA-painted chrome
+   (scrollbars, form controls, the canvas behind overscroll) follows the
+   theme instead of staying dark on paper. */
+html[data-theme="light"] {
+  color-scheme: light;
+}
+
 html,
 body {
   max-width: 100vw;

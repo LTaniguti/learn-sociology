@@ -54,6 +54,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${spectral.variable} ${plexMono.variable}`}>
+      <head>
+        {/* Pre-paint theme boot (Step 3.1). MUST be an inline, blocking script
+            in <head>: this is a static export, so any read of localStorage
+            after hydration would flash the default dark theme on every load
+            for midnight/light users. The whitelist is the security boundary —
+            only the two literal values ever reach the DOM, never arbitrary
+            storage contents. Mirrors the justification-comment pattern from
+            2.6/2.10 rather than restructuring around the lint rule. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("learn-sociology:theme:v1");if(t==="midnight"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}`,
+          }}
+        />
+      </head>
       <body>{children}</body>
     </html>
   );
