@@ -3,9 +3,14 @@ import Link from "next/link";
 // Shared top bar for all frames (docs/wireframes.md, "Shared shell").
 // Network and Sociologists are rendered disabled, not hidden: the four-mode
 // roadmap is part of the project's identity and the UI advertises it honestly.
-// Course went live with Step 2.5; Hierarchy goes live with Step 2.6.
-export default function Shell({ active }: { active?: "course" }) {
+// Course went live with Step 2.5; Hierarchy with Step 2.6.
+export default function Shell({
+  active,
+}: {
+  active?: "course" | "hierarchy";
+}) {
   const courseActive = active === "course";
+  const hierarchyActive = active === "hierarchy";
   return (
     <header className="shell">
       <Link href="/" className="shell-home">
@@ -19,7 +24,13 @@ export default function Shell({ active }: { active?: "course" }) {
         >
           Course
         </Link>
-        <Link href="#" className="shell-tab">
+        <Link
+          href="/hierarchy"
+          className={
+            hierarchyActive ? "shell-tab shell-tab-active" : "shell-tab"
+          }
+          aria-current={hierarchyActive ? "page" : undefined}
+        >
           Hierarchy
         </Link>
         <span className="shell-tab shell-tab-disabled" aria-disabled="true">

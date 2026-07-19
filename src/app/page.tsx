@@ -23,6 +23,9 @@ export default function Home() {
             <Link href="/course">Start the course</Link>
           </li>
           <li>
+            <Link href="/hierarchy">Browse the concept hierarchy</Link>
+          </li>
+          <li>
             <a href="https://github.com/LTaniguti/learn-sociology">
               GitHub repository
             </a>

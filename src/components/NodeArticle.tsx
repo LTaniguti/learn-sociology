@@ -94,6 +94,11 @@ export default async function NodeArticle({
             </span>
           ))}
           <span aria-current="page">{node.slug}</span>
+          {/* The breadcrumb doubles as the you-are-here link into Mode 2
+              (docs/wireframes.md, Frame 3) — mode-neutral, so both routes
+              render it. */}
+          <span className="breadcrumb-separator"> · </span>
+          <Link href={`/hierarchy#${node.slug}`}>View in hierarchy</Link>
         </nav>
 
         {banner && (
