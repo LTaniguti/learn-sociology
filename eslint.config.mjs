@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Acceptance renders from the design sessions: self-contained tool
+    // exports, not app source, and never bundled. Same exemption in spirit as
+    // tokens.css/theme-*.css sitting outside the hex-literal guard.
+    "docs/design/hifi/**",
   ]),
 ]);
 
