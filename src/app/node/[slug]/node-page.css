@@ -1,0 +1,87 @@
+/* Minimal layout only — palette/typography is Step 2.9. */
+
+/* Shared shell */
+.shell {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 1px solid currentColor;
+}
+
+.shell-tabs {
+  display: flex;
+  gap: 1rem;
+}
+
+.shell-tab-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.shell-search {
+  margin-left: auto;
+}
+
+/* Node page: main column + right rail */
+.node-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 16rem;
+  gap: 2.5rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.title-block {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.status-banner {
+  border: 1px solid currentColor;
+  padding: 0.5rem 0.75rem;
+}
+
+.difficulty-badge {
+  border: 1px solid currentColor;
+  border-radius: 1em;
+  padding: 0.1em 0.6em;
+  font-size: 0.8rem;
+}
+
+.lede {
+  font-size: 1.15rem;
+}
+
+.prereq-callout {
+  border: 1px solid currentColor;
+  padding: 0.75rem 1rem;
+}
+
+.prereq-heading,
+.rail-heading {
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.rail-section {
+  margin-bottom: 1.5rem;
+}
+
+.tag-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+}
+
+.tag-chip {
+  border: 1px solid currentColor;
+  border-radius: 1em;
+  padding: 0.1em 0.6em;
+  font-size: 0.8rem;
+}
