@@ -8,7 +8,9 @@
 
 1. Install the **giscus GitHub App** on `LTaniguti/learn-sociology` (https://github.com/apps/giscus)
 2. In repo Discussions, create a category named **Lessons** with the **Announcements** format — announcement-type categories mean only giscus and maintainers can open discussions, so the one-per-lesson mapping can't be polluted by manually created threads
-3. On https://giscus.app, select the repo and the Lessons category, and copy the generated `data-repo-id` and `data-category-id` values into this brief (or paste them to Claude Code). These IDs are public identifiers, not secrets — committing them is correct.
+3. On https://giscus.app, select the repo and the Lessons category, and copy the generated `data-repo-id` and `data-category-id` values into this brief (or paste them to Claude Code).
+4. Aforementioned ID's : data-repo-id="R_kgDOTU5rmQ"
+                         data-category-id="DIC_kwDOTU5rmc4DBgJA"
 
 **Claude Code: if the repo ID / category ID are not provided, stop and report.** Do not invent values or scrape them.
 
