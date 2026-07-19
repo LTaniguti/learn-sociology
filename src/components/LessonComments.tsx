@@ -26,8 +26,10 @@ export default function LessonComments({ slug }: { slug: string }) {
     script.setAttribute("data-reactions-enabled", "1");
     script.setAttribute("data-input-position", "bottom");
     script.setAttribute("data-loading", "lazy");
-    // Theme follows the OS for now; revisit alongside site theming in 2.9.
-    script.setAttribute("data-theme", "preferred_color_scheme");
+    // Borderless dark blends best into the surrounding warm-dark panel
+    // (dark_dimmed's blue-gray frame clashes with the Open Commons palette).
+    // TODO(post-2.9): ship a token-matched custom Giscus theme via CSS URL.
+    script.setAttribute("data-theme", "noborder_dark");
     script.setAttribute("data-lang", "en");
     container.appendChild(script);
   }, [slug]);
