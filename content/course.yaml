@@ -1,0 +1,86 @@
+# Mode 1 course manifest — the single source of linear course ordering.
+#
+# Reordering the course is an edit to this file only, never to node
+# frontmatter: ordering is a property of the course, not the concept
+# (see docs/schema.md, "Where Mode 1's course order lives").
+#
+# Modules and node order mirror docs/concept-list.md. A build check may
+# verify that no node appears before its `prerequisites`.
+
+course: introduction-to-sociology
+modules:
+  - title: "An Introduction to Sociology"
+    nodes:
+      - sociology
+      - sociological-imagination
+      - levels-of-analysis
+      - theoretical-paradigms
+      - functionalism
+      - conflict-theory
+      - symbolic-interactionism
+  - title: "Sociological Research"
+    nodes:
+      - sociological-research
+      - scientific-method
+      - quantitative-and-qualitative-methods
+      - surveys
+      - ethnography
+      - research-ethics
+  - title: "Culture"
+    nodes:
+      - culture
+      - values-and-beliefs
+      - social-norms
+      - symbols-and-language
+      - subcultures-and-countercultures
+      - ethnocentrism-and-cultural-relativism
+  - title: "Society and Social Interaction"
+    nodes:
+      - society
+      - types-of-societies
+      - social-institutions
+      - status
+      - roles
+      - social-construction-of-reality
+  - title: "Socialization"
+    nodes:
+      - socialization
+      - development-of-the-self
+      - agents-of-socialization
+      - resocialization
+  - title: "Groups and Organizations"
+    nodes:
+      - social-groups
+      - primary-and-secondary-groups
+      - in-groups-and-out-groups
+      - bureaucracy
+  - title: "Deviance, Crime, and Social Control"
+    nodes:
+      - deviance
+      - social-control
+      - labeling-theory
+      - strain-theory
+  - title: "Social Stratification"
+    nodes:
+      - social-stratification
+      - social-class
+      - social-mobility
+      - global-stratification
+  - title: "Race, Ethnicity, and Gender"
+    nodes:
+      - race-and-ethnicity
+      - prejudice-and-discrimination
+      - sex-and-gender
+      - gender-socialization
+      - intersectionality
+  - title: "Social Institutions"
+    nodes:
+      - family
+      - religion
+      - education
+      - power-and-authority
+      - economic-systems
+  - title: "Social Change"
+    nodes:
+      - social-change
+      - social-movements
