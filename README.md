@@ -50,6 +50,8 @@ Current focus:
 - [x] Draft sample nodes to validate the schema
 - [x] Sketch the proof-of-concept designs for navigation modes 1 and 2
 
+The full seed concept structure is now in place: every concept exists in `content/` as a stub node with complete metadata (`status: stub`), giving the PoC build complete graph data while the full articles are written incrementally. Content contributions are welcome — each stub is an article waiting for an author.
+
 Contributions will be very welcome once the framework is further defined. In the meantime, feel free to open an issue with ideas, feedback, or interest in contributing.
 
 ## License
