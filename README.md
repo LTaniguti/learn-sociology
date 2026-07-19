@@ -1,6 +1,10 @@
 # learn-sociology
 
+[![deploy](https://github.com/LTaniguti/learn-sociology/actions/workflows/deploy.yml/badge.svg)](https://github.com/LTaniguti/learn-sociology/actions/workflows/deploy.yml)
+
 An open-source, graph-navigable platform for self-learning Sociology.
+
+**Live at:** <https://ltaniguti.github.io/learn-sociology/>
 
 ## About
 
@@ -41,18 +45,14 @@ Portions of the content are adapted from [*Introduction to Sociology 3e*](https:
 
 ## Status
 
-**Design phase closed; PoC build is next**
-
-Current focus:
+**PoC deployed** — the site is live at <https://ltaniguti.github.io/learn-sociology/>, with navigation modes 1 (course order) and 2 (concept hierarchy) usable end to end. Every merge to `main` is lint-checked, built, and auto-published by GitHub Actions.
 
 - [x] Define the concept-node schema and tag taxonomy
 - [x] Select the initial set of ~40–60 seed concepts
 - [x] Draft sample nodes to validate the schema
-- [x] Sketch the proof-of-concept designs for navigation modes 1 and 2
+- [x] Build and deploy the proof of concept for navigation modes 1 and 2
 
-The full seed concept structure is now in place: every concept exists in `content/` as a stub node with complete metadata (`status: stub`), giving the PoC build complete graph data while the full articles are written incrementally. Content contributions are welcome — each stub is an article waiting for an author.
-
-Contributions will be very welcome once the framework is further defined. In the meantime, feel free to open an issue with ideas, feedback, or interest in contributing.
+All 53 concept nodes currently exist as stubs (`status: stub`) with complete metadata — the graph structure is fully navigable, but the articles remain to be written. Each stub is an article waiting for an author: see [CONTRIBUTING.md](CONTRIBUTING.md) for the contribution workflow. Issues with ideas or feedback are also very welcome.
 
 ## License
 
