@@ -1,0 +1,126 @@
+/* ============================================================
+   learn-sociology · Theme override: "Light" (daylight sibling)
+   Warm paper, dark ink — same character as Open Commons,
+   inverted. Not a generic light mode: canvas sits in the
+   #f5efe4 paper range, shadows stay warm and soft rather than
+   turning gray. Only overridden tokens are listed.
+   ============================================================ */
+
+[data-theme="light"] {
+
+  /* Core surfaces — warm paper, stepping slightly deeper for sunken/selected */
+  --color-canvas:            #f5efe4;
+  --color-surface:           #fbf7ef;
+  --color-surface-raised:    #fffdf7;
+  --color-surface-sunken:    #eee6d6;
+  --color-surface-hover:     #efe6d4;
+  --color-surface-selected:  #e8dcc4;
+  --color-surface-current:   #ede0c8;
+
+  /* Borders */
+  --color-border:            #ddd0b8;
+  --color-border-subtle:     #e6dac0;
+  --color-border-faint:      #ece1c8;
+  --color-border-input:      #d3c4a8;
+  --color-border-accent:     #b8823a;
+  --color-edge:              #d0c0a0;
+  --color-edge-active:       #b8823a;
+
+  /* Text — dark ink on paper */
+  --color-text-strong:       #241d13;
+  --color-text-heading:      #2c2417;
+  --color-text-body:         #3a3021;
+  --color-text-lede:         #453a28;
+  --color-text-related:      #2f2718;
+  --color-text-muted:        #726447;
+  --color-text-faint:        #96876a;
+  --color-text-disabled:     #a99a7c;
+  --color-text-meta-warm:    #714f22;
+  --color-text-upcoming:     #7d7156;
+  --color-module-collapsed:  #6b5d44;
+
+  /* Accent — derived deep amber; #e08a3c is 2.33:1 on #f5efe4 paper and fails
+     text contrast, so the light theme uses #8a4a15 (5.98:1) for text-sized
+     accent uses. #7c4212 (6.94:1) covers the bolder "strong" role. */
+  --color-accent:            #8a4a15;
+  --color-accent-hover:      #a05a1e;
+  --color-accent-strong:     #7c4212;
+  --color-accent-wash:       rgba(138,74,21,0.07);
+  --color-accent-ring:       rgba(138,74,21,0.18);
+
+  --color-link:              #8a4a15;
+  --color-link-hover:        #a05a1e;
+  --color-selection:         rgba(138,74,21,0.20);
+
+  /* Lesson progress states */
+  --state-complete-mark:     #3f7a4a;
+  --state-complete-label:    #4d6a45;
+  --state-complete-bg:       #e6ecdf;
+  --state-complete-border:   #c3d3b5;
+  --state-complete-text:     #33451f;
+
+  --state-current-bar:       #8a4a15;
+  --state-current-bg:        #ede0c8;
+  --state-current-text:      #241d13;
+
+  --state-upcoming-mark:     #a99a7c;
+  --state-upcoming-text:     #7d7156;
+
+  --state-unmet-mark:        #a05a1e;
+  --state-unmet-bg:          #f2e2ce;
+  --state-unmet-border:      #d9bd93;
+  --state-unmet-text:        #4a3520;
+  --state-unmet-label:       #8a5a30;
+
+  /* Draft / status banner */
+  --status-draft-border:     #b8823a;
+  --status-draft-bg:         rgba(138,74,21,0.07);
+  --status-draft-icon:       #8a4a15;
+  --status-draft-text:       #714f22;
+  --status-draft-strong:     #7c4212;
+
+  /* Difficulty badges */
+  --diff-intro-text:         #726447;
+  --diff-intro-border:       #d3c4a8;
+  --diff-intermediate-text:  #8a4a15;
+  --diff-intermediate-border:#b8823a;
+  --diff-advanced-text:      #a03a20;
+  --diff-advanced-border:    #c99070;
+
+  /* Paradigm trio — darkened for paper contrast, still recognizably teal/rose/amber */
+  --paradigm-functionalism:  #256a59;
+  --paradigm-conflict:       #a3486d;
+  --paradigm-interactionism: #8a4a15;
+
+  --paradigm-func-surface:   #eef2ee;
+  --paradigm-conflict-surface:#f6eef1;
+  --paradigm-inter-surface:  #f5ecdd;
+
+  /* Disabled mode tabs */
+  --tab-disabled-text:       #a99a7c;
+  --tab-active-bg:           #e8dcc4;
+  --tab-active-text:         #2c2417;
+  --tab-idle-text:           #5c5136;
+
+  /* Tree / hierarchy canvas */
+  --tree-canvas-bg:          #efe6d4;
+  --tree-dot:                #ddd0b8;
+  --tree-node-bg:            #fffdf7;
+  --tree-node-border:        #ddd0b8;
+  --tree-node-open-bg:       #ede0c8;
+  --tree-node-open-border:   #b8823a;
+  --tree-badge-text:         #726447;
+  --tree-badge-border:       #ddd0b8;
+
+  /* Progress indicator */
+  --progress-track:          #e8dcc4;
+  --progress-fill:           #8a4a15;
+
+  /* Shadows — real light-mode work: soft, warm, low-opacity, not gray */
+  --shadow-panel: 0 30px 80px -40px rgba(120,90,40,0.18);
+  --shadow-pop:   0 18px 44px -18px rgba(120,90,40,0.22);
+  --shadow-inter: 0 8px 24px -12px rgba(138,74,21,0.22);
+
+  /* Focus ring */
+  --focus-ring-color: #8a4a15;
+}

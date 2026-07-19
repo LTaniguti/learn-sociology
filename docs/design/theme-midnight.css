@@ -1,0 +1,125 @@
+/* ============================================================
+   learn-sociology · Theme override: "Midnight Draft" (alt-dark)
+   Second dark theme. Higher-contrast, near-black surfaces vs.
+   the shipped "Open Commons" warm-ink base. Amber accent pushed
+   brighter to read clearly against the deeper canvas. Only
+   overridden tokens are listed — everything else inherits from
+   the base tokens.css cascade.
+   ============================================================ */
+
+[data-theme="midnight"] {
+
+  /* Core surfaces — near-black, still warm-leaning ink, not neutral gray */
+  --color-canvas:            #050505;
+  --color-surface:           #0d0b09;
+  --color-surface-raised:    #161310;
+  --color-surface-sunken:    #0a0908;
+  --color-surface-hover:     #1b160f;
+  --color-surface-selected:  #241c14;
+  --color-surface-current:   #221a12;
+
+  /* Borders */
+  --color-border:            #443826;
+  --color-border-subtle:     #2e2619;
+  --color-border-faint:      #1f1810;
+  --color-border-input:      #4a3d2c;
+  --color-border-accent:     #8f6a38;
+  --color-edge:              #574632;
+  --color-edge-active:       #8f6a38;
+
+  /* Text — pushed lighter for higher contrast against near-black */
+  --color-text-strong:       #faf5ea;
+  --color-text-heading:      #f6efe0;
+  --color-text-body:         #e2d7c5;
+  --color-text-lede:         #d8ccb8;
+  --color-text-related:      #eee4d2;
+  --color-text-muted:        #a3927a;
+  --color-text-faint:        #83765f;
+  --color-text-disabled:     #6c6250;
+  --color-text-meta-warm:    #d4b587;
+  --color-text-upcoming:     #ac9f89;
+  --color-module-collapsed:  #b8a98c;
+
+  /* Accent — brighter amber to keep wayfinding legible on deeper ground */
+  --color-accent:            #f0983f;
+  --color-accent-hover:      #ffb066;
+  --color-accent-strong:     #f4bd82;
+  --color-accent-wash:       rgba(240,152,63,0.08);
+  --color-accent-ring:       rgba(240,152,63,0.25);
+
+  --color-link:              #f0983f;
+  --color-link-hover:        #ffb066;
+  --color-selection:         rgba(240,152,63,0.32);
+
+  /* Lesson progress states */
+  --state-complete-mark:     #8ecf96;
+  --state-complete-label:    #7a9873;
+  --state-complete-bg:       #182018;
+  --state-complete-border:   #33422e;
+  --state-complete-text:     #d6e0cd;
+
+  --state-current-bar:       #f0983f;
+  --state-current-bg:        #221a12;
+  --state-current-text:      #faf5ea;
+
+  --state-upcoming-mark:     #6c6250;
+  --state-upcoming-text:     #ac9f89;
+
+  --state-unmet-mark:        #d69968;
+  --state-unmet-bg:          #201712;
+  --state-unmet-border:      #4a3a2c;
+  --state-unmet-text:        #e0d0c0;
+  --state-unmet-label:       #b08760;
+
+  /* Draft / status banner */
+  --status-draft-border:     #8f6a38;
+  --status-draft-bg:         rgba(240,152,63,0.08);
+  --status-draft-icon:       #f0983f;
+  --status-draft-text:       #d4b587;
+  --status-draft-strong:     #f4bd82;
+
+  /* Difficulty badges */
+  --diff-intro-text:         #a3927a;
+  --diff-intro-border:       #4a3d2c;
+  --diff-intermediate-text:  #f0983f;
+  --diff-intermediate-border:#8f6a38;
+  --diff-advanced-text:      #d16f47;
+  --diff-advanced-border:    #603a24;
+
+  /* Paradigm trio — recognizably teal/rose/amber, brightened for the darker ground */
+  --paradigm-functionalism:  #7fbfae;
+  --paradigm-conflict:       #d590ac;
+  --paradigm-interactionism: #f0983f;
+
+  --paradigm-func-surface:   #101815;
+  --paradigm-conflict-surface:#171114;
+  --paradigm-inter-surface:  #1c150e;
+
+  /* Disabled mode tabs */
+  --tab-disabled-text:       #6c6250;
+  --tab-active-bg:           #241c14;
+  --tab-active-text:         #f6efe0;
+  --tab-idle-text:           #c2b49a;
+
+  /* Tree / hierarchy canvas */
+  --tree-canvas-bg:          #060505;
+  --tree-dot:                #1a140d;
+  --tree-node-bg:            #161310;
+  --tree-node-border:        #443826;
+  --tree-node-open-bg:       #221a12;
+  --tree-node-open-border:   #8f6a38;
+  --tree-badge-text:         #a3927a;
+  --tree-badge-border:       #443826;
+
+  /* Progress indicator */
+  --progress-track:          #241c14;
+  --progress-fill:           #f0983f;
+
+  /* Shadows — deeper, still near-invisible lifts appropriate to dark mode */
+  --shadow-panel: 0 30px 90px -40px rgba(0,0,0,0.95);
+  --shadow-pop:   0 20px 50px -18px rgba(0,0,0,0.92);
+  --shadow-inter: 0 10px 28px -12px rgba(240,152,63,0.45);
+
+  /* Focus ring */
+  --focus-ring-color: #f0983f;
+}
