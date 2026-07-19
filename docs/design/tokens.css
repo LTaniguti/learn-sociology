@@ -15,8 +15,10 @@
   /* ----------------------------------------------------------
      1. FONT FAMILIES  (both SIL Open Font License — see direction.md)
      ---------------------------------------------------------- */
-  --font-serif: "Spectral", Georgia, "Times New Roman", serif;      /* reading + display */
-  --font-mono:  "IBM Plex Mono", ui-monospace, "SFMono-Regular",
+  /* next/font (layout.tsx) registers scoped family names on <html>;
+     these bridge them, falling back to the literal families. */
+  --font-serif: var(--font-spectral, "Spectral"), Georgia, "Times New Roman", serif; /* reading + display */
+  --font-mono:  var(--font-plex-mono, "IBM Plex Mono"), ui-monospace, "SFMono-Regular",
                 "Menlo", "Consolas", monospace;                      /* metadata / labels / repo texture */
 
   /* ----------------------------------------------------------

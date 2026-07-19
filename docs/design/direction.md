@@ -54,3 +54,6 @@ This is an open-source repository, so every font must be freely redistributable.
 
 ### Recommended `@font-face` weights to ship
 Spectral: 300, 400, 400 italic, 600, 700 · IBM Plex Mono: 400, 500, 600. Subset to Latin (+ Latin-Extended if lessons need it). Use `font-display: swap`.
+
+**Amendment (Step 2.9):** both families are loaded via `next/font/google`, which downloads at build time and self-hosts the output — same goals (no runtime third-party requests, OFL, `swap`, Latin subset) without committing woff2 binaries to the repo.
+`tokens.css` bridges the scoped variables: `--font-serif: var(--font-spectral, "Spectral"), …` / `--font-mono: var(--font-plex-mono, "IBM Plex Mono"), …`.
