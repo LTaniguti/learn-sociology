@@ -105,6 +105,63 @@
   box-shadow: none; /* the pill wrapper carries the ring via :focus-within */
 }
 
+/* Search results popover (Step 2.10) */
+.shell-search {
+  position: relative;
+}
+
+.search-results {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  left: 0;
+  right: 0;
+  z-index: 10;
+  list-style: none;
+  max-height: 296px; /* ~8 rows, scrolls beyond */
+  overflow-y: auto;
+  background: var(--color-surface-raised);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  padding: var(--space-1);
+}
+
+.search-result {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.search-result-active {
+  background: var(--color-surface-hover);
+  box-shadow: var(--focus-ring);
+}
+
+.search-result-title {
+  font-family: var(--type-related-family);
+  font-size: var(--type-related-size);
+  line-height: var(--type-related-line);
+  color: var(--color-text-related);
+}
+
+.search-result-slug {
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+  color: var(--color-text-faint);
+}
+
+.search-empty {
+  padding: var(--space-2) var(--space-3);
+  font-family: var(--type-caption-family);
+  font-size: var(--type-tag-size);
+  color: var(--color-text-muted);
+}
+
 /* ============================================================
    Node page — main column + right rail
    ============================================================ */

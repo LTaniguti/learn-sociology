@@ -1,14 +1,23 @@
 import Link from "next/link";
+import SearchBox, { type SearchEntry } from "./SearchBox";
+import { getAllNodes } from "../../lib/content";
 
 // Shared top bar for all frames (docs/wireframes.md, "Shared shell").
 // Network and Sociologists are rendered disabled, not hidden: the four-mode
 // roadmap is part of the project's identity and the UI advertises it honestly.
 // Course went live with Step 2.5; Hierarchy with Step 2.6.
-export default function Shell({
+export default async function Shell({
   active,
 }: {
   active?: "course" | "hierarchy";
 }) {
+  // Search index: every node, any status. Built here rather than plumbed
+  // through each page — Shell is a server component with pipeline access, and
+  // at 53 nodes the array inlines into the static export.
+  const index: SearchEntry[] = (await getAllNodes()).map((n) => ({
+    title: n.title,
+    slug: n.slug,
+  }));
   const courseActive = active === "course";
   const hierarchyActive = active === "hierarchy";
   return (
@@ -48,22 +57,11 @@ export default function Shell({
           Sociologists
         </span>
       </nav>
-      {/* TODO: search is not part of Step 2.4. When implemented it operates
-          over `title` + `summary` only (docs/wireframes.md, shared shell).
-          Styled per spec while disabled — it advertises the roadmap honestly
-          (direction.md rule 5). */}
-      <span className="shell-search">
-        <span className="shell-search-glyph" aria-hidden="true">
-          ⌕
-        </span>
-        <input
-          className="shell-search-input"
-          type="search"
-          placeholder="search title / summary…"
-          aria-label="Search lessons"
-          disabled
-        />
-      </span>
+      {/* Search shipped in Step 2.10. Scope narrowed from the wireframe's
+          `title` + `summary` to **title only**: summary matches surface rows
+          whose visible label doesn't contain the query, which reads as noise
+          at this corpus size. Revisit if the corpus grows. */}
+      <SearchBox index={index} />
     </header>
   );
 }
