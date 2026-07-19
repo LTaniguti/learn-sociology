@@ -4,6 +4,7 @@ import {
   getAllNodes,
   type ConceptNode,
 } from "../../lib/content";
+import LessonCheck from "@/components/course/LessonCheck";
 
 // The Frame 3 article (docs/wireframes.md): breadcrumb → title block → lede →
 // prerequisites → body → right rail → Giscus placeholder → attribution.
@@ -60,12 +61,16 @@ export default async function NodeArticle({
   slug,
   beforeTitle,
   afterArticle,
+  showPrereqCompletion = false,
 }: {
   slug: string;
   // Mode-1-only slots (Frame 1): the position line above the title and the
   // Prev/Next + mark-complete controls below the article. Absent on /node.
   beforeTitle?: ReactNode;
   afterArticle?: ReactNode;
+  // Mode 1 decorates prerequisite items with completion checkmarks; /node
+  // keeps the plain 2.4 markup.
+  showPrereqCompletion?: boolean;
 }) {
   const nodeMap = new Map((await getAllNodes()).map((n) => [n.slug, n]));
   const node = nodeMap.get(slug);
@@ -121,6 +126,7 @@ export default async function NodeArticle({
                   data-slug={prereq.slug}
                 >
                   <Link href={`/node/${prereq.slug}`}>{prereq.title}</Link>
+                  {showPrereqCompletion && <LessonCheck slug={prereq.slug} />}
                 </li>
               ))}
             </ul>

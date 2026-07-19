@@ -1,0 +1,58 @@
+/* Mode 1 layout — structure only; palette/typography is Step 2.9. */
+
+.course-layout {
+  display: grid;
+  grid-template-columns: 18rem minmax(0, 1fr);
+  gap: 2rem;
+  padding: 1.5rem;
+}
+
+.syllabus {
+  border-right: 1px solid currentColor;
+  padding-right: 1rem;
+}
+
+.syllabus-lessons {
+  list-style: none;
+  padding-left: 0.75rem;
+}
+
+.syllabus-lesson [aria-current="page"] {
+  font-weight: bold;
+}
+
+.lesson-check {
+  margin-left: 0.35rem;
+}
+
+.syllabus-footer {
+  margin-top: 1.5rem;
+  border-top: 1px solid currentColor;
+  padding-top: 0.5rem;
+}
+
+.position-line {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.course-controls {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  border-top: 1px solid currentColor;
+  padding-top: 1rem;
+}
+
+.prev-next {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex: 1;
+}
+
+.next-link {
+  margin-left: auto;
+}
