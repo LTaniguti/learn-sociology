@@ -26,7 +26,7 @@ The two planned modes appear in the interface as visible, disabled tabs on purpo
 - **Content:** `/content` holds one Markdown file per concept node (53 seed concepts across 11 modules, drawn from OpenStax *Introduction to Sociology 3e*). `content/course.yaml` defines the Mode 1 sequence. `docs/schema.md` and `docs/taxonomy.md` define the frontmatter contract and tag vocabulary.
 - **Validation:** `npm run lint:content` checks every node (slugs, parents, prerequisites, tags, status, ordering). It runs on every push and pull request, and a failing lint blocks deployment.
 - **Site:** Next.js static export, deployed to GitHub Pages by Actions on every merge to `main`. Progress and preferences are device-local (`localStorage`) — there are no accounts and no tracking.
-- **Design:** the visual system ("Open Commons") lives in `docs/design/` — direction, tokens, and component specs. Every visual value in the app is a token; the token file itself is imported as live code.
+- **Design:** the visual system ("Open Commons") lives in `docs/design/` — direction, tokens, and component specs. Every visual value in the app is a token; the token file itself is imported as live code. The site ships three themes — the Open Commons dark default, a higher-contrast "Midnight Draft", and a warm light theme — selectable from the top bar and remembered device-locally. Themes are token overrides only: no component knows a theme name.
 - **Discussion:** each lesson embeds a Giscus thread backed by this repo's GitHub Discussions.
 - **Multi-perspective by design:** contested topics present sociology's paradigms side by side rather than flattening them into one narrative. This is a design principle, not an afterthought.
 
@@ -42,7 +42,6 @@ Near term:
 
 Further out:
 - Mode 3: concept network view (graph visualization), including a node-and-edge canvas upgrade for the Hierarchy view
-- Theme switcher — current dark as default, plus an alternate dark and a light theme
 - A testing/QA system for course content quality
 - Mode 4: sociologist profiles and citation network
 - Token-matched custom Giscus theme
