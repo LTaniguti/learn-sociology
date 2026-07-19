@@ -48,7 +48,7 @@ export default async function CourseView({ slug }: { slug: string }) {
 
   return (
     <>
-      <Shell />
+      <Shell active="course" />
       <div className="course-layout">
         <Syllabus modules={modules} currentSlug={slug} allSlugs={flat} />
         <div className="course-main">
