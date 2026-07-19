@@ -163,6 +163,64 @@
 }
 
 /* ============================================================
+   Text-size control (Step 2.10) — no components.md spec existed; states
+   improvised from the canvas-control pill and mode-tab specs (report flags
+   them for back-fill). Reading typography only: --type-body-size,
+   --type-lede-size, --type-related-size. Chrome sizes are untouched.
+   ============================================================ */
+
+html[data-textsize="sm"] {
+  --type-body-size: var(--type-body-size-sm);
+  --type-lede-size: var(--type-lede-size-sm);
+  --type-related-size: var(--type-related-size-sm);
+}
+
+html[data-textsize="lg"] {
+  --type-body-size: var(--type-body-size-lg);
+  --type-lede-size: var(--type-lede-size-lg);
+  --type-related-size: var(--type-related-size-lg);
+}
+
+.article-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.textsize {
+  display: flex;
+  gap: var(--space-1);
+  flex: none;
+}
+
+.textsize-step {
+  font-family: var(--font-mono);
+  font-size: var(--type-control-size);
+  color: var(--color-text-muted);
+  background: none;
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.textsize-step:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-meta-warm);
+}
+
+/* Active step in amber: this is wayfinding (which step you are on). */
+.textsize-step-active,
+.textsize-step-active:hover {
+  color: var(--color-accent);
+  border-color: var(--color-border-accent);
+  background: var(--color-surface-selected);
+}
+
+/* ============================================================
    Node page — main column + right rail
    ============================================================ */
 
@@ -659,12 +717,12 @@
     font-size: var(--type-title-size-mobile);
   }
 
-  .lede {
-    font-size: var(--type-lede-size-mobile);
-  }
-
-  body {
-    font-size: var(--type-body-size-mobile);
+  /* Mobile shrinks reading type by redefining the tokens, not by setting
+     sizes on elements — so an explicit text-size choice (html[data-textsize],
+     more specific) still wins here. */
+  html {
+    --type-lede-size: var(--type-lede-size-mobile);
+    --type-body-size: var(--type-body-size-mobile);
   }
 
   .shell {

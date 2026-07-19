@@ -6,6 +6,7 @@ import {
 } from "../../lib/content";
 import LessonCheck from "@/components/course/LessonCheck";
 import LessonComments from "@/components/LessonComments";
+import TextSizeControl from "@/components/TextSizeControl";
 
 // The Frame 3 article (docs/wireframes.md): breadcrumb → title block → lede →
 // prerequisites → body → right rail → Giscus placeholder → attribution.
@@ -94,6 +95,7 @@ export default async function NodeArticle({
   return (
     <div className="node-layout">
       <main className="node-main">
+        <div className="article-toolbar">
         <nav className="breadcrumb" aria-label="Breadcrumb">
           {ancestors.map((ancestor) => (
             <span key={ancestor.slug}>
@@ -108,6 +110,8 @@ export default async function NodeArticle({
           <span className="breadcrumb-separator"> · </span>
           <Link href={`/hierarchy#${node.slug}`}>View in hierarchy</Link>
         </nav>
+          <TextSizeControl />
+        </div>
 
         {banner && (
           <p className={`status-banner status-${node.status}`} role="note">

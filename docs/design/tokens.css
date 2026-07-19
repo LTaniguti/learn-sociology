@@ -256,6 +256,16 @@
   --type-lede-size-mobile:    16px;
   --type-body-size-mobile:    15px;
 
+  /* Reading-size steps (added 2.10, text-size control). Only reading
+     typography scales; UI chrome sizes above are never stepped.
+     sm reuses the mobile values; lg is ≈ +10%. */
+  --type-body-size-sm:        var(--type-body-size-mobile);
+  --type-body-size-lg:        18px;
+  --type-lede-size-sm:        var(--type-lede-size-mobile);
+  --type-lede-size-lg:        21px;
+  --type-related-size-sm:     14.5px;
+  --type-related-size-lg:     17px;
+
   /* ----------------------------------------------------------
      11. SPACING SCALE  (4px base)
      ---------------------------------------------------------- */
