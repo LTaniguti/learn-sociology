@@ -5,6 +5,7 @@ import {
   type ConceptNode,
 } from "../../lib/content";
 import LessonCheck from "@/components/course/LessonCheck";
+import LessonComments from "@/components/LessonComments";
 
 // The Frame 3 article (docs/wireframes.md): breadcrumb → title block → lede →
 // prerequisites → body → right rail → Giscus placeholder → attribution.
@@ -143,8 +144,7 @@ export default async function NodeArticle({
           dangerouslySetInnerHTML={{ __html: node.html }}
         />
 
-        {/* Giscus lesson forum — Step 2.7. Region reserved only; no script yet. */}
-        <section className="giscus-placeholder" aria-hidden="true" />
+        <LessonComments slug={node.slug} />
 
         {node.adapted_from && (
           <footer className="attribution">
