@@ -24,7 +24,7 @@ Every unit of content in this platform is a **concept node**: a single Markdown 
 | `difficulty` | `intro` \| `intermediate` \| `advanced` | yes | Lets learners self-filter and lets graph views visually distinguish depth. Three values only; finer scales invite endless debate. |
 | `thinkers` | list of names | no | Seeds **Mode 4**, the sociologist network, later. Cheap to record now, expensive to backfill. |
 | `adapted_from` | string (source + section) | when applicable | **License compliance.** CC BY 4.0 requires attribution to travel with the material, not just live in `LICENSE-CONTENT.md`. Format: `"OpenStax Introduction to Sociology 3e, Section 1.2"`. If a node draws on two sections, comma-separate them within the string. Omit only for fully original nodes. |
-| `status` | `draft` \| `review` \| `published` | yes | Scaffolds the future peer-review workflow: pull requests move nodes from `draft` to `review` to `published`. Until then, it honestly signals maturity to readers. |
+| `status` | `stub` \| `draft` \| `review` \| `published` | yes | Scaffolds the future peer-review workflow: pull requests move nodes from `stub` to `draft` to `review` to `published`. A `stub` has complete, valid frontmatter and a real `summary`, but no lesson body yet. Until then, it honestly signals maturity to readers. |
 
 ## Where Mode 1's course order lives
 
