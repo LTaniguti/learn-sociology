@@ -4,6 +4,10 @@
    Every visual value used in the Course, Hierarchy, and Node
    screens is defined here. Screens must not hard-code any value
    that is not represented below.
+
+   LIVE CODE — imported by src/app/layout.tsx since Step 2.9.
+   This file is the app's single token source, not only a design
+   reference; edits here change the deployed site.
    ============================================================ */
 
 :root {

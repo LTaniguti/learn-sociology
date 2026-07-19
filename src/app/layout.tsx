@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+// The design tokens live in docs/design/ (single source, no copy to drift);
+// a relative import from outside src/ is valid for global CSS here.
+import "../../docs/design/tokens.css";
 import "./globals.css";
 
 const geistSans = Geist({
