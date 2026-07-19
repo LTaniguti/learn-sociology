@@ -65,15 +65,43 @@ export default async function CourseView({ slug }: { slug: string }) {
               <div className="course-controls">
                 <MarkCompleteButton slug={slug} />
                 <nav className="prev-next" aria-label="Previous and next lessons">
-                  {prevSlug && (
-                    <Link className="prev-link" href={`/course/${prevSlug}`}>
-                      ← Previous: {titleOf(prevSlug)}
+                  {prevSlug ? (
+                    <Link
+                      className="prev-next-card prev-link"
+                      href={`/course/${prevSlug}`}
+                    >
+                      <span className="prev-next-label">← Previous</span>
+                      <span className="prev-next-title">
+                        {titleOf(prevSlug)}
+                      </span>
                     </Link>
+                  ) : (
+                    <span
+                      className="prev-next-card prev-link prev-next-disabled"
+                      aria-disabled="true"
+                    >
+                      <span className="prev-next-label">← Previous</span>
+                      <span className="prev-next-title">Start of course</span>
+                    </span>
                   )}
-                  {nextSlug && (
-                    <Link className="next-link" href={`/course/${nextSlug}`}>
-                      Next: {titleOf(nextSlug)} →
+                  {nextSlug ? (
+                    <Link
+                      className="prev-next-card next-link"
+                      href={`/course/${nextSlug}`}
+                    >
+                      <span className="prev-next-label">Next →</span>
+                      <span className="prev-next-title">
+                        {titleOf(nextSlug)}
+                      </span>
                     </Link>
+                  ) : (
+                    <span
+                      className="prev-next-card next-link prev-next-disabled"
+                      aria-disabled="true"
+                    >
+                      <span className="prev-next-label">Next →</span>
+                      <span className="prev-next-title">End of course</span>
+                    </span>
                   )}
                 </nav>
               </div>

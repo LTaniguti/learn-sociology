@@ -52,6 +52,7 @@
   --color-text-disabled:     #5f5647;  /* disabled tabs, reserved-region note */
   --color-text-meta-warm:    #c6a877;  /* mono metadata w/ warmth (tags, attrib) */
   --color-text-upcoming:     #9a8f7c;  /* upcoming (not-yet-done) lesson label */
+  --color-module-collapsed:  #a7997f;  /* collapsed sidebar module header (components.md; added 2.9) */
 
   /* Accent (brand primary — orange) */
   --color-accent:            #e08a3c;  /* primary accent: current node, links, CTAs */
@@ -124,6 +125,11 @@
   --paradigm-func-surface:   #1b211e;
   --paradigm-conflict-surface:#211c1f;
   --paradigm-inter-surface:  #241d15;
+
+  /* Paradigm swatch geometry (components.md; added 2.9) */
+  --paradigm-dot-size:       7px;      /* tree leaf / list dot */
+  --related-swatch-w:        4px;      /* related-list colour tag, bar variant */
+  --related-swatch-h:        16px;
 
   /* ----------------------------------------------------------
      7. SEMANTIC — DISABLED MODE TABS  (Network / Sociologists)
@@ -232,6 +238,23 @@
   --type-wordmark-family:    var(--font-serif);
   --type-wordmark-size:      18px;
   --type-wordmark-weight:    700;
+
+  /* Component sizes from components.md (added 2.9 so screens stay literal-free) */
+  --type-tab-size:            12.5px;  /* mode tabs */
+  --type-search-size:         12px;    /* search pill */
+  --type-module-size:         11.5px;  /* sidebar module header */
+  --type-lesson-size:         14px;    /* sidebar lesson item */
+  --type-prevnext-label-size: 10.5px;  /* Prev/Next direction label */
+  --type-prevnext-title-size: 14.5px;  /* Prev/Next lesson title */
+  --type-banner-size:         11.5px;  /* draft-status banner */
+  --type-control-size:        11.5px;  /* canvas control pills, breadcrumb links */
+  --type-node-label-size:     13.5px;  /* tree node label */
+  --type-card-title-size:     15px;    /* preview card title */
+  --type-card-summary-size:   13px;    /* preview card summary */
+
+  /* Mobile sizes noted inline above (added 2.9) */
+  --type-lede-size-mobile:    16px;
+  --type-body-size-mobile:    15px;
 
   /* ----------------------------------------------------------
      11. SPACING SCALE  (4px base)

@@ -24,6 +24,13 @@ const ZOOM_STEPS = [
   { label: "A+", name: "Larger text", scale: 1.2 },
 ];
 
+// Paradigm colour classes derive from the paradigm/* tag (direction.md rule
+// 4: the trio is semantic, never decorative). Pure styling hook — no new data.
+function paradigmOf(tags: string[]): string | null {
+  const tag = tags.find((t) => t.startsWith("paradigm/"));
+  return tag ? tag.slice("paradigm/".length) : null;
+}
+
 // Slugs from root to `target` inclusive, or null if the slug isn't in the tree.
 function findPath(node: HierarchyNode, target: string): string[] | null {
   if (node.slug === target) return [node.slug];
@@ -113,14 +120,16 @@ export default function HierarchyTree({ root }: { root: HierarchyNode }) {
   const renderNode = (node: HierarchyNode) => {
     const hasChildren = node.children.length > 0;
     const isExpanded = expanded.has(node.slug);
+    const paradigm = paradigmOf(node.tags);
+    const classes = [
+      "hnode",
+      highlighted === node.slug && "hnode-highlighted",
+      paradigm && `hnode-paradigm-${paradigm}`,
+    ]
+      .filter(Boolean)
+      .join(" ");
     return (
-      <li
-        key={node.slug}
-        id={`hnode-${node.slug}`}
-        className={
-          highlighted === node.slug ? "hnode hnode-highlighted" : "hnode"
-        }
-      >
+      <li key={node.slug} id={`hnode-${node.slug}`} className={classes}>
         <div className="hnode-row">
           {hasChildren ? (
             <button
@@ -157,8 +166,11 @@ export default function HierarchyTree({ root }: { root: HierarchyNode }) {
               {node.title}
             </button>
             {hasChildren && !isExpanded && (
-              <span className="hnode-count">
-                {node.descendantCount} inside
+              <span
+                className="hnode-count"
+                aria-label={`${node.descendantCount} concepts inside`}
+              >
+                +{node.descendantCount}
               </span>
             )}
             <div
@@ -180,7 +192,14 @@ export default function HierarchyTree({ root }: { root: HierarchyNode }) {
               {node.tags.length > 0 && (
                 <ul className="tag-chips">
                   {node.tags.map((tag) => (
-                    <li key={tag} className="tag-chip">
+                    <li
+                      key={tag}
+                      className={
+                        tag.startsWith("paradigm/")
+                          ? "tag-chip tag-chip-paradigm"
+                          : "tag-chip"
+                      }
+                    >
                       {tag}
                     </li>
                   ))}

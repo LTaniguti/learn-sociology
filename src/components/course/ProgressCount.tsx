@@ -15,9 +15,17 @@ export default function ProgressCount({ slugs }: { slugs: string[] }) {
     return () => window.removeEventListener(PROGRESS_EVENT, update);
   }, [slugs]);
 
+  const pct = slugs.length > 0 ? (count / slugs.length) * 100 : 0;
+
   return (
-    <p className="progress-count">
-      {count} of {slugs.length} lessons
-    </p>
+    <div className="progress">
+      <div className="progress-track" aria-hidden="true">
+        <div className="progress-fill" style={{ width: `${pct}%` }} />
+      </div>
+      <p className="progress-count">
+        {count} of {slugs.length} lessons complete ·{" "}
+        <span className="progress-local">device-local</span>
+      </p>
+    </div>
   );
 }

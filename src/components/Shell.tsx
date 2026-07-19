@@ -33,22 +33,37 @@ export default function Shell({
         >
           Hierarchy
         </Link>
-        <span className="shell-tab shell-tab-disabled" aria-disabled="true">
+        <span
+          className="shell-tab shell-tab-disabled"
+          aria-disabled="true"
+          title="Coming soon"
+        >
           Network
         </span>
-        <span className="shell-tab shell-tab-disabled" aria-disabled="true">
+        <span
+          className="shell-tab shell-tab-disabled"
+          aria-disabled="true"
+          title="Coming soon"
+        >
           Sociologists
         </span>
       </nav>
       {/* TODO: search is not part of Step 2.4. When implemented it operates
-          over `title` + `summary` only (docs/wireframes.md, shared shell). */}
-      <input
-        className="shell-search"
-        type="search"
-        placeholder="Search lessons"
-        aria-label="Search lessons"
-        disabled
-      />
+          over `title` + `summary` only (docs/wireframes.md, shared shell).
+          Styled per spec while disabled — it advertises the roadmap honestly
+          (direction.md rule 5). */}
+      <span className="shell-search">
+        <span className="shell-search-glyph" aria-hidden="true">
+          ⌕
+        </span>
+        <input
+          className="shell-search-input"
+          type="search"
+          placeholder="search title / summary…"
+          aria-label="Search lessons"
+          disabled
+        />
+      </span>
     </header>
   );
 }

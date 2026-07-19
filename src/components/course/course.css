@@ -1,58 +1,285 @@
-/* Mode 1 layout — structure only; palette/typography is Step 2.9. */
+/* Mode 1 — Open Commons styling (Step 2.9). All values from tokens.css. */
 
 .course-layout {
+  flex: 1;
   display: grid;
-  grid-template-columns: 18rem minmax(0, 1fr);
-  gap: 2rem;
-  padding: 1.5rem;
+  grid-template-columns: 288px minmax(0, 1fr);
 }
+
+/* ============================================================
+   Sidebar — syllabus
+   ============================================================ */
 
 .syllabus {
-  border-right: 1px solid currentColor;
-  padding-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface-sunken);
+  border-right: var(--border-thin) solid var(--color-border);
+  padding: var(--space-6) var(--space-4);
 }
 
+.syllabus-module {
+  margin-bottom: var(--space-2);
+}
+
+/* Module header (components.md "Sidebar — module header") */
+.syllabus-module-title {
+  list-style: none;
+  cursor: pointer;
+  font-family: var(--type-eyebrow-family);
+  font-size: var(--type-module-size);
+  font-weight: var(--type-eyebrow-weight);
+  letter-spacing: var(--type-breadcrumb-tracking);
+  text-transform: var(--type-eyebrow-transform);
+  color: var(--color-module-collapsed);
+  padding: 9px 11px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.syllabus-module-title::-webkit-details-marker {
+  display: none;
+}
+
+.syllabus-module-title::before {
+  content: "▸ ";
+  color: var(--color-text-faint);
+}
+
+.syllabus-module-title:hover {
+  background: var(--color-surface-hover);
+}
+
+.syllabus-module[open] > .syllabus-module-title {
+  background: var(--color-surface-hover);
+  color: var(--color-text-meta-warm);
+}
+
+.syllabus-module[open] > .syllabus-module-title::before {
+  content: "▾ ";
+  color: var(--color-accent);
+}
+
+/* Lesson items */
 .syllabus-lessons {
   list-style: none;
-  padding-left: 0.75rem;
+  margin-top: var(--space-1);
 }
 
-.syllabus-lesson [aria-current="page"] {
-  font-weight: bold;
+.syllabus-lesson {
+  position: relative; /* anchors the visually-hidden .lesson-check */
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-family: var(--type-body-family);
+  font-size: var(--type-lesson-size);
+  padding: var(--space-2) 11px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
 }
 
-.lesson-check {
-  margin-left: 0.35rem;
+/* Leading mark: upcoming ○ by default … */
+.syllabus-lesson::before {
+  content: "○";
+  flex: none;
+  color: var(--state-upcoming-mark);
 }
 
+.syllabus-lesson a {
+  color: var(--color-text-body);
+}
+
+/* … complete ✓ when the LessonCheck decorator is present … */
+.syllabus-lesson:has(.lesson-check)::before {
+  content: "✓";
+  color: var(--state-complete-mark);
+}
+
+.syllabus-lesson:has(.lesson-check) a {
+  color: var(--state-upcoming-text); /* done & de-emphasised */
+}
+
+/* The decorator glyph itself is redrawn above; keep it for screen readers. */
+.syllabus-lesson .lesson-check {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* … current ● wins over both. */
+.syllabus-lesson:has(a[aria-current="page"]) {
+  background: var(--state-current-bg);
+  border-left: var(--border-accent) solid var(--state-current-bar);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding-left: var(--space-2);
+}
+
+.syllabus-lesson:has(a[aria-current="page"])::before {
+  content: "●";
+  color: var(--state-current-bar);
+}
+
+.syllabus-lesson:has(a[aria-current="page"]) a {
+  color: var(--state-current-text);
+  font-weight: var(--type-h2-serif-weight);
+}
+
+.syllabus-lesson:not(:has(a[aria-current="page"])):hover {
+  background: var(--color-surface-hover);
+}
+
+/* Progress indicator */
 .syllabus-footer {
-  margin-top: 1.5rem;
-  border-top: 1px solid currentColor;
-  padding-top: 0.5rem;
+  margin-top: auto;
+  padding-top: var(--space-6);
 }
+
+.progress-track {
+  height: var(--space-2);
+  background: var(--progress-track);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: var(--space-2);
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--progress-fill);
+  border-radius: var(--radius-sm);
+}
+
+.progress-count {
+  font-family: var(--font-mono);
+  font-size: var(--type-eyebrow-size);
+  line-height: var(--type-caption-line);
+  color: var(--color-text-muted);
+}
+
+.progress-local {
+  color: var(--color-text-faint);
+}
+
+/* ============================================================
+   Main pane extras (position line, controls, Prev/Next)
+   ============================================================ */
 
 .position-line {
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-family: var(--type-breadcrumb-family);
+  font-size: var(--type-breadcrumb-size);
+  letter-spacing: var(--type-breadcrumb-tracking);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
 }
 
 .course-controls {
   display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  margin-top: 2rem;
-  border-top: 1px solid currentColor;
-  padding-top: 1rem;
+  flex-direction: column;
+  gap: var(--space-5);
+  margin-top: var(--space-8);
+  border-top: var(--border-thin) solid var(--color-border);
+  padding-top: var(--space-6);
 }
 
+/* Mark complete — the screen's single amber action (rule 3) */
+.mark-complete {
+  align-self: flex-start;
+  font-family: var(--font-mono);
+  font-size: var(--type-control-size);
+  background: var(--color-accent);
+  color: var(--color-surface);
+  border: var(--border-thin) solid transparent;
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-4);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.mark-complete:hover {
+  background: var(--color-accent-hover);
+}
+
+.mark-complete[aria-pressed="true"] {
+  background: var(--state-complete-bg);
+  color: var(--state-complete-text);
+  border-color: var(--state-complete-border);
+}
+
+/* Prev/Next cards */
 .prev-next {
   display: flex;
-  justify-content: space-between;
-  gap: 1rem;
+  gap: var(--space-4);
+}
+
+.prev-next-card {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  border: var(--border-thin) solid var(--color-border-input);
+  background: var(--color-surface-sunken);
+  border-radius: var(--radius-lg);
+  padding: 13px var(--space-4);
+  transition: border-color var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .next-link {
-  margin-left: auto;
+  text-align: right;
+}
+
+.prev-next-label {
+  font-family: var(--font-mono);
+  font-size: var(--type-prevnext-label-size);
+  color: var(--color-text-muted);
+}
+
+.prev-next-title {
+  font-family: var(--font-serif);
+  font-size: var(--type-prevnext-title-size);
+  color: var(--color-text-body);
+}
+
+a.prev-next-card:hover {
+  border-color: var(--color-border-accent);
+  background: var(--color-surface-hover);
+}
+
+a.prev-next-card:hover .prev-next-title {
+  color: var(--color-text-strong);
+}
+
+.prev-next-disabled {
+  cursor: default;
+}
+
+.prev-next-disabled .prev-next-label,
+.prev-next-disabled .prev-next-title {
+  color: var(--color-text-disabled);
+}
+
+/* ============================================================
+   Responsive: sidebar collapses below the content
+   ============================================================ */
+
+@media (max-width: 900px) {
+  .course-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .syllabus {
+    order: 2;
+    border-right: none;
+    border-top: var(--border-thin) solid var(--color-border);
+  }
+
+  .prev-next {
+    flex-direction: column;
+  }
+
+  .next-link {
+    text-align: left;
+  }
 }

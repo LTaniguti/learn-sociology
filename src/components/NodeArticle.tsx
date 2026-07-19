@@ -43,6 +43,13 @@ function getAncestors(
   return chain;
 }
 
+// Paradigm colour classes derive from the paradigm/* tag (direction.md rule
+// 4: the trio is semantic, never decorative). Pure styling hook — no new data.
+function paradigmOf(tags: string[]): string | null {
+  const tag = tags.find((t) => t.startsWith("paradigm/"));
+  return tag ? tag.slice("paradigm/".length) : null;
+}
+
 function resolve(
   slugs: string[],
   nodeMap: Map<string, ConceptNode>,
@@ -104,7 +111,7 @@ export default async function NodeArticle({
 
         {banner && (
           <p className={`status-banner status-${node.status}`} role="note">
-            ⚠ status: {node.status} — {banner}
+            <strong>status: {node.status}</strong> — {banner}
           </p>
         )}
 
@@ -124,7 +131,13 @@ export default async function NodeArticle({
             <h2 className="prereq-heading">Before this lesson</h2>
             {/* Completion state is a Step 2.5 / localStorage concern; it will
                 decorate these items without changing the markup. */}
-            <ul className="prereq-list">
+            <ul
+              className={
+                showPrereqCompletion
+                  ? "prereq-list prereq-list-tracked"
+                  : "prereq-list"
+              }
+            >
               {prerequisites.map((prereq) => (
                 <li
                   key={prereq.slug}
@@ -148,7 +161,9 @@ export default async function NodeArticle({
 
         {node.adapted_from && (
           <footer className="attribution">
-            Adapted from {node.adapted_from}, licensed under{" "}
+            Adapted from{" "}
+            <span className="attribution-source">{node.adapted_from}</span>,
+            licensed under{" "}
             <a href="https://creativecommons.org/licenses/by/4.0/">
               CC BY 4.0
             </a>
@@ -168,11 +183,19 @@ export default async function NodeArticle({
           <section className="rail-section rail-related">
             <h2 className="rail-heading">Related concepts</h2>
             <ul>
-              {related.map((rel) => (
-                <li key={rel.slug}>
-                  <Link href={`/node/${rel.slug}`}>{rel.title}</Link>
-                </li>
-              ))}
+              {related.map((rel) => {
+                const paradigm = paradigmOf(rel.tags);
+                return (
+                  <li
+                    key={rel.slug}
+                    className={
+                      paradigm ? `related-item paradigm-${paradigm}` : "related-item"
+                    }
+                  >
+                    <Link href={`/node/${rel.slug}`}>{rel.title}</Link>
+                  </li>
+                );
+              })}
             </ul>
           </section>
         )}
@@ -182,6 +205,7 @@ export default async function NodeArticle({
             <h2 className="rail-heading">Thinkers</h2>
             {/* Mode 4 seed data — deliberately inert plain text, not links. */}
             <p>{node.thinkers!.join(", ")}</p>
+            <p className="rail-note">plain text — links arrive with Mode 4</p>
           </section>
         )}
 
@@ -191,7 +215,14 @@ export default async function NodeArticle({
             {/* Inert chips — tag filtering is deferred. */}
             <ul className="tag-chips">
               {node.tags.map((tag) => (
-                <li key={tag} className="tag-chip">
+                <li
+                  key={tag}
+                  className={
+                    tag.startsWith("paradigm/")
+                      ? "tag-chip tag-chip-paradigm"
+                      : "tag-chip"
+                  }
+                >
                   {tag}
                 </li>
               ))}
