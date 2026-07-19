@@ -7,6 +7,7 @@ import {
 import LessonCheck from "@/components/course/LessonCheck";
 import LessonComments from "@/components/LessonComments";
 import TextSizeControl from "@/components/TextSizeControl";
+import NodeRail from "@/components/NodeRail";
 
 // The Frame 3 article (docs/wireframes.md): breadcrumb → title block → lede →
 // prerequisites → body → right rail → Giscus placeholder → attribution.
@@ -182,7 +183,7 @@ export default async function NodeArticle({
         {afterArticle}
       </main>
 
-      <aside className="node-rail">
+      <NodeRail>
         {related.length > 0 && (
           <section className="rail-section rail-related">
             <h2 className="rail-heading">Related concepts</h2>
@@ -233,7 +234,7 @@ export default async function NodeArticle({
             </ul>
           </section>
         )}
-      </aside>
+      </NodeRail>
     </div>
   );
 }

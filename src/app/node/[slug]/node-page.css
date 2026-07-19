@@ -279,12 +279,25 @@ html[data-textsize="lg"] {
   flex: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 288px; /* fixed rail (rule 9) */
+  transition: grid-template-columns var(--transition-fast);
+}
+
+/* Collapsed rail (Step 3.1), mirroring the 2.10 course sidebar: the column
+   animates to a slim rail holding only the toggle. */
+.node-layout:has(.node-rail-collapsed) {
+  grid-template-columns: minmax(0, 1fr) var(--rail-collapsed-width);
 }
 
 .node-main {
   padding: var(--pad-panel);
   max-width: 740px; /* ~660px text + panel padding (rule 9) */
   width: 100%;
+}
+
+/* Hiding the rail buys whitespace, not longer lines: the measure stays capped
+   at 740px and the column recenters in the space it just gained. */
+.node-layout:has(.node-rail-collapsed) .node-main {
+  margin-inline: auto;
 }
 
 /* Breadcrumb */
@@ -567,9 +580,51 @@ html[data-textsize="lg"] {
    ============================================================ */
 
 .node-rail {
+  display: flex;
+  flex-direction: column;
   background: var(--color-surface-sunken);
   border-left: var(--border-thin) solid var(--color-border);
   padding: var(--pad-rail);
+}
+
+/* Toggle sits at the rail's top edge, hugging the border it controls.
+   Same shape as .syllabus-toggle, mirrored to the other side. */
+.node-rail-toggle {
+  align-self: flex-start;
+  margin-bottom: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--type-control-size);
+  color: var(--color-text-muted);
+  background: none;
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.node-rail-toggle:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-meta-warm);
+}
+
+/* Doubled class for specificity, not style: this block sits above the base
+   .node-rail rule, so at equal specificity the base padding would win on
+   source order. */
+.node-rail.node-rail-collapsed {
+  /* Narrow sides so the toggle fits the 52px rail — --pad-rail's 24px would
+     leave 4px of content box. Same values as the collapsed syllabus. */
+  padding: var(--space-6) var(--space-2);
+  overflow: hidden;
+}
+
+.node-rail-collapsed .node-rail-toggle {
+  align-self: center;
+}
+
+/* Removed from layout and from the accessibility tree — no focus trap. */
+.node-rail-collapsed .node-rail-content {
+  display: none;
 }
 
 .rail-section {
@@ -749,13 +804,37 @@ html[data-textsize="lg"] {
    ============================================================ */
 
 @media (max-width: 900px) {
-  .node-layout {
+  .node-layout,
+  /* Outspecifies the collapsed-rail rule above, which must not survive into
+     the stacked layout. */
+  .node-layout:has(.node-rail-collapsed) {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .node-rail {
     border-left: none;
     border-top: var(--border-thin) solid var(--color-border);
+  }
+
+  /* Desktop-only affordance: stacked, the rail sits below the article, so
+     collapsing it would only hide content and buy no width back. A stored
+     collapsed preference is ignored here rather than cleared — it still
+     applies when the reader returns to a wide viewport. */
+  .node-rail-toggle {
+    display: none;
+  }
+
+  .node-rail.node-rail-collapsed {
+    padding: var(--pad-rail);
+    overflow: visible;
+  }
+
+  .node-rail-collapsed .node-rail-content {
+    display: block;
+  }
+
+  .node-layout:has(.node-rail-collapsed) .node-main {
+    margin-inline: 0;
   }
 }
 
