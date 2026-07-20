@@ -47,8 +47,15 @@ const section = name => (schema.split(/^## /m).find(s => s.startsWith(name)) ?? 
 const KNOWN_FIELDS = new Set(
   [...section("Frontmatter fields").matchAll(/^\| `([a-z_]+)` \|/gm)].map(m => m[1]),
 );
+// Only the bullet (definition) lines declare reserved fields — the `key:` form.
+// Scoping to bullets keeps prose examples (e.g. a "`prerequisite:` typo for
+// `prerequisites:`") from being misread as reserved declarations, which would
+// flag every node's real `prerequisites` field.
 const RESERVED_FIELDS = new Set(
-  [...section("Reserved fields").matchAll(/`([a-z_]+):`/g)].map(m => m[1]),
+  section("Reserved fields")
+    .split("\n")
+    .filter(line => line.trimStart().startsWith("- "))
+    .flatMap(line => [...line.matchAll(/`([a-z_]+):`/g)].map(m => m[1])),
 );
 if (KNOWN_FIELDS.size === 0) errors.push("schema: could not parse the Frontmatter fields table from docs/schema.md");
 
