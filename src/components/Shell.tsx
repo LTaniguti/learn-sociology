@@ -4,13 +4,14 @@ import ThemeControl from "./ThemeControl";
 import { getAllNodes } from "../../lib/content";
 
 // Shared top bar for all frames (docs/wireframes.md, "Shared shell").
-// Network and Sociologists are rendered disabled, not hidden: the four-mode
-// roadmap is part of the project's identity and the UI advertises it honestly.
-// Course went live with Step 2.5; Hierarchy with Step 2.6.
+// Sociologists is rendered disabled, not hidden: the four-mode roadmap is part
+// of the project's identity and the UI advertises it honestly. It is now the
+// only honest-disabled tab.
+// Course went live with Step 2.5; Hierarchy with 2.6/3.2; Network with 3.3.
 export default async function Shell({
   active,
 }: {
-  active?: "course" | "hierarchy";
+  active?: "course" | "hierarchy" | "network";
 }) {
   // Search index: every node, any status. Built here rather than plumbed
   // through each page — Shell is a server component with pipeline access, and
@@ -21,6 +22,7 @@ export default async function Shell({
   }));
   const courseActive = active === "course";
   const hierarchyActive = active === "hierarchy";
+  const networkActive = active === "network";
   return (
     <header className="shell">
       <Link href="/" className="shell-home" aria-label="learn-sociology">
@@ -90,13 +92,13 @@ export default async function Shell({
         >
           Hierarchy
         </Link>
-        <span
-          className="shell-tab shell-tab-disabled"
-          aria-disabled="true"
-          title="Coming soon"
+        <Link
+          href="/network"
+          className={networkActive ? "shell-tab shell-tab-active" : "shell-tab"}
+          aria-current={networkActive ? "page" : undefined}
         >
           Network
-        </span>
+        </Link>
         <span
           className="shell-tab shell-tab-disabled"
           aria-disabled="true"

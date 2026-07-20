@@ -16,13 +16,13 @@ States not shown in the mockups (hover, keyboard focus, disabled) are defined he
 - "learn-sociology" · `--type-wordmark-family` / `--type-wordmark-size` / weight `--type-wordmark-weight`; colour `--color-text-heading`.
 
 ### Mode tabs
-Four tabs: **Course**, **Hierarchy** (active pair), **Network**, **Sociologists** (disabled/future).
+Four tabs: **Course**, **Hierarchy**, **Network** (all live as of 3.3), **Sociologists** (disabled/future — now the only one).
 - Font `--type-tag-family` 12.5px; padding `var(--space-2) 13px`; radius `--radius-sm`.
 - **Active:** background `--tab-active-bg`, text `--tab-active-text`.
 - **Idle (enabled, not current):** text `--tab-idle-text`, transparent background.
   - *Hover:* background `--color-surface-hover`, border `--border-thin var(--color-border-accent)`.
   - *Focus:* focus ring.
-- **Disabled (Network, Sociologists):** text `--tab-disabled-text`; no hover, no pointer, `cursor:default`, `aria-disabled="true"`, `title="Coming soon"`. Stays visible on purpose — advertises the roadmap. Never removed.
+- **Disabled (Sociologists only, since 3.3):** text `--tab-disabled-text`; no hover, no pointer, `cursor:default`, `aria-disabled="true"`, `title="Coming soon"`. Stays visible on purpose — advertises the roadmap. Never removed.
 
 ### Search box
 - Pill: background `--color-surface`; border `--border-thin var(--color-border-input)`; radius `--radius-pill`; padding `var(--space-2) 15px`; width 240px.
@@ -111,6 +111,53 @@ Base: background `--tree-node-bg`; border `--border-thin var(--tree-node-border)
 - Toolbar row above the canvas: "Expand all" / "Collapse all" pills — `--font-mono` `--type-control-size`, text `--color-text-meta-warm`, border `--border-thin var(--color-border-input)`, radius `--radius-sm`; hover `--color-surface-hover`. Wraps at ≤640px.
 - The structure toggle (Node & edge / Rows) and the zoom stepper specified here pre-3.2 were **not** built: the rows variant was retired outright (see open question (a)), and zoom belongs to Mode 3's force canvas, where panning is unbounded — the hierarchy canvas scrolls instead.
 - Footnote below the canvas (`--font-mono` `--type-control-size` `--color-text-faint`) states the parent-field rule, so the missing cross-links read as a decision rather than an omission.
+
+---
+
+## Network canvas (Mode 3, shipped 3.3)
+No hi-fi was ever drawn for this mode. Everything below is either inherited from the hierarchy canvas — deliberately, so the two modes read as one system — or improvised from `direction.md` and recorded here as the spec of record.
+
+Same rendering contract as the hierarchy: SVG-in-DOM, **d3 computes, React renders**. d3-force settles coordinates and d3-zoom supplies the gesture math; neither touches the DOM. The zoom transform is React state, applied as one `<g transform>`.
+
+- **Surface, node pill, dashed non-published treatment, preview card:** identical to the hierarchy canvas — same tokens, same rules. Nodes carry a paradigm dot when tagged. There is no count badge and no expand affordance; a graph has no collapse.
+- **Selection is the one amber moment.** The selected pill takes `--tree-node-open-bg` / `--tree-node-open-border` and its label goes `--color-text-strong`; its incident edges go `--color-edge-active` at `--border-med`; its **neighbours** take `--color-surface-hover`. This is the graph's equivalent of the hierarchy's lit ancestor path — in a network, "where am I" means the local neighbourhood.
+- **Layout is deterministic.** Nodes are seeded on an explicit phyllotaxis spiral so d3's `jiggle()` never reaches for `Math.random()`; the same corpus always settles into the same picture, so spatial memory of the graph is worth something. Force constants live in `layout.ts` (see the hierarchy note on why geometry cannot be tokens) and are the design values of this mode.
+- **Layout is computed client-side only**, behind a mount gate — settling on the server as well would have to agree to the last float, and `Math.cos`/`Math.sin` are not required to be correctly rounded.
+
+### Edges
+- **Prerequisite** — directed, `--color-edge` at `--border-thin`, with an arrowhead at the target end (markers use `markerUnits="userSpaceOnUse"`; the default scales to stroke width and renders invisible at 1px). Direction runs prerequisite → dependent, the way learning flows.
+- **Related** — undirected, `--color-border-subtle`, no marker, slightly reduced opacity.
+- The distinction is carried by **stroke weight and the presence of the arrow, never by hue**, so it survives all three themes and colour vision deficiency. Related edges are deliberately **not** dashed although "lighter" suggests it: this canvas already spends the dash on non-published nodes, and one surface must not use a treatment for two unrelated meanings.
+- Edges are trimmed to the pill boundary at both ends, so lines never emerge from under a label and arrowheads sit clear of the box.
+- Only `prerequisites` and `related` are drawn. **Shared-tag edges are excluded**: every node carries `discipline/sociology`, so they would produce a near-complete graph. Revisitable once the canvas has edge-class filtering.
+
+### Zoom controls
+Vertical stack at the canvas's top-right: `+` / `−` / `fit`. `--font-mono` `--type-control-size`, text `--color-text-meta-warm`, background `--color-surface-raised`, border `--border-thin var(--color-border-input)`, radius `--radius-sm`; 32px square, **40px at ≤640px**. Hover `--color-surface-hover`; focus ring. Muted, never amber — the selection owns amber.
+These are the accessibility floor: zoom must never require a wheel or trackpad, on desktop or touch. Double-click zoom is **off** (it fought node activation). Zoom has no transition at all, so `prefers-reduced-motion` has nothing to suppress.
+
+### Legend
+Bottom-left corner, always visible. `--font-mono` `--type-caption-size`, text `--color-text-faint`, on `--color-surface-raised` with a `--color-border-faint` hairline. Three rows: prerequisite (line + arrow), related (line), not yet published (dashed pill outline). Muted — it explains the picture, it is not part of it.
+
+### Initial view
+`fit` is the initial view: seeing the whole territory is the point of the mode, and small labels at the overview are a feature — you read the shape, then zoom for names. **Exception:** when fit would land below ~0.4 scale the pills stop reading as pills (a 150px node under 60px), and the view instead centres the highest-degree node at 1:1. In practice desktop fits (~0.58 on a laptop viewport) and 390px falls back to the hub, leaving `fit` one button away.
+
+### Keyboard grammar (novel — no WAI-ARIA archetype fits a graph)
+`role="application"` on the canvas with an `aria-label` spelling out the keys, plus `aria-activedescendant` pointing at the focused node. The canvas is a **single tab stop**; none of the nodes are tabbable. Each node is `role="img"` with an `aria-label` of *title, status, connection count*. The zoom buttons are separately tabbable, as controls should be.
+
+| Key | Action |
+|---|---|
+| ↑ ↓ ← → | Move focus **along an edge** to the adjacent concept nearest that direction |
+| `Home` | Focus the highest-degree concept (the hub) |
+| `Enter` / `Space` | Toggle the preview card for the focused concept |
+| `Esc` | Dismiss the preview |
+| `+` / `−` | Zoom in / out (mirrors the buttons) |
+| `0` | Fit the whole graph |
+
+Two decisions worth keeping:
+- **Arrows traverse edges, not space.** Candidates are the focused node's neighbours inside a 90° cone around the pressed direction, nearest first; if the cone is empty, any neighbour on the correct side, best-aligned first. A grid-style spatial walk would step onto nodes that are merely *near* — exactly the claim a concept graph exists to deny. A node with no neighbour in that direction simply does not move.
+- **There is no `End`.** A graph has no last node, and inventing one (lowest degree? alphabetically last?) would be a key that means nothing. `Home` earns its place because the highest-degree node genuinely is the hub.
+
+Focus movement pans the focused node into view — pan only, never zoom, and only when it has actually left the viewport.
 
 ---
 

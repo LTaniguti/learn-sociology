@@ -15,11 +15,11 @@ Every lesson is a Markdown file with YAML frontmatter in this repository. The re
 | Mode | View | Status |
 |---|---|---|
 | 1 | **Course** — a linear, university-style path with progress tracking | Live |
-| 2 | **Hierarchy** — a collapsible concept tree from core to niche | Live |
-| 3 | **Network** — a navigable graph of how concepts interrelate | Planned |
+| 2 | **Hierarchy** — a node-and-edge canvas of the concept tree, from core to niche | Live |
+| 3 | **Network** — a navigable graph of how concepts interrelate | Live |
 | 4 | **Sociologists** — a citation-weighted network of thinkers and their work | Planned |
 
-The two planned modes appear in the interface as visible, disabled tabs on purpose: the roadmap is part of the project's identity.
+The remaining planned mode appears in the interface as a visible, disabled tab on purpose: the roadmap is part of the project's identity.
 
 ## How it works
 
@@ -32,7 +32,7 @@ The two planned modes appear in the interface as visible, disabled tabs on purpo
 
 ## Status
 
-The proof of concept is live with Modes 1 and 2. The current focus is **content**: replacing stub nodes with full published lessons.
+The proof of concept is live with Modes 1, 2 and 3. The current focus is **content**: replacing stub nodes with full published lessons.
 
 ## Roadmap
 
@@ -41,10 +41,8 @@ Near term:
 - Structured "Perspectives" rendering — paradigm columns driven by content-pipeline hooks
 
 Further out:
-- Mode 3: concept network view (graph visualization), including a node-and-edge canvas upgrade for the Hierarchy view
 - A testing/QA system for course content quality
 - Mode 4: sociologist profiles and citation network
-- Token-matched custom Giscus theme
 
 ## Contributing
 
