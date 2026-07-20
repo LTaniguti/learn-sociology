@@ -287,6 +287,7 @@
   --pad-card:       16px;            /* perspectives / preview cards */
   --topbar-height:  58px;
   --rail-collapsed-width: 52px;      /* collapsed course sidebar (added 2.10) */
+  --tree-viewport-mobile-height: 70dvh; /* hierarchy canvas scroll area at ≤640px (added 3.2) */
 
   /* ----------------------------------------------------------
      12. RADII

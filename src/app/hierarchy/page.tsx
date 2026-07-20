@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Shell from "@/components/Shell";
-import HierarchyTree, {
-  type HierarchyNode,
-} from "@/components/hierarchy/HierarchyTree";
+import HierarchyCanvas from "@/components/hierarchy/HierarchyCanvas";
+import type { HierarchyNode } from "@/components/hierarchy/layout";
 import {
   getAllNodes,
   getTree,
@@ -11,12 +10,13 @@ import {
 } from "../../../lib/content";
 // Shell / badge / chip styles live with the node route (see CourseView).
 import "@/app/node/[slug]/node-page.css";
-import "@/components/hierarchy/hierarchy.css";
+import "@/components/hierarchy/hierarchy-canvas.css";
 
-// Frame 2 — Mode 2 hierarchy view. The tree's structure comes from exactly
-// one source, the `parent` field (via getTree); this page only enriches each
-// node with the fields the frame renders and hands a serializable tree to the
-// client component. lib/content stays server-only.
+// Mode 2 hierarchy view — the node-and-edge canvas (Phase 3.2). The tree's
+// structure comes from exactly one source, the `parent` field (via getTree);
+// this page only enriches each node with the fields the canvas renders and
+// hands a serializable tree to the client component. lib/content stays
+// server-only.
 
 export const metadata: Metadata = {
   title: "Hierarchy — learn-sociology",
@@ -41,6 +41,7 @@ function enrich(tree: TreeNode, nodeMap: Map<string, ConceptNode>): HierarchyNod
     title: node.title,
     summary: node.summary,
     difficulty: node.difficulty,
+    status: node.status,
     tags: node.tags,
     descendantCount,
     children,
@@ -55,7 +56,7 @@ export default async function HierarchyPage() {
     <>
       <Shell active="hierarchy" />
       <main className="hierarchy-page">
-        <HierarchyTree root={root} />
+        <HierarchyCanvas root={root} />
       </main>
     </>
   );
