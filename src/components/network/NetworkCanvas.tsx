@@ -135,14 +135,10 @@ function NetworkGraph({
   );
   const adjacency = useMemo(() => buildAdjacency(graph), [graph]);
 
-  // Highest-degree node — the graph's centre of gravity in the content sense.
-  // Home targets it, and it is the fallback initial view. Ties break on slug
-  // so the choice is stable across builds.
-  const hubSlug = useMemo(() => {
-    return [...graph.nodes]
-      .sort((a, b) => b.degree - a.degree || a.slug.localeCompare(b.slug))[0]
-      .slug;
-  }, [graph]);
+  // The pinned core (CENTER_SLUG). In the radial layout "home" has a literal
+  // meaning: the centre of the map. Home targets it, it is the fallback initial
+  // view, and it is where keyboard focus starts.
+  const centerSlug = layout.centerSlug;
 
   const clampScale = (k: number) =>
     Math.max(MIN_SCALE, Math.min(MAX_SCALE, k));
@@ -180,18 +176,18 @@ function NetworkGraph({
    * point of this mode, and small labels at the overview are a feature, not a
    * defect: you read the shape, then zoom for the names.
    *
-   * The exception is 390px, where the graph fits at ~0.22 and the pills
-   * collapse into 35px slivers — that is a picture of a network, not a view
-   * of one. There the initial view centres the highest-degree node at 1:1,
-   * which puts the learner somewhere real and leaves `fit` one button away.
-   * Desktop fits at ~0.58 on a laptop viewport and clears the floor easily.
+   * The exception is 390px, where the graph fits well below the floor and the
+   * pills collapse into slivers — that is a picture of a network, not a view of
+   * one. There the initial view centres the core node at 1:1, which puts the
+   * learner at the middle of the map (equivalent to centring the whole radial
+   * structure) and leaves `fit` one button away. Desktop clears the floor.
    */
   const initialTransform = useCallback((): Transform => {
     const fit = fitTransform();
     if (fit.k >= MIN_FIT_SCALE) return fit;
-    const hub = layout.bySlug.get(hubSlug);
-    return hub ? centerOn(hub, 1) : fit;
-  }, [fitTransform, centerOn, layout, hubSlug]);
+    const core = layout.bySlug.get(centerSlug);
+    return core ? centerOn(core, 1) : fit;
+  }, [fitTransform, centerOn, layout, centerSlug]);
 
   // Push a transform through the zoom behaviour rather than to state directly,
   // so d3's internal transform never drifts from what is rendered — otherwise
@@ -421,7 +417,7 @@ function NetworkGraph({
   );
 
   const onKeyDown = (e: React.KeyboardEvent) => {
-    const current = focused ?? hubSlug;
+    const current = focused ?? centerSlug;
     switch (e.key) {
       case "ArrowRight":
         moveFocus(step(current, 1, 0));
@@ -436,10 +432,11 @@ function NetworkGraph({
         moveFocus(step(current, 0, -1));
         break;
       case "Home":
-        // No End: a graph has no last node, and inventing one (lowest degree?
+        // No End: a graph has no last node, and inventing one (outermost ring?
         // alphabetically last?) would be a key that means nothing. Home is
-        // meaningful because the highest-degree node genuinely is the hub.
-        moveFocus(hubSlug);
+        // meaningful because the radial layout gives it a literal target — the
+        // pinned core at the centre of the map.
+        moveFocus(centerSlug);
         break;
       case "Enter":
       case " ":
@@ -559,9 +556,10 @@ function NetworkGraph({
           role="application"
           tabIndex={0}
           aria-label={
-            "Concept network. Arrow keys move between connected concepts, " +
-            "Home jumps to the most connected concept, Enter opens a preview, " +
-            "Escape closes it. Plus and minus zoom, 0 fits the whole graph."
+            "Concept network, arranged in rings by distance from the central " +
+            "concept. Arrow keys move between connected concepts, Home jumps to " +
+            "the central concept, Enter opens a preview, Escape closes it. Plus " +
+            "and minus zoom, 0 fits the whole graph."
           }
           aria-activedescendant={focused ? `nwnode-${focused}` : undefined}
           onKeyDown={onKeyDown}
@@ -599,6 +597,20 @@ function NetworkGraph({
           <g
             transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}
           >
+            {/* Ring guides: muted dashed circles at each occupied ring radius,
+                wayfinding furniture that sits far behind the graph. Distinct
+                from the non-published dash — see .nwring-guide. */}
+            <g className="nwring-guides" aria-hidden="true">
+              {layout.ringRadii.map((r) => (
+                <circle
+                  key={r}
+                  className="nwring-guide"
+                  cx={layout.center.x}
+                  cy={layout.center.y}
+                  r={r}
+                />
+              ))}
+            </g>
             <g aria-hidden="true">{layout.edges.map(renderEdge)}</g>
             {layout.nodes.map(renderNode)}
           </g>
@@ -629,6 +641,18 @@ function NetworkGraph({
         {/* Legend. Muted mono in the corner: it explains the picture, it is
             not part of it, so it takes no amber. */}
         <dl className="network-legend">
+          <div>
+            <dt>
+              <svg viewBox="0 0 34 8" aria-hidden="true">
+                <path
+                  className="nwring-guide"
+                  d="M0,4 h34"
+                  fill="none"
+                />
+              </svg>
+            </dt>
+            <dd>rings = distance from the core</dd>
+          </div>
           <div>
             <dt>
               <svg viewBox="0 0 34 8" aria-hidden="true">

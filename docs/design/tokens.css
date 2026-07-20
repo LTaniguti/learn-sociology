@@ -40,6 +40,7 @@
   --color-border-accent:     #7a5a2e;  /* dim-orange edge: current, draft, badges */
   --color-edge:              #4a3f30;  /* tree connector stroke (inactive) */
   --color-edge-active:       #7a5a2e;  /* tree connector stroke (path to open node) */
+  --color-ring-guide:        #3a3024;  /* network ring-distance guide circles (behind, low opacity) */
 
   /* Text */
   --color-text-strong:       #f4ecdd;  /* h1 / titles */

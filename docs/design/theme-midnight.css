@@ -26,6 +26,7 @@
   --color-border-accent:     #8f6a38;
   --color-edge:              #574632;
   --color-edge-active:       #8f6a38;
+  --color-ring-guide:        #3d3122;
 
   /* Text — pushed lighter for higher contrast against near-black */
   --color-text-strong:       #faf5ea;

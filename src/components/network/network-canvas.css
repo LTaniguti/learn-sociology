@@ -67,6 +67,24 @@
 }
 
 /* ============================================================
+   Ring guides — concentric distance-from-core wayfinding
+   ============================================================ */
+
+/* Muted dashed circles behind everything, marking each occupied ring radius.
+   Deliberately NOT the non-published dash: that treatment carries a node's
+   publication status at full node-border prominence with a tight 4/4 dash;
+   these guides are structural furniture, so they take a distinct low-opacity
+   colour token, a sparser 4/12 dash, and sit far behind. The two dashed
+   meanings must never read the same. */
+.nwring-guide {
+  fill: none;
+  stroke: var(--color-ring-guide);
+  stroke-width: var(--border-thin);
+  stroke-dasharray: var(--space-1) var(--space-3);
+  opacity: 0.55;
+}
+
+/* ============================================================
    Edges
    ============================================================ */
 
