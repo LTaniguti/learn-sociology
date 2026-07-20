@@ -1,0 +1,169 @@
+/* ============================================================
+   learn-sociology · Giscus theme — "Daylight" (Light theme)
+
+   GENERATED FROM THE TOKEN FILES. Base: giscus's built-in
+   `light` (giscus/giscus, styles/themes/light.css); its
+   GitHub-green/blue accent and interaction colours are replaced
+   with the corresponding tokens from docs/design/theme-light.css.
+   Neutral surfaces, text, and the secondary button set are kept
+   near the built-in values, where they already harmonize with the
+   warm paper — only the clashing accents are re-skinned.
+
+   Why this file contains hex literals — the only place in the
+   project that may. Giscus renders in a cross-origin iframe served
+   from giscus.app, which cannot read this site's CSS custom
+   properties. The values must therefore be inlined. The sync map
+   below exists so a future token change has a mechanical path into
+   this file; it is the mitigation for duplicating the palette. This
+   file lives in public/, outside the src/ hex grep guard, for the
+   same reason.
+
+   NOTE ON LOCAL DEV: this stylesheet is referenced by its deployed
+   URL, so a local dev server pulls the *deployed* copy. Edits here do
+   not appear locally until they ship. Verify against the live site.
+
+   ------------------------------------------------------------
+   SYNC MAP — token → hex (theme-light.css)
+   ------------------------------------------------------------
+   --color-accent            #8a4a15 → --color-accent-fg,
+                                       --color-accent-emphasis,
+                                       --color-btn-primary-bg,
+                                       --color-link (via accent-fg)
+     The derived deep amber: #e08a3c is 2.33:1 on #f5efe4 paper and
+     fails contrast, so the light theme uses #8a4a15 (5.98:1) for
+     text/link-sized accent uses. This replaces GitHub blue #0969da.
+   --color-accent-strong     #7c4212 → --color-attention-fg,
+                                       --color-btn-primary-hover-bg,
+                                       --color-btn-primary-selected-bg
+   --color-accent-wash       rgba(138,74,21,0.07)
+                                     → --color-scale-blue-1 (reaction bg)
+   --color-surface-hover     #efe6d4 → --color-scale-gray-1 (reaction hover)
+   --state-complete-mark     #3f7a4a → --color-success-fg (was green #1a7f37)
+   --diff-advanced-text      #a03a20 → --color-danger-fg (was red #d1242f)
+
+   Primary button — white ink on the deep amber fill (#8a4a15 is dark
+   enough that white clears contrast comfortably), so unlike the two
+   dark themes this keeps the built-in's #fff button text rather than
+   the dark-ink-on-bright-amber treatment.
+
+   The --color-prettylights-syntax-* block is inherited from the
+   built-in `light` UNCHANGED. Those are GitHub's code
+   syntax-highlighting colours, not site palette; the project has no
+   tokens for them and recolouring them would only hurt code
+   legibility in comments. The neutral --color-btn-*, --color-fg-*,
+   --color-canvas-*, and --color-border-* values are likewise
+   inherited from the built-in `light`.
+   ============================================================ */
+
+main {
+  --color-prettylights-syntax-comment: #6e7781;
+  --color-prettylights-syntax-constant: #0550ae;
+  --color-prettylights-syntax-entity: #8250df;
+  --color-prettylights-syntax-storage-modifier-import: #24292f;
+  --color-prettylights-syntax-entity-tag: #116329;
+  --color-prettylights-syntax-keyword: #cf222e;
+  --color-prettylights-syntax-string: #0a3069;
+  --color-prettylights-syntax-variable: #953800;
+  --color-prettylights-syntax-brackethighlighter-unmatched: #82071e;
+  --color-prettylights-syntax-invalid-illegal-text: #f6f8fa;
+  --color-prettylights-syntax-invalid-illegal-bg: #82071e;
+  --color-prettylights-syntax-carriage-return-text: #f6f8fa;
+  --color-prettylights-syntax-carriage-return-bg: #cf222e;
+  --color-prettylights-syntax-string-regexp: #116329;
+  --color-prettylights-syntax-markup-list: #3b2300;
+  --color-prettylights-syntax-markup-heading: #0550ae;
+  --color-prettylights-syntax-markup-italic: #24292f;
+  --color-prettylights-syntax-markup-bold: #24292f;
+  --color-prettylights-syntax-markup-deleted-text: #82071e;
+  --color-prettylights-syntax-markup-deleted-bg: #ffebe9;
+  --color-prettylights-syntax-markup-inserted-text: #116329;
+  --color-prettylights-syntax-markup-inserted-bg: #dafbe1;
+  --color-prettylights-syntax-markup-changed-text: #953800;
+  --color-prettylights-syntax-markup-changed-bg: #ffd8b5;
+  --color-prettylights-syntax-markup-ignored-text: #eaeef2;
+  --color-prettylights-syntax-markup-ignored-bg: #0550ae;
+  --color-prettylights-syntax-meta-diff-range: #8250df;
+  --color-prettylights-syntax-brackethighlighter-angle: #57606a;
+  --color-prettylights-syntax-sublimelinter-gutter-mark: #8c959f;
+  --color-prettylights-syntax-constant-other-reference-link: #0a3069;
+
+  /* Buttons — secondary set inherited from the built-in `light` (neutral,
+     harmonizes with the warm paper). */
+  --color-btn-text: #24292f;
+  --color-btn-bg: #f6f8fa;
+  --color-btn-border: rgb(31 35 40 / 15%);
+  --color-btn-shadow: 0 1px 0 rgb(31 35 40 / 4%);
+  --color-btn-inset-shadow: inset 0 1px 0 rgb(255 255 255 / 25%);
+  --color-btn-hover-bg: #f3f4f6;
+  --color-btn-hover-border: rgb(31 35 40 / 15%);
+  --color-btn-active-bg: hsl(220deg 14% 93% / 100%);
+  --color-btn-active-border: rgb(31 35 40 / 15%);
+  --color-btn-selected-bg: hsl(220deg 14% 94% / 100%);
+
+  /* Primary button — deep amber fill, white ink (see header note). Replaces
+     the built-in GitHub green. */
+  --color-btn-primary-text: #fff;
+  --color-btn-primary-bg: #8a4a15; /* --color-accent */
+  --color-btn-primary-border: rgb(31 35 40 / 15%);
+  --color-btn-primary-shadow: 0 1px 0 rgb(31 35 40 / 10%);
+  --color-btn-primary-inset-shadow: inset 0 1px 0 rgb(255 255 255 / 3%);
+  --color-btn-primary-hover-bg: #7c4212; /* --color-accent-strong */
+  --color-btn-primary-hover-border: rgb(31 35 40 / 15%);
+  --color-btn-primary-selected-bg: #7c4212; /* --color-accent-strong */
+  --color-btn-primary-selected-shadow: inset 0 1px 0 rgb(0 0 0 / 20%);
+  --color-btn-primary-disabled-text: rgb(255 255 255 / 80%);
+  --color-btn-primary-disabled-bg: rgba(138, 74, 21, 0.45); /* washed --color-accent */
+  --color-btn-primary-disabled-border: rgb(31 35 40 / 15%);
+
+  --color-action-list-item-default-hover-bg: rgb(208 215 222 / 32%);
+  --color-segmented-control-bg: #eaeef2;
+  --color-segmented-control-button-bg: #fff;
+  --color-segmented-control-button-selected-border: rgba(138, 74, 21, 0.55); /* --color-accent */
+
+  /* Text — inherited from the built-in `light` (dark ink, harmonizes). */
+  --color-fg-default: #1f2328;
+  --color-fg-muted: #656d76;
+  --color-fg-subtle: #6e7781;
+
+  /* Surfaces — inherited from the built-in `light`. */
+  --color-canvas-default: #fff;
+  --color-canvas-overlay: #fff;
+  --color-canvas-inset: #f6f8fa;
+  --color-canvas-subtle: #f6f8fa;
+
+  /* Borders — inherited from the built-in `light`. */
+  --color-border-default: #d0d7de;
+  --color-border-muted: hsl(210deg 18% 87% / 100%);
+  --color-neutral-muted: rgb(175 184 193 / 20%);
+
+  /* Accent / links — deep amber, replacing GitHub blue. */
+  --color-accent-fg: #8a4a15; /* --color-accent */
+  --color-accent-emphasis: #8a4a15; /* --color-accent */
+  --color-accent-muted: rgba(138, 74, 21, 0.4);
+  --color-accent-subtle: rgba(138, 74, 21, 0.1);
+
+  /* Semantic states — mapped to site tokens (matching the two dark themes). */
+  --color-success-fg: #3f7a4a; /* --state-complete-mark */
+  --color-attention-fg: #7c4212; /* --color-accent-strong */
+  --color-attention-muted: rgba(124, 66, 18, 0.4);
+  --color-attention-subtle: rgba(124, 66, 18, 0.15);
+  --color-danger-fg: #a03a20; /* --diff-advanced-text */
+  --color-danger-muted: rgba(160, 58, 32, 0.4);
+  --color-danger-subtle: rgba(160, 58, 32, 0.1);
+
+  --color-primer-shadow-inset: inset 0 1px 0 rgb(208 215 222 / 20%);
+  --color-scale-gray-1: #efe6d4; /* --color-surface-hover */
+  --color-scale-blue-1: rgba(138, 74, 21, 0.07); /* --color-accent-wash */
+
+  /*! Extensions from @primer/css/alerts/flash.scss */
+  --color-social-reaction-bg-hover: var(--color-scale-gray-1);
+  --color-social-reaction-bg-reacted-hover: var(--color-scale-blue-1);
+}
+
+main .pagination-loader-container {
+  background-image: url("https://github.com/images/modules/pulls/progressive-disclosure-line.svg");
+}
+
+main .gsc-loading-image {
+  background-image: url("https://github.githubassets.com/images/mona-loading-default.gif");
+}
