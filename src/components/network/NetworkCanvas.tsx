@@ -191,23 +191,55 @@ function NetworkGraph({
     []
   );
 
+  // Fallback initial view: frame the **core neighbourhood** — the root plus all
+  // depth-1 concepts — filling the short viewport dimension. Used when the
+  // whole-graph fit falls below MIN_FIT_SCALE (the 390px case, and small desktop
+  // viewports). The learner starts on the centre and its ten specializations,
+  // legible, rather than one pill in emptiness; full `fit` is one button away.
+  // Deterministic — same subset, same box, every run.
+  const fitToCoreTransform = useCallback((): Transform => {
+    const viewport = viewportRef.current;
+    if (!viewport) return { k: 1, x: 0, y: 0 };
+    const core = layout.nodes.filter((n) => n.depth <= 1);
+    if (core.length === 0) return fitTransform();
+    let minX = Infinity;
+    let minY = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    for (const n of core) {
+      minX = Math.min(minX, n.x - n.width / 2);
+      maxX = Math.max(maxX, n.x + n.width / 2);
+      minY = Math.min(minY, n.y - n.height / 2);
+      maxY = Math.max(maxY, n.y + n.height / 2);
+    }
+    const pad = geometry.padding;
+    const w = maxX - minX + pad * 2;
+    const h = maxY - minY + pad * 2;
+    const vw = viewport.clientWidth;
+    const vh = viewport.clientHeight;
+    const k = clampScale(Math.min(vw / w, vh / h));
+    const cx = (minX + maxX) / 2;
+    const cy = (minY + maxY) / 2;
+    return { k, x: vw / 2 - cx * k, y: vh / 2 - cy * k };
+  }, [layout, fitTransform, geometry]);
+
   /**
    * Initial view. `fit` is the intent — seeing the whole territory is the
    * point of this mode, and small labels at the overview are a feature, not a
    * defect: you read the shape, then zoom for the names.
    *
-   * The exception is 390px, where the graph fits well below the floor and the
-   * pills collapse into slivers — that is a picture of a network, not a view of
-   * one. There the initial view centres the core node at 1:1, which puts the
-   * learner at the middle of the map (equivalent to centring the whole radial
-   * structure) and leaves `fit` one button away. Desktop clears the floor.
+   * The exception is where the whole graph fits below the floor and the pills
+   * collapse into slivers — that is a picture of a network, not a view of one.
+   * There the initial view falls back to `fitToCoreTransform`: the root plus its
+   * ten depth-1 specializations, framed to fill the viewport, so 390px opens on
+   * the core neighbourhood rather than one pill in a void. `fit` is one button
+   * away. (Which case applies at each breakpoint is recorded in components.md.)
    */
   const initialTransform = useCallback((): Transform => {
     const fit = fitTransform();
     if (fit.k >= MIN_FIT_SCALE) return fit;
-    const core = layout.bySlug.get(centerSlug);
-    return core ? centerOn(core, 1) : fit;
-  }, [fitTransform, centerOn, layout, centerSlug]);
+    return fitToCoreTransform();
+  }, [fitTransform, fitToCoreTransform]);
 
   // Push a transform through the zoom behaviour rather than to state directly,
   // so d3's internal transform never drifts from what is rendered — otherwise
@@ -589,12 +621,26 @@ function NetworkGraph({
         {node.paradigm && (
           <circle className="nwnode-dot" cx={15} cy={node.height / 2} r={3.5} />
         )}
+        {/* One or two lines (v4). A wrapped title is two <tspan>s centred on the
+            pill's midline, each carrying the same x so the second line does not
+            inherit the first's advance. Single-line pills render exactly as
+            before. */}
         <text
           className="nwnode-label"
           x={node.paradigm ? 27 : 14}
           y={node.height / 2}
         >
-          {node.title}
+          {node.lines.length === 1
+            ? node.lines[0]
+            : node.lines.map((line, i) => (
+                <tspan
+                  key={i}
+                  x={node.paradigm ? 27 : 14}
+                  dy={i === 0 ? -geometry.lineAdvance / 2 : geometry.lineAdvance}
+                >
+                  {line}
+                </tspan>
+              ))}
         </text>
       </g>
     );

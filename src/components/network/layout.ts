@@ -47,17 +47,19 @@ import {
 export type NetworkTree = { slug: string; children: NetworkTree[] };
 
 export type NetworkGeometry = {
-  nodeHeight: number;
+  nodeHeight: number; // single-line pill height (the tap target)
   fontSize: number; // must track --type-node-label-size
   padX: number; // pill edge → label
   padding: number; // canvas padding around the settled extent
-  ringSpacing: number; // radius added per hierarchy depth
+  minRingGap: number; // minimum radius added from one ring to the next (v4)
   sepGapArc: number; // separation: arc (px) wanted between adjacent pills
   closeGap: number; // radians left open so the first/last sector don't touch
+  wrapThreshold: number; // titles longer than this (chars) wrap onto two lines
+  lineAdvance: number; // extra pill height + baseline advance for a wrapped pill
 };
 
 /**
- * The design constants of this mode, v3 — in the same sense that row pitch and
+ * The design constants of this mode, v4 — in the same sense that row pitch and
  * column gap are the hierarchy's. They decide whether the graph reads as a clean
  * branching tree or a tangle, so they are named and recorded here rather than
  * buried in the layout call. (Geometry cannot live in tokens.css — it is JS the
@@ -72,32 +74,46 @@ export type NetworkGeometry = {
  * arc as the radius grows with depth). Wide sibling groups borrow angle from
  * sparse sectors, which is what lets the layout close cleanly.
  *
- * - `ringSpacing 600`: `ringRadius(depth) = depth × 600`. The binding ring is
- *   depth 2 (30 nodes, several with very wide titles): the full circle at that
- *   radius must hold ~6900px of pill width, which needs radius ≳ 1100, i.e.
- *   spacing ≳ 550. 600 clears every ring with comfortable breathing room (no
- *   pill pair closer than ~10px horizontally / ~12px vertically — verified pair
- *   by pair across the settled corpus). Tighter spacings leave the wide sibling
- *   groups overlapping; that they *cannot* fit closer is a property of the
- *   content shape (see the report's `parent:` findings), not a tuning miss.
+ * v4 attacks the 3.5 "too spaced out" defect at its two sources:
+ *
+ * - **Two-line labels** (`wrapThreshold`, `lineAdvance`): the extent was set by
+ *   depth-2's widest single-line pills. Wrapping titles over `wrapThreshold`
+ *   chars onto two balanced lines drops the binding pill width from ~349 to
+ *   ~198, which is what lets every ring pull inward. A wrapped pill grows by
+ *   `lineAdvance` to hold the second line (≥40px tap target preserved).
+ * - **Per-ring, data-driven radii** (`minRingGap`): 3.5's uniform
+ *   `depth × ringSpacing` let one crowded ring dictate the spacing of all of
+ *   them. v4 computes each ring's radius from its own angular gaps and pill
+ *   widths (see `layoutNetwork`): the minimum radius at which no adjacent pair
+ *   overlaps, floored at `radius(d−1) + minRingGap` so rings never crowd each
+ *   other radially. Ring 1 (10 nodes) now lands far closer in than 600.
+ *
+ * - `minRingGap 260`: the least radius added from one ring to the next — a ring
+ *   must clear the previous ring's tallest pill (≤54px) plus generous breathing
+ *   room for the branch read. The binding ring (depth 2, 30 nodes) is set by its
+ *   own angular constraint, well above this floor; the floor governs the sparse
+ *   outer relationship between rings 2 and 3.
  * - `sepGapArc 44`: the minimum arc a pill wants beyond half of each neighbour's
- *   width. Small enough that the tree still closes at spacing 600, large enough
- *   that abutting pills read as separate.
+ *   width. Large enough that abutting pills read as separate; unchanged from 3.5.
  * - `closeGap 0.06`: a sliver of angle left open at the 12-o'clock seam so the
  *   first and last top-level sectors don't collide across it.
+ * - `wrapThreshold 18`, `lineAdvance 14`: titles longer than 18 chars wrap; a
+ *   wrapped pill is 54px tall (40 + 14) and its two baselines sit ±7px of centre.
  *
- * The settled extent is ~3584 × 3416 (radially symmetric by construction — a
- * near square, unlike 3.4's letterbox). See NetworkCanvas for the fit decision
+ * The resolved radii and settled extent are reported as the v4 constants (see
+ * `ringRadii` on the returned layout). See NetworkCanvas for the fit decision
  * this extent drives.
  */
 export const NETWORK_GEOMETRY: NetworkGeometry = {
-  nodeHeight: 40, // the tap target, desktop and mobile — as since 3.2
+  nodeHeight: 40, // the single-line tap target, desktop and mobile — as since 3.2
   fontSize: 13.5,
   padX: 14,
   padding: 80,
-  ringSpacing: 600,
+  minRingGap: 260,
   sepGapArc: 44,
   closeGap: 0.06,
+  wrapThreshold: 18,
+  lineAdvance: 14,
 };
 
 // 390px differs only in canvas padding. The graph's *shape* is deliberately
@@ -114,9 +130,10 @@ export type LaidNetworkNode = NetworkNodeData & {
   y: number; // centre
   width: number;
   height: number;
+  lines: string[]; // title, wrapped to one or two lines (v4)
   depth: number; // hierarchy depth — the node's ring index
   angle: number; // radial angle (radians), for tree-edge paths
-  radius: number; // distance from centre, = depth × ringSpacing
+  radius: number; // distance from centre — the ring's computed radius (v4)
   parentSlug: string | null; // tree parent — for the path-to-centre highlight
 };
 
@@ -153,16 +170,46 @@ export type NetworkLayout = {
   ringRadii: number[]; // radius of each occupied ring, for the guide circles
 };
 
-function pillWidth(title: string, geom: NetworkGeometry): number {
-  return geom.padX * 2 + estimateTextWidth(title, geom.fontSize);
+/**
+ * Balanced two-line wrap for long titles (v4). Titles at or under `threshold`
+ * characters stay one line; longer titles break at the single word boundary that
+ * minimises the wider of the two lines — no hyphenation, no truncation, so every
+ * title stays fully readable. A title of one long word cannot wrap and stays on
+ * one line (an editorial finding for the content phase, not a layout failure).
+ */
+function wrapTitle(
+  title: string,
+  threshold: number,
+  fontSize: number
+): string[] {
+  if (title.length <= threshold) return [title];
+  const words = title.split(" ");
+  if (words.length < 2) return [title];
+  let best: { lines: [string, string]; max: number } | null = null;
+  for (let i = 1; i < words.length; i++) {
+    const l1 = words.slice(0, i).join(" ");
+    const l2 = words.slice(i).join(" ");
+    const max = Math.max(
+      estimateTextWidth(l1, fontSize),
+      estimateTextWidth(l2, fontSize)
+    );
+    if (!best || max < best.max) best = { lines: [l1, l2], max };
+  }
+  return best!.lines;
 }
 
-/** Ring radius by hierarchy depth. The root sits at 0; every deeper ring is one
- *  `ringSpacing` further out. Depth is *declared* specialization now — the
- *  curated `parent:` chain — so a node's ring is a function of the hierarchy,
- *  the same source Mode 2 draws. */
-function ringRadius(depth: number, geom: NetworkGeometry): number {
-  return depth * geom.ringSpacing;
+/** The pill's footprint from its wrapped label: width is the widest line plus
+ *  horizontal padding; height grows by `lineAdvance` for a two-line pill. */
+function pillShape(
+  title: string,
+  geom: NetworkGeometry
+): { lines: string[]; width: number; height: number } {
+  const lines = wrapTitle(title, geom.wrapThreshold, geom.fontSize);
+  const width =
+    geom.padX * 2 +
+    Math.max(...lines.map((l) => estimateTextWidth(l, geom.fontSize)));
+  const height = geom.nodeHeight + (lines.length > 1 ? geom.lineAdvance : 0);
+  return { lines, width, height };
 }
 
 /** Undirected pair key, order-independent (mirrors graph.ts's private one). */
@@ -209,9 +256,14 @@ export function layoutNetwork(
   geom: NetworkGeometry
 ): NetworkLayout {
   const dataBySlug = new Map(graph.nodes.map((n) => [n.slug, n]));
-  const widthBySlug = new Map(
-    graph.nodes.map((n) => [n.slug, pillWidth(n.title, geom)])
+  // Wrapped label + footprint per node (v4). Width is the widest wrapped line;
+  // height grows for two-line pills. Both feed the separation, the radii, and
+  // the bounding box below.
+  const shapeBySlug = new Map(
+    graph.nodes.map((n) => [n.slug, pillShape(n.title, geom)])
   );
+  const widthOf = (slug: string) => shapeBySlug.get(slug)?.width ?? 0;
+  const heightOf = (slug: string) => shapeBySlug.get(slug)?.height ?? geom.nodeHeight;
 
   // Radial tidy layout. `size([2π − closeGap, 1])` normalises the angular extent
   // to (almost) a full turn regardless of the separation weights, so the circle
@@ -226,13 +278,44 @@ export function layoutNetwork(
   const laid = tree<NetworkTree>()
     .size([2 * Math.PI - geom.closeGap, 1])
     .separation((a, b) => {
-      const wa = widthBySlug.get(a.data.slug) ?? 0;
-      const wb = widthBySlug.get(b.data.slug) ?? 0;
+      const wa = widthOf(a.data.slug);
+      const wb = widthOf(b.data.slug);
       return ((wa + wb) / 2 + geom.sepGapArc) / a.depth;
     })(h);
 
-  // Polar → cartesian around the origin. node.x is the angle; radius is derived
-  // from hierarchy depth, not from d3's normalised y.
+  // Per-ring, data-driven radii (v4). 3.5's uniform `depth × ringSpacing` let
+  // the single most crowded ring set the spacing of every ring, inflating the
+  // extent. Instead, for each depth compute the minimum radius at which no
+  // angularly-adjacent pair overlaps — for every adjacent pair,
+  // `angularGap × r ≥ (wᵃ + wᵇ)/2 + sepGapArc` (the chord ≈ arc for these gaps,
+  // and this horizontal-projection bound is the binding case near the 12/6
+  // o'clock seams). Then floor at `radius(d−1) + minRingGap` so rings never
+  // crowd each other radially. Pure function of the (deterministic) angles and
+  // widths — no iteration-order dependence.
+  const ringOf = new Map<number, { angle: number; width: number }[]>();
+  laid.each((n) => {
+    const arr = ringOf.get(n.depth) ?? [];
+    arr.push({ angle: n.x, width: widthOf(n.data.slug) });
+    ringOf.set(n.depth, arr);
+  });
+  const maxDepth = Math.max(...ringOf.keys());
+  const radiusByDepth: number[] = [0]; // depth 0 (root) sits at the centre
+  for (let d = 1; d <= maxDepth; d++) {
+    const ring = (ringOf.get(d) ?? [])
+      .slice()
+      .sort((a, b) => a.angle - b.angle);
+    let computed = 0;
+    for (let i = 1; i < ring.length; i++) {
+      const gap = ring[i].angle - ring[i - 1].angle;
+      if (gap <= 0) continue;
+      const need = ((ring[i].width + ring[i - 1].width) / 2 + geom.sepGapArc) / gap;
+      computed = Math.max(computed, need);
+    }
+    radiusByDepth[d] = Math.max(computed, radiusByDepth[d - 1] + geom.minRingGap);
+  }
+
+  // Polar → cartesian around the origin. node.x is the angle; radius is the
+  // ring's computed radius, not d3's normalised y.
   type Placed = { slug: string; angle: number; radius: number; depth: number };
   const placed: Placed[] = [];
   const parentSlugBy = new Map<string, string | null>();
@@ -241,7 +324,7 @@ export function layoutNetwork(
     placed.push({
       slug: n.data.slug,
       angle: n.x,
-      radius: ringRadius(n.depth, geom),
+      radius: radiusByDepth[n.depth],
       depth: n.depth,
     });
   });
@@ -255,11 +338,12 @@ export function layoutNetwork(
   let maxY = -Infinity;
   for (const p of placed) {
     const c = polar(0, 0, p.radius, p.angle);
-    const w = widthBySlug.get(p.slug) ?? 0;
+    const w = widthOf(p.slug);
+    const hh = heightOf(p.slug);
     minX = Math.min(minX, c.x - w / 2);
     maxX = Math.max(maxX, c.x + w / 2);
-    minY = Math.min(minY, c.y - geom.nodeHeight / 2);
-    maxY = Math.max(maxY, c.y + geom.nodeHeight / 2);
+    minY = Math.min(minY, c.y - hh / 2);
+    maxY = Math.max(maxY, c.y + hh / 2);
   }
   const dx = geom.padding - minX;
   const dy = geom.padding - minY;
@@ -268,12 +352,14 @@ export function layoutNetwork(
 
   const nodes: LaidNetworkNode[] = placed.map((p) => {
     const c = polar(cx, cy, p.radius, p.angle);
+    const shape = shapeBySlug.get(p.slug)!;
     return {
       ...dataBySlug.get(p.slug)!,
       x: c.x,
       y: c.y,
-      width: widthBySlug.get(p.slug) ?? 0,
-      height: geom.nodeHeight,
+      width: shape.width,
+      height: shape.height,
+      lines: shape.lines,
       depth: p.depth,
       angle: p.angle,
       radius: p.radius,
