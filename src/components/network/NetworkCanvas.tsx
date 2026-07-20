@@ -11,31 +11,39 @@ import {
 import { select } from "d3-selection";
 import { zoom, zoomIdentity, type ZoomBehavior } from "d3-zoom";
 import PreviewCard from "../preview/PreviewCard";
-import { buildAdjacency, type GraphData } from "./graph";
+import { type GraphData } from "./graph";
 import {
-  MOBILE_NETWORK_FORCES,
-  NETWORK_FORCES,
+  MOBILE_NETWORK_GEOMETRY,
+  NETWORK_GEOMETRY,
+  edgeKey,
   layoutNetwork,
+  treePathToRoot,
   trimToPill,
+  type LaidCrossEdge,
   type LaidNetworkNode,
+  type NetworkTree,
 } from "./layout";
 
-// Phase 3.3 — Mode 3's concept network.
+// Phase 3.5 — Mode 3's concept network, now a radial tidy tree of the Mode 2
+// hierarchy with a quiet cross-link overlay.
 //
-// Same split as 3.2, one layer deeper: d3-force computes coordinates
-// (layout.ts) and d3-zoom computes the view transform, but **neither touches
-// the DOM**. The zoom behaviour writes its transform into React state, which
-// renders as a single <g transform>. React owns every pixel, so nodes stay
-// real SVG elements with tokens, themes, and focus semantics intact.
+// Same split as every canvas since 3.2, one layer deeper: layout.ts computes
+// coordinates (from the hierarchy tree) and d3-zoom computes the view transform,
+// but **neither touches the DOM**. The zoom behaviour writes its transform into
+// React state, which renders as a single <g transform>. React owns every pixel,
+// so nodes stay real SVG elements with tokens, themes, and focus semantics.
+//
+// Two edge layers now. The **tree edges** (parent links) are the always-on
+// structural skeleton, at full weight. The **cross-links** (prerequisite/related
+// edges that are not already parent links) are faint by default and come forward
+// only for the selected concept — the web is contextual, not constant. Amber
+// discipline holds: selecting a node lights its relationships in normal ink and
+// its lineage back to the centre in --color-edge-active; the legend and controls
+// stay muted.
 //
 // Design authority: no hi-fi exists for this mode. The visual language is the
-// shipped hierarchy canvas's (node pills, edge tokens, dotted grid, preview
-// card, dashed non-published treatment); everything genuinely new — the
-// legend, the zoom controls, the edge-direction treatment, the keyboard
-// grammar — is improvised from direction.md's rules of thumb and listed in the
-// phase report for components.md back-fill. Amber discipline holds: the
-// selected node and its incident edges are the only wayfinding moment; the
-// legend and controls stay muted.
+// shipped hierarchy canvas's; everything new is improvised from direction.md and
+// recorded in components.md.
 
 const CARD_GAP = 14; // node edge → preview card (px, screen space)
 const EDGE_GAP = 5; // pill edge → where an edge stops (canvas units)
@@ -69,7 +77,13 @@ type Transform = { k: number; x: number; y: number };
  * and the graph itself appears on mount. At ~30ms it is not a perceptible
  * flash, and the static export stays clean of 53 nodes of coordinates.
  */
-export default function NetworkCanvas({ graph }: { graph: GraphData }) {
+export default function NetworkCanvas({
+  graph,
+  tree,
+}: {
+  graph: GraphData;
+  tree: NetworkTree;
+}) {
   const [mounted, setMounted] = useState(false);
   const [mobile, setMobile] = useState(false);
 
@@ -94,25 +108,29 @@ export default function NetworkCanvas({ graph }: { graph: GraphData }) {
       </div>
     );
   }
-  return <NetworkGraph graph={graph} mobile={mobile} />;
+  return <NetworkGraph graph={graph} tree={tree} mobile={mobile} />;
 }
 
 function NetworkNote() {
   return (
     <p className="network-note">
-      Edges are <strong>prerequisites</strong> (directed) and{" "}
-      <strong>related</strong> links (undirected), taken from each
-      concept&rsquo;s own frontmatter. Shared tags are deliberately not drawn —
-      at this size they would connect nearly everything to everything.
+      The rings are the <strong>hierarchy</strong> — each concept&rsquo;s{" "}
+      <code>parent</code>, the same structure as the Hierarchy view — drawn
+      outward by specialization depth. <strong>Prerequisite</strong> and{" "}
+      <strong>related</strong> links that aren&rsquo;t already parent links show
+      faint, and come forward for a concept when you select it. Shared tags are
+      deliberately not drawn.
     </p>
   );
 }
 
 function NetworkGraph({
   graph,
+  tree,
   mobile,
 }: {
   graph: GraphData;
+  tree: NetworkTree;
   mobile: boolean;
 }) {
   const [transform, setTransform] = useState<Transform>({ k: 1, x: 0, y: 0 });
@@ -128,17 +146,19 @@ function NetworkGraph({
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const didInitialView = useRef(false);
 
-  const geometry = mobile ? MOBILE_NETWORK_FORCES : NETWORK_FORCES;
+  const geometry = mobile ? MOBILE_NETWORK_GEOMETRY : NETWORK_GEOMETRY;
   const layout = useMemo(
-    () => layoutNetwork(graph, geometry),
-    [graph, geometry]
+    () => layoutNetwork(graph, tree, geometry),
+    [graph, tree, geometry]
   );
-  const adjacency = useMemo(() => buildAdjacency(graph), [graph]);
+  // Keyboard traversal and neighbour highlight both walk the union of tree edges
+  // and cross-links (computed in the layout) — the tree alone would strand
+  // keyboard users off the skeleton's cross-connections.
+  const adjacency = layout.adjacency;
 
-  // The pinned core (CENTER_SLUG). In the radial layout "home" has a literal
-  // meaning: the centre of the map. Home targets it, it is the fallback initial
-  // view, and it is where keyboard focus starts.
-  const centerSlug = layout.centerSlug;
+  // The hierarchy root is the structural centre of the map. Home targets it, it
+  // is the fallback initial view, and it is where keyboard focus starts.
+  const centerSlug = layout.rootSlug;
 
   const clampScale = (k: number) =>
     Math.max(MIN_SCALE, Math.min(MAX_SCALE, k));
@@ -284,6 +304,14 @@ function NetworkGraph({
     if (!selected) return new Set<string>();
     return new Set(adjacency.get(selected) ?? []);
   }, [selected, adjacency]);
+
+  // The selected concept's lineage: the tree edges from it back to the centre,
+  // as undirected pair keys. These light in --color-edge-active — the one amber
+  // wayfinding moment, the radial equivalent of the hierarchy's ancestor path.
+  const selectedPath = useMemo(
+    () => (selected ? treePathToRoot(selected, layout.bySlug) : new Set<string>()),
+    [selected, layout]
+  );
 
   // Dismiss on Esc / outside click.
   //
@@ -434,8 +462,9 @@ function NetworkGraph({
       case "Home":
         // No End: a graph has no last node, and inventing one (outermost ring?
         // alphabetically last?) would be a key that means nothing. Home is
-        // meaningful because the radial layout gives it a literal target — the
-        // pinned core at the centre of the map.
+        // meaningful because the radial tree gives it a literal target — the
+        // hierarchy root at the centre of the map. (The root is focusable
+        // content, so Home lands on it directly; no hub special-case is needed.)
         moveFocus(centerSlug);
         break;
       case "Enter":
@@ -460,25 +489,38 @@ function NetworkGraph({
     e.stopPropagation();
   };
 
-  const renderEdge = (
-    edge: (typeof layout.edges)[number],
-    index: number
-  ) => {
+  // A cross-link is active when it is incident to the selected concept.
+  const crossActive = (edge: LaidCrossEdge) =>
+    selected !== null && (edge.source === selected || edge.target === selected);
+
+  // Tree edge — the structural skeleton, a radial bézier. Full --color-edge
+  // weight; the selected concept's path back to the centre goes amber.
+  const renderTreeEdge = (edge: (typeof layout.treeEdges)[number]) => {
+    const onPath = selectedPath.has(edgeKey(edge.parentSlug, edge.childSlug));
+    return (
+      <path
+        key={`${edge.parentSlug}-${edge.childSlug}`}
+        className={onPath ? "nwtree-edge nwtree-edge-active" : "nwtree-edge"}
+        d={edge.path}
+      />
+    );
+  };
+
+  // Cross-link — a prerequisite/related edge that is not already a parent link.
+  // Faint by default (no arrowhead at whisper weight — markers read as dirt);
+  // full 3.3 treatment when incident to the selection (arrowhead on
+  // prerequisites, the lighter related weight).
+  const renderCrossEdge = (edge: LaidCrossEdge, index: number) => {
     const source = layout.bySlug.get(edge.source)!;
     const target = layout.bySlug.get(edge.target)!;
-    // Trim both ends to the pill boundary: the tail so the line does not
-    // emerge from under a label, the head so the arrow marker is visible.
+    // Trim both ends to the pill boundary: the tail so the line does not emerge
+    // from under a label, the head so the arrow marker is visible.
     const a = trimToPill(target.x, target.y, source, EDGE_GAP);
     const b = trimToPill(source.x, source.y, target, EDGE_GAP);
-    const active =
-      selected !== null && (edge.source === selected || edge.target === selected);
-    const classes = [
-      "nwedge",
-      `nwedge-${edge.kind}`,
-      active && "nwedge-active",
-    ]
-      .filter(Boolean)
-      .join(" ");
+    const active = crossActive(edge);
+    const classes = active
+      ? `nwcross nwcross-${edge.kind}`
+      : "nwcross nwcross-faint";
     return (
       <line
         key={`${edge.source}-${edge.target}-${index}`}
@@ -488,11 +530,7 @@ function NetworkGraph({
         x2={b.x}
         y2={b.y}
         markerEnd={
-          edge.kind === "prerequisite"
-            ? active
-              ? "url(#nw-arrow-active)"
-              : "url(#nw-arrow)"
-            : undefined
+          active && edge.kind === "prerequisite" ? "url(#nw-arrow)" : undefined
         }
       />
     );
@@ -556,17 +594,20 @@ function NetworkGraph({
           role="application"
           tabIndex={0}
           aria-label={
-            "Concept network, arranged in rings by distance from the central " +
-            "concept. Arrow keys move between connected concepts, Home jumps to " +
-            "the central concept, Enter opens a preview, Escape closes it. Plus " +
-            "and minus zoom, 0 fits the whole graph."
+            "Concept network, arranged as a radial tree in rings by " +
+            "specialization depth from the central concept. Arrow keys move " +
+            "between connected concepts, Home jumps to the central concept, " +
+            "Enter opens a preview, Escape closes it. Plus and minus zoom, 0 " +
+            "fits the whole graph."
           }
           aria-activedescendant={focused ? `nwnode-${focused}` : undefined}
           onKeyDown={onKeyDown}
         >
           <defs>
             {/* userSpaceOnUse: the default (strokeWidth) would scale the
-                arrowhead to a 1px stroke and render it invisible. */}
+                arrowhead to a 1px stroke and render it invisible. Only one
+                marker now — arrowheads appear solely on an *active* (selected)
+                prerequisite cross-link, so it uses the normal edge ink. */}
             <marker
               id="nw-arrow"
               viewBox="0 0 8 8"
@@ -579,18 +620,6 @@ function NetworkGraph({
             >
               <path className="nwarrow" d="M0,0 L8,4 L0,8 Z" />
             </marker>
-            <marker
-              id="nw-arrow-active"
-              viewBox="0 0 8 8"
-              refX="7"
-              refY="4"
-              markerWidth="8"
-              markerHeight="8"
-              markerUnits="userSpaceOnUse"
-              orient="auto"
-            >
-              <path className="nwarrow nwarrow-active" d="M0,0 L8,4 L0,8 Z" />
-            </marker>
           </defs>
           {/* The single transformed group — this is where d3-zoom's output
               lands, and the only thing that moves. */}
@@ -598,8 +627,9 @@ function NetworkGraph({
             transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}
           >
             {/* Ring guides: muted dashed circles at each occupied ring radius,
-                wayfinding furniture that sits far behind the graph. Distinct
-                from the non-published dash — see .nwring-guide. */}
+                now at hierarchy depths. Wayfinding furniture that sits far
+                behind the graph. Distinct from the non-published dash — see
+                .nwring-guide. */}
             <g className="nwring-guides" aria-hidden="true">
               {layout.ringRadii.map((r) => (
                 <circle
@@ -611,7 +641,22 @@ function NetworkGraph({
                 />
               ))}
             </g>
-            <g aria-hidden="true">{layout.edges.map(renderEdge)}</g>
+            {/* Paint order carries the emphasis: faint idle relationships sit
+                behind the skeleton; the tree skeleton (incl. the amber path to
+                the centre) draws over them; the selected concept's own
+                relationships come up on top. Nodes paint last, over every edge
+                end. */}
+            <g aria-hidden="true">
+              {layout.crossEdges
+                .filter((e) => !crossActive(e))
+                .map(renderCrossEdge)}
+            </g>
+            <g aria-hidden="true">{layout.treeEdges.map(renderTreeEdge)}</g>
+            <g aria-hidden="true">
+              {layout.crossEdges
+                .filter((e) => crossActive(e))
+                .map(renderCrossEdge)}
+            </g>
             {layout.nodes.map(renderNode)}
           </g>
         </svg>
@@ -644,31 +689,26 @@ function NetworkGraph({
           <div>
             <dt>
               <svg viewBox="0 0 34 8" aria-hidden="true">
-                <path
-                  className="nwring-guide"
-                  d="M0,4 h34"
-                  fill="none"
-                />
+                <path className="nwring-guide" d="M0,4 h34" fill="none" />
               </svg>
             </dt>
-            <dd>rings = distance from the core</dd>
+            <dd>rings = specialization depth</dd>
           </div>
           <div>
             <dt>
               <svg viewBox="0 0 34 8" aria-hidden="true">
-                <line className="nwedge nwedge-prerequisite" x1="0" y1="4" x2="26" y2="4" />
-                <path className="nwarrow" d="M26,0 L34,4 L26,8 Z" />
+                <path className="nwtree-edge" d="M0,7 C 12,7 22,1 34,1" />
               </svg>
             </dt>
-            <dd>prerequisite</dd>
+            <dd>hierarchy</dd>
           </div>
           <div>
             <dt>
               <svg viewBox="0 0 34 8" aria-hidden="true">
-                <line className="nwedge nwedge-related" x1="0" y1="4" x2="34" y2="4" />
+                <line className="nwcross nwcross-faint" x1="0" y1="4" x2="34" y2="4" />
               </svg>
             </dt>
-            <dd>related</dd>
+            <dd>relationship (shown on select)</dd>
           </div>
           <div>
             <dt>

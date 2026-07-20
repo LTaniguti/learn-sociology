@@ -85,45 +85,57 @@
 }
 
 /* ============================================================
-   Edges
+   Edges — two layers: the tree skeleton, and the cross-link overlay
    ============================================================ */
 
-.nwedge {
+/* Tree edges (parent links): the always-on structural skeleton, radial béziers
+   at full --color-edge weight. Curved to match the branching aesthetic. */
+.nwtree-edge {
   fill: none;
   stroke: var(--color-edge);
   stroke-width: var(--border-thin);
 }
 
-/* Prerequisites are the directed, load-bearing claim: full-weight stroke plus
-   an arrowhead. Related links are symmetric and softer, so they read lighter.
-   The distinction is carried by stroke weight and by the presence of the
-   arrow — never by hue, so it survives all three themes and colour vision
-   deficiency alike.
-
-   Related edges are deliberately NOT dashed, though "lighter" would suggest
-   it: this canvas already spends the dash on non-published nodes, and one
-   surface should not use the same treatment for two unrelated meanings. */
-.nwedge-prerequisite {
-  stroke: var(--color-edge);
-}
-
-.nwedge-related {
-  stroke: var(--color-border-subtle);
-  stroke-width: var(--border-thin);
-  opacity: 0.85;
-}
-
-.nwedge-active {
+/* The selected concept's path back to the centre — the one amber wayfinding
+   moment, the radial equivalent of the hierarchy's lit ancestor path. */
+.nwtree-edge-active {
   stroke: var(--color-edge-active);
   stroke-width: var(--border-med);
 }
 
-.nwarrow {
-  fill: var(--color-edge);
+/* Cross-links (prerequisite/related edges that are not already parent links).
+   Faint by default so the idle picture is the tree, not the web. */
+.nwcross {
+  fill: none;
+  stroke-width: var(--border-thin);
 }
 
-.nwarrow-active {
-  fill: var(--color-edge-active);
+/* The quiet idle state: its own low token, NOT an opacity — a whisper-opacity
+   line disappears on light paper, and a per-theme colour keeps the faintness
+   legible in all three themes (see --color-edge-faint in each theme file).
+   Deliberately no arrowhead: a marker at whisper weight reads as dirt. */
+.nwcross-faint {
+  stroke: var(--color-edge-faint);
+}
+
+/* On selection the incident cross-links come up to the 3.3 treatment: the
+   directed, load-bearing prerequisite at full --color-edge weight plus an
+   arrowhead; the symmetric related link lighter and unmarked. The distinction
+   is carried by weight and the arrow, never by hue, so it survives all three
+   themes and colour vision deficiency. Related is deliberately NOT dashed — the
+   dash is spent on non-published nodes, and one surface must not use a
+   treatment for two unrelated meanings. */
+.nwcross-prerequisite {
+  stroke: var(--color-edge);
+}
+
+.nwcross-related {
+  stroke: var(--color-border-subtle);
+  opacity: 0.85;
+}
+
+.nwarrow {
+  fill: var(--color-edge);
 }
 
 /* ============================================================

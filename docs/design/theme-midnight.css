@@ -25,6 +25,7 @@
   --color-border-input:      #4a3d2c;
   --color-border-accent:     #8f6a38;
   --color-edge:              #574632;
+  --color-edge-faint:        #2b2317;  /* network cross-link overlay (idle) */
   --color-edge-active:       #8f6a38;
   --color-ring-guide:        #3d3122;
 

@@ -2,16 +2,18 @@ import type { Metadata } from "next";
 import Shell from "@/components/Shell";
 import NetworkCanvas from "@/components/network/NetworkCanvas";
 import { buildGraph, type GraphInput } from "@/components/network/graph";
-import { getAllNodes } from "../../../lib/content";
+import { getAllNodes, getTree } from "../../../lib/content";
 // Shell / badge / chip styles live with the node route (see CourseView).
 import "@/app/node/[slug]/node-page.css";
 import "@/components/preview/preview-card.css";
 import "@/components/network/network-canvas.css";
 
-// Mode 3 — the concept network (Phase 3.3). The graph is built at build time
-// from frontmatter that Modes 1 and 2 already read; lib/content stays
-// server-only and a plain serializable GraphData crosses to the client, where
-// d3-force settles it on mount.
+// Mode 3 — the concept network (Phase 3.5). Built at build time from frontmatter
+// that Modes 1 and 2 already read. Two serializable objects cross to the client:
+// the cross-link graph (prerequisite + related edges) and the **same hierarchy
+// tree Mode 2 uses** (`getTree()`, from the single `parent:` field). The client
+// lays the tree out radially and settles the picture on mount. lib/content stays
+// server-only.
 
 export const metadata: Metadata = {
   title: "Network — learn-sociology",
@@ -31,12 +33,13 @@ export default async function NetworkPage() {
     prerequisites: n.prerequisites,
     related: n.related,
   }));
+  const tree = await getTree();
 
   return (
     <>
       <Shell active="network" />
       <main className="network-page">
-        <NetworkCanvas graph={buildGraph(input)} />
+        <NetworkCanvas graph={buildGraph(input)} tree={tree} />
       </main>
     </>
   );

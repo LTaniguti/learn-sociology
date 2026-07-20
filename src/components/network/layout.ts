@@ -1,11 +1,4 @@
-import {
-  forceLink,
-  forceManyBody,
-  forceRadial,
-  forceSimulation,
-  type SimulationLinkDatum,
-  type SimulationNodeDatum,
-} from "d3-force";
+import { hierarchy, tree } from "d3-hierarchy";
 import { estimateTextWidth } from "../hierarchy/layout";
 import {
   buildAdjacency,
@@ -14,127 +7,130 @@ import {
   type NetworkNodeData,
 } from "./graph";
 
-// Phase 3.4 — radial, degrees-of-separation layout for the network canvas.
-// Same split as 3.2/3.3: **d3 computes coordinates, it never touches the
-// DOM.** React renders the settled result as SVG, so every visual value stays
-// a CSS token and all three themes work untouched.
+// Phase 3.5 — Mode 3 as a **radial tidy tree of the Mode 2 hierarchy**, with
+// prerequisite/related edges as a quiet overlay that comes forward on selection.
 //
-// v1 (3.3) settled a free force cloud — clusters, but no reading of centrality.
-// v2 pins the discipline's root at the middle and places every other node on a
-// concentric ring by its distance from that root, so the picture *is* the
-// original Mode 3 vision: central ideas at the centre, peripheral at the edge.
-// A node's own frontmatter (its prerequisite/related links) determines its
-// ring, which is what lets future content — including eventual interdisciplinary
-// gateway nodes at the periphery — self-locate without a layout change.
+// Same split as every canvas since 3.2: **d3 computes coordinates, it never
+// touches the DOM.** React renders the settled result as SVG, so every visual
+// value stays a CSS token and all three themes work untouched.
 //
-// The simulation is run to settlement synchronously and then discarded —
-// `.stop()` before its internal timer ever fires, then the whole tick budget
-// spent in one pass. No animated settling, no per-tick React render. At 53
-// nodes that is ~30ms; more importantly it is the structure that keeps a
-// future 500-node graph off the render loop entirely.
+// Why this replaces 3.4's force-with-radial-constraint layout:
+//
+//  - Ring depth is now *declared* specialization — a node's depth in the curated
+//    `parent:` chain — instead of a BFS distance derived from its prerequisite/
+//    related wiring. There is one source of truth for "how core is this concept",
+//    the hierarchy, and Modes 2 and 3 now share it. In 3.4 the two modes could
+//    disagree about a node's centrality; they no longer can.
+//  - Branching is guaranteed by tidy-tree construction, not coaxed out of tuned
+//    forces and a hand-seeded angular spread. Sibling subtrees occupy contiguous
+//    angular sectors by construction, so the branch read is structural.
+//  - The cross-link web is contextual instead of constant: the hierarchy is the
+//    always-on skeleton, and the prerequisite/related edges that are *not* already
+//    a parent link render faint, coming up to full weight only for the selected
+//    concept. The idle picture is the tree; the relationships are on demand.
+//
+// Determinism: the tidy tree is deterministic by construction (Reingold–Tilford
+// over a fixed, course-ordered child list). There is no randomness anywhere in
+// this module — no `Math.random`, no force jiggle — so the same corpus always
+// settles into the same picture, run to run, server or client.
+//
+// `CENTER_SLUG` is retired: the centre is structural now (the hierarchy root),
+// not an editorial pin.
 
 /**
- * The centre is **pinned, not computed**. Society is the highest-degree node at
- * time of writing and the discipline's natural root, so it is named here as an
- * editorial choice. Deriving the centre from degree instead would let future
- * content silently move the middle of the map out from under a returning
- * learner's spatial memory; pinning makes recentring a deliberate one-line edit.
+ * The hierarchy handed to the layout: exactly the Mode 2 tree (`getTree()` in
+ * lib/content — built from the single `parent:` field, children course-ordered).
+ * Only the slug structure is needed here; node display data comes from `graph`.
+ * Passing the built tree rather than re-deriving one from flat parent pointers is
+ * deliberate: Modes 2 and 3 must not build two hierarchies that could drift.
  */
-export const CENTER_SLUG = "society";
-
-// Seed spread (radians) applied to a node's angle around its BFS parent's
-// angle. Not a force — it only shapes the *initial* placement so subtrees fall
-// into angular sectors (branches) rather than a dartboard; the radial and
-// collide forces take over from there. Narrowed by depth (÷ depth-1) so deep
-// twigs stay tight under their branch. Deterministic (hash of slug, below).
-const SEED_ANGULAR_SPREAD = 0.5;
+export type NetworkTree = { slug: string; children: NetworkTree[] };
 
 export type NetworkGeometry = {
   nodeHeight: number;
   fontSize: number; // must track --type-node-label-size
   padX: number; // pill edge → label
   padding: number; // canvas padding around the settled extent
-  linkDistance: number; // resting length of an edge
-  linkStrength: number;
-  chargeStrength: number; // node repulsion (negative)
-  chargeDistanceMax: number; // beyond this, repulsion is not computed
-  collideGapX: number; // minimum clear space between pills, horizontally
-  collideGapY: number; // …and vertically
-  collideIterations: number;
-  ringSpacing: number; // radius added per degree of separation from the core
-  radialStrength: number; // pull toward the node's ring — the dominant force
-  ticks: number;
+  ringSpacing: number; // radius added per hierarchy depth
+  sepGapArc: number; // separation: arc (px) wanted between adjacent pills
+  closeGap: number; // radians left open so the first/last sector don't touch
 };
 
 /**
- * Force parameters — the design values of this mode, v2, in the same sense that
- * row pitch and column gap are the hierarchy's. They decide whether the graph
- * reads as concentric structure or as a hairball, so they are named and
- * recorded here rather than buried in the simulation call.
+ * The design constants of this mode, v3 — in the same sense that row pitch and
+ * column gap are the hierarchy's. They decide whether the graph reads as a clean
+ * branching tree or a tangle, so they are named and recorded here rather than
+ * buried in the layout call. (Geometry cannot live in tokens.css — it is JS the
+ * layout consumes, not CSS — so it is centralised here and flagged in the report,
+ * exactly as the hierarchy canvas does.)
  *
- * Tuned against the real corpus: 53 nodes, 85 edges, one connected component,
- * seven rings (depths 0–6 from `society`). Settled extent ~1848x1177 with zero
- * pill overlaps and rings that stay visually distinct (each ring's radial band
- * clears the next by ~20px+ at settle).
+ * Settled against the real corpus: 53 nodes, hierarchy depths 0–3 (root
+ * `sociology`; rings of 10 / 30 / 12 nodes). Placement uses d3-hierarchy's
+ * radial `tree()` with a **width-aware separation** normalised to fill the
+ * circle: adjacent pills are allotted angle in proportion to their own widths
+ * (÷ depth, the standard radial move, so a fixed pill width maps to a constant
+ * arc as the radius grows with depth). Wide sibling groups borrow angle from
+ * sparse sectors, which is what lets the layout close cleanly.
  *
- * - `ringSpacing 200` with `radialStrength 0.8`: `ringRadius(depth) =
- *   depth * 200`. The radial force is now the dominant positional force — it,
- *   not gravity, is what shapes the map. 200px is the tightest spacing at which
- *   the heavily-loaded ring 2 (27 nodes) settles into a band that still clears
- *   rings 1 and 3; closer merged the bands, wider only inflated the extent and
- *   pushed fit-zoom below the legibility floor.
- * - `linkDistance 70` / `linkStrength 0.2`: weaker and shorter than 3.3's
- *   95/0.35, because links no longer set position (the radial force does).
- *   Their job now is tangential: pulling connected siblings together *within*
- *   a ring so branches read as branches. Stronger links fought the radial pull
- *   and warped the rings.
- * - `chargeStrength -260` / `chargeDistanceMax 420`: softer than 3.3's
- *   -340/500. With the radial force containing nodes to rings and rectangle
- *   collision resolving overlaps, charge only needs to spread nodes tangentially
- *   inside a ring; more just bowed the rings outward.
+ * - `ringSpacing 600`: `ringRadius(depth) = depth × 600`. The binding ring is
+ *   depth 2 (30 nodes, several with very wide titles): the full circle at that
+ *   radius must hold ~6900px of pill width, which needs radius ≳ 1100, i.e.
+ *   spacing ≳ 550. 600 clears every ring with comfortable breathing room (no
+ *   pill pair closer than ~10px horizontally / ~12px vertically — verified pair
+ *   by pair across the settled corpus). Tighter spacings leave the wide sibling
+ *   groups overlapping; that they *cannot* fit closer is a property of the
+ *   content shape (see the report's `parent:` findings), not a tuning miss.
+ * - `sepGapArc 44`: the minimum arc a pill wants beyond half of each neighbour's
+ *   width. Small enough that the tree still closes at spacing 600, large enough
+ *   that abutting pills read as separate.
+ * - `closeGap 0.06`: a sliver of angle left open at the 12-o'clock seam so the
+ *   first and last top-level sectors don't collide across it.
  *
- * Removed in v2: the asymmetric `gravityX 0.18` / `gravityY 0.04` pull. Its job
- * was to fight the letterbox aspect ratio of the free cloud — squaring the
- * extent up so labels stayed legible at fit-zoom. Concentric geometry is
- * radially symmetric by construction, so there is no letterbox to fight and the
- * gravity would only distort the rings into ellipses. (Recorded, not deleted,
- * so the reasoning history survives: gravity solved 3.3's problem; 3.4 no longer
- * has that problem.)
+ * The settled extent is ~3584 × 3416 (radially symmetric by construction — a
+ * near square, unlike 3.4's letterbox). See NetworkCanvas for the fit decision
+ * this extent drives.
  */
-export const NETWORK_FORCES: NetworkGeometry = {
-  nodeHeight: 40, // 3.2's node height, desktop and mobile — the tap target
+export const NETWORK_GEOMETRY: NetworkGeometry = {
+  nodeHeight: 40, // the tap target, desktop and mobile — as since 3.2
   fontSize: 13.5,
   padX: 14,
   padding: 80,
-  linkDistance: 70,
-  linkStrength: 0.2,
-  chargeStrength: -260,
-  chargeDistanceMax: 420,
-  collideGapX: 22,
-  collideGapY: 24,
-  collideIterations: 4,
-  ringSpacing: 200,
-  radialStrength: 0.8,
-  ticks: 300,
+  ringSpacing: 600,
+  sepGapArc: 44,
+  closeGap: 0.06,
 };
 
 // 390px differs only in canvas padding. The graph's *shape* is deliberately
 // identical across breakpoints: a deep link, a screenshot, or a remembered
-// position has to mean the same thing on both, so the mobile adaptation is in
+// position has to mean the same thing on both, so the mobile adaptation lives in
 // the initial view and the zoom, never in the layout.
-export const MOBILE_NETWORK_FORCES: NetworkGeometry = {
-  ...NETWORK_FORCES,
+export const MOBILE_NETWORK_GEOMETRY: NetworkGeometry = {
+  ...NETWORK_GEOMETRY,
   padding: 40,
 };
 
 export type LaidNetworkNode = NetworkNodeData & {
-  x: number; // centre
+  x: number; // centre (canvas coords)
   y: number; // centre
   width: number;
   height: number;
+  depth: number; // hierarchy depth — the node's ring index
+  angle: number; // radial angle (radians), for tree-edge paths
+  radius: number; // distance from centre, = depth × ringSpacing
+  parentSlug: string | null; // tree parent — for the path-to-centre highlight
 };
 
-export type LaidNetworkEdge = NetworkEdgeData & {
+// A tree (parent) edge: the structural skeleton, drawn as a radial bézier.
+export type LaidTreeEdge = {
+  childSlug: string;
+  parentSlug: string;
+  path: string; // SVG path data (radial cubic bézier)
+};
+
+// A cross-link (prerequisite or related) that is NOT already a parent edge —
+// the contextual overlay. Endpoints are pill centres; the canvas trims them to
+// the pill boundary at render time (as in 3.3).
+export type LaidCrossEdge = NetworkEdgeData & {
   x1: number;
   y1: number;
   x2: number;
@@ -143,302 +139,246 @@ export type LaidNetworkEdge = NetworkEdgeData & {
 
 export type NetworkLayout = {
   nodes: LaidNetworkNode[];
-  edges: LaidNetworkEdge[];
+  treeEdges: LaidTreeEdge[];
+  crossEdges: LaidCrossEdge[];
   bySlug: Map<string, LaidNetworkNode>;
+  // slug → tree-adjacent ∪ cross-adjacent neighbours (the keyboard grammar and
+  // neighbour highlight both traverse this union; the tree alone would strand
+  // keyboard users off the skeleton's cross-connections).
+  adjacency: Map<string, string[]>;
   width: number;
   height: number;
-  centerSlug: string; // the pinned core (CENTER_SLUG when present)
+  rootSlug: string; // the hierarchy root — the structural centre
   center: { x: number; y: number }; // its canvas position — the rings' origin
   ringRadii: number[]; // radius of each occupied ring, for the guide circles
 };
-
-type SimNode = SimulationNodeDatum & {
-  slug: string;
-  width: number;
-  height: number;
-  depth: number; // BFS distance from the centre — the node's ring index
-};
-
-/**
- * Rectangle separation, replacing `forceCollide`.
- *
- * `forceCollide` is circular, and these pills are ~4:1. A circle enclosing a
- * 150x40 pill reserves 85px of vertical clearance for 40px of node, which
- * inflated the settled extent to ~2100x1800 and pushed fit-zoom labels down
- * to 5px — illegible. Shrinking the radius to fit the height instead let
- * pills overlap horizontally (50+ collisions). Neither is a tuning problem;
- * a circle cannot describe this box.
- *
- * This force resolves axis-aligned box overlaps directly, separating along
- * the axis of *proportionally* least penetration so wide pills part sideways
- * and stacked ones part vertically. O(n²) per iteration, which at 53 nodes is
- * ~1,400 pair tests — cheaper than building a quadtree. Revisit above a few
- * hundred nodes.
- */
-function rectCollide(geom: NetworkGeometry) {
-  let nodes: SimNode[] = [];
-  const force = () => {
-    for (let k = 0; k < geom.collideIterations; k++) {
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const a = nodes[i];
-          const b = nodes[j];
-          const dx = (b.x ?? 0) - (a.x ?? 0);
-          const dy = (b.y ?? 0) - (a.y ?? 0);
-          const minX = (a.width + b.width) / 2 + geom.collideGapX;
-          const minY = (a.height + b.height) / 2 + geom.collideGapY;
-          const overlapX = minX - Math.abs(dx);
-          const overlapY = minY - Math.abs(dy);
-          if (overlapX <= 0 || overlapY <= 0) continue; // disjoint on an axis
-          if (overlapX / minX < overlapY / minY) {
-            const push = (dx < 0 ? -overlapX : overlapX) / 2;
-            a.x = (a.x ?? 0) - push;
-            b.x = (b.x ?? 0) + push;
-          } else {
-            const push = (dy < 0 ? -overlapY : overlapY) / 2;
-            a.y = (a.y ?? 0) - push;
-            b.y = (b.y ?? 0) + push;
-          }
-        }
-      }
-    }
-  };
-  force.initialize = (n: SimNode[]) => {
-    nodes = n;
-  };
-  return force;
-}
 
 function pillWidth(title: string, geom: NetworkGeometry): number {
   return geom.padX * 2 + estimateTextWidth(title, geom.fontSize);
 }
 
-/** Ring radius by degree of separation. The core sits at 0; every ring out is
- *  one `ringSpacing` further. This is the placement rule content self-locates
- *  into: a node's ring is a function of its own frontmatter, nothing more. */
+/** Ring radius by hierarchy depth. The root sits at 0; every deeper ring is one
+ *  `ringSpacing` further out. Depth is *declared* specialization now — the
+ *  curated `parent:` chain — so a node's ring is a function of the hierarchy,
+ *  the same source Mode 2 draws. */
 function ringRadius(depth: number, geom: NetworkGeometry): number {
   return depth * geom.ringSpacing;
 }
 
-/** Deterministic hash of a slug → [0, 1). FNV-1a; the same slug always yields
- *  the same value, so the angular seed carries no `Math.random` and the layout
- *  is reproducible run to run (the phyllotaxis-seed principle from 3.3). */
-function hashUnit(slug: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < slug.length; i++) {
-    h ^= slug.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return (h >>> 0) / 4294967296;
+/** Undirected pair key, order-independent (mirrors graph.ts's private one). */
+function pairKey(a: string, b: string): string {
+  return a < b ? `${a}|${b}` : `${b}|${a}`;
+}
+
+/** Point on the circle of the given radius at the given angle, offset to the
+ *  canvas-space centre. Angle 0 is +x; the whole wheel is rotated by the layout
+ *  so it reads the same every run (deterministic). */
+function polar(
+  cx: number,
+  cy: number,
+  radius: number,
+  angle: number
+): { x: number; y: number } {
+  return { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
 }
 
 /**
- * BFS from the centre over the **undirected union of prerequisite + related
- * edges**, recording each node's ring (depth) and the parent it was reached
- * through (used to seed angular sectors). Unreachable nodes — currently zero,
- * and that must stay checkable — land on the outermost ring and carry no
- * parent, so a future orphan surfaces as a node marooned on the rim rather than
- * silently dropped.
+ * Radial cubic bézier from parent (inner) to child (outer), the d3 `linkRadial`
+ * shape: hold the parent's angle out to the mid-radius, then sweep to the
+ * child's angle. This is what gives the skeleton its branching curve rather than
+ * a spider's straight spoke. Center-to-center — the pills paint over the ends,
+ * exactly as the hierarchy's connectors tuck under their nodes.
  */
-function bfsRings(
-  graph: GraphData,
-  centerSlug: string
-): { depth: Map<string, number>; parent: Map<string, string | null> } {
-  const adjacency = buildAdjacency(graph);
-  const depth = new Map<string, number>();
-  const parent = new Map<string, string | null>();
-  depth.set(centerSlug, 0);
-  parent.set(centerSlug, null);
-  const queue = [centerSlug];
-  for (let head = 0; head < queue.length; head++) {
-    const current = queue[head];
-    const d = depth.get(current)!;
-    for (const next of adjacency.get(current) ?? []) {
-      if (depth.has(next)) continue;
-      depth.set(next, d + 1);
-      parent.set(next, current);
-      queue.push(next);
-    }
-  }
-  let maxDepth = 0;
-  for (const d of depth.values()) maxDepth = Math.max(maxDepth, d);
-  for (const n of graph.nodes) {
-    if (!depth.has(n.slug)) {
-      depth.set(n.slug, maxDepth); // marooned → outermost ring
-      parent.set(n.slug, null);
-    }
-  }
-  return { depth, parent };
+function radialLinkPath(
+  cx: number,
+  cy: number,
+  parent: LaidNetworkNode,
+  child: LaidNetworkNode
+): string {
+  const mid = (parent.radius + child.radius) / 2;
+  const p0 = polar(cx, cy, parent.radius, parent.angle);
+  const c1 = polar(cx, cy, mid, parent.angle);
+  const c2 = polar(cx, cy, mid, child.angle);
+  const p1 = polar(cx, cy, child.radius, child.angle);
+  return `M ${p0.x} ${p0.y} C ${c1.x} ${c1.y}, ${c2.x} ${c2.y}, ${p1.x} ${p1.y}`;
 }
 
 export function layoutNetwork(
   graph: GraphData,
+  treeData: NetworkTree,
   geom: NetworkGeometry
 ): NetworkLayout {
-  // Centre is pinned editorially (CENTER_SLUG); if the corpus somehow lacks it,
-  // fall back to the first node so the graph still renders rather than throwing.
-  const centerSlug = graph.nodes.some((n) => n.slug === CENTER_SLUG)
-    ? CENTER_SLUG
-    : graph.nodes[0]?.slug;
-  const { depth, parent } = bfsRings(graph, centerSlug);
+  const dataBySlug = new Map(graph.nodes.map((n) => [n.slug, n]));
+  const widthBySlug = new Map(
+    graph.nodes.map((n) => [n.slug, pillWidth(n.title, geom)])
+  );
 
-  // Angular seeding. Every node starts at its ring radius, at an angle chosen
-  // so that subtrees settle into sectors — the difference between "branches
-  // radiating from a core" and "a dartboard". Ring-1 nodes spread evenly around
-  // the centre; each deeper node starts near its BFS parent's angle, nudged by
-  // a deterministic per-slug offset (no randomness). A parentless node — an
-  // orphan on the rim, currently none — falls back to the phyllotaxis spiral
-  // seed from 3.3. Because every node lands at a distinct point, d3's `jiggle`
-  // (which reaches for Math.random on coincident bodies) is never triggered and
-  // the layout is reproducible run to run. (Verified identical across runs.)
-  const angleOf = new Map<string, number>();
-  const ring1 = graph.nodes
-    .filter((n) => depth.get(n.slug) === 1)
-    .map((n) => n.slug)
-    .sort();
-  ring1.forEach((slug, i) => {
-    angleOf.set(slug, (2 * Math.PI * i) / ring1.length);
-  });
-  let maxDepth = 0;
-  for (const d of depth.values()) maxDepth = Math.max(maxDepth, d);
-  for (let d = 2; d <= maxDepth; d++) {
-    for (const n of graph.nodes) {
-      if (depth.get(n.slug) !== d) continue;
-      const parentAngle = angleOf.get(parent.get(n.slug) ?? "");
-      if (parentAngle === undefined) continue; // parentless → phyllotaxis below
-      const offset = (hashUnit(n.slug) * 2 - 1) * (SEED_ANGULAR_SPREAD / (d - 1));
-      angleOf.set(n.slug, parentAngle + offset);
-    }
-  }
+  // Radial tidy layout. `size([2π − closeGap, 1])` normalises the angular extent
+  // to (almost) a full turn regardless of the separation weights, so the circle
+  // is filled cleanly with no wrap. The separation is width-aware: adjacent
+  // pills are allotted angle in proportion to half of each pill's width plus a
+  // gap, ÷ depth so the same width maps to a constant arc as the radius grows.
+  // This is the rectangle-aware spacing that keeps wide pills at inner rings from
+  // colliding; sparse sectors donate their slack to crowded ones.
+  const h = hierarchy(treeData, (n) => n.children);
+  // tree() mutates h in place and returns it typed as a positioned node (x/y
+  // now set); capture that type so `n.x` is a number, not number | undefined.
+  const laid = tree<NetworkTree>()
+    .size([2 * Math.PI - geom.closeGap, 1])
+    .separation((a, b) => {
+      const wa = widthBySlug.get(a.data.slug) ?? 0;
+      const wb = widthBySlug.get(b.data.slug) ?? 0;
+      return ((wa + wb) / 2 + geom.sepGapArc) / a.depth;
+    })(h);
 
-  const simNodes: SimNode[] = graph.nodes.map((n, i) => {
-    const d = depth.get(n.slug)!;
-    const radius = ringRadius(d, geom);
-    const angle = angleOf.get(n.slug);
-    const seed =
-      angle === undefined
-        ? // Phyllotaxis fallback (parentless / orphan): a distinct spiral point.
-          (() => {
-            const r = 12 * Math.sqrt(0.5 + i);
-            const a = i * Math.PI * (3 - Math.sqrt(5)); // golden angle
-            return { x: r * Math.cos(a), y: r * Math.sin(a) };
-          })()
-        : { x: radius * Math.cos(angle), y: radius * Math.sin(angle) };
-    return {
-      slug: n.slug,
-      width: pillWidth(n.title, geom),
-      height: geom.nodeHeight,
-      depth: d,
-      x: seed.x,
-      y: seed.y,
-    };
+  // Polar → cartesian around the origin. node.x is the angle; radius is derived
+  // from hierarchy depth, not from d3's normalised y.
+  type Placed = { slug: string; angle: number; radius: number; depth: number };
+  const placed: Placed[] = [];
+  const parentSlugBy = new Map<string, string | null>();
+  laid.each((n) => {
+    parentSlugBy.set(n.data.slug, n.parent ? n.parent.data.slug : null);
+    placed.push({
+      slug: n.data.slug,
+      angle: n.x,
+      radius: ringRadius(n.depth, geom),
+      depth: n.depth,
+    });
   });
 
-  // Pin the centre at the origin. forceRadial pulls it to radius 0 too, but a
-  // hard pin makes the map's middle a fixed point of reference rather than
-  // something the simulation can nudge.
-  const centerNode = simNodes.find((n) => n.slug === centerSlug);
-  if (centerNode) {
-    centerNode.fx = 0;
-    centerNode.fy = 0;
-  }
-
-  // d3-force mutates what it is given; `simNodes` are throwaway copies so the
-  // server-built GraphData shared across renders stays pristine.
-  const simLinks: SimulationLinkDatum<SimNode>[] = graph.edges.map((e) => ({
-    source: e.source,
-    target: e.target,
-  }));
-
-  forceSimulation(simNodes)
-    .force(
-      "link",
-      forceLink<SimNode, SimulationLinkDatum<SimNode>>(simLinks)
-        .id((d) => d.slug)
-        .distance(geom.linkDistance)
-        .strength(geom.linkStrength)
-    )
-    .force(
-      "charge",
-      forceManyBody<SimNode>()
-        .strength(geom.chargeStrength)
-        .distanceMax(geom.chargeDistanceMax)
-    )
-    .force("collide", rectCollide(geom))
-    // The dominant positional force: each node toward its ring radius, centred
-    // on the pinned origin. This is what makes distance-from-core legible.
-    .force(
-      "radial",
-      forceRadial<SimNode>((d) => ringRadius(d.depth, geom), 0, 0).strength(
-        geom.radialStrength
-      )
-    )
-    .stop()
-    // d3's default alphaDecay is calibrated for exactly 300 ticks, so the
-    // simulation is cold by the time this returns.
-    .tick(geom.ticks);
-
-  // Translate the settled cloud so its bounding box starts at `padding`.
-  // Everything downstream — fit, deep links, keyboard panning — works in these
-  // canvas coordinates, which are therefore always positive.
+  // Translate the wheel so its bounding box starts at `padding`. Everything
+  // downstream — fit, deep links, keyboard panning — works in these canvas
+  // coordinates, which are therefore always positive.
   let minX = Infinity;
   let minY = Infinity;
   let maxX = -Infinity;
   let maxY = -Infinity;
-  for (const n of simNodes) {
-    minX = Math.min(minX, (n.x ?? 0) - n.width / 2);
-    maxX = Math.max(maxX, (n.x ?? 0) + n.width / 2);
-    minY = Math.min(minY, (n.y ?? 0) - n.height / 2);
-    maxY = Math.max(maxY, (n.y ?? 0) + n.height / 2);
+  for (const p of placed) {
+    const c = polar(0, 0, p.radius, p.angle);
+    const w = widthBySlug.get(p.slug) ?? 0;
+    minX = Math.min(minX, c.x - w / 2);
+    maxX = Math.max(maxX, c.x + w / 2);
+    minY = Math.min(minY, c.y - geom.nodeHeight / 2);
+    maxY = Math.max(maxY, c.y + geom.nodeHeight / 2);
   }
   const dx = geom.padding - minX;
   const dy = geom.padding - minY;
+  const cx = dx; // the origin (root) in canvas coords — the rings' centre
+  const cy = dy;
 
-  const dataBySlug = new Map(graph.nodes.map((n) => [n.slug, n]));
-  const nodes: LaidNetworkNode[] = simNodes.map((n) => ({
-    ...dataBySlug.get(n.slug)!,
-    x: (n.x ?? 0) + dx,
-    y: (n.y ?? 0) + dy,
-    width: n.width,
-    height: n.height,
-  }));
-
+  const nodes: LaidNetworkNode[] = placed.map((p) => {
+    const c = polar(cx, cy, p.radius, p.angle);
+    return {
+      ...dataBySlug.get(p.slug)!,
+      x: c.x,
+      y: c.y,
+      width: widthBySlug.get(p.slug) ?? 0,
+      height: geom.nodeHeight,
+      depth: p.depth,
+      angle: p.angle,
+      radius: p.radius,
+      parentSlug: parentSlugBy.get(p.slug) ?? null,
+    };
+  });
   const bySlug = new Map(nodes.map((n) => [n.slug, n]));
 
-  const edges: LaidNetworkEdge[] = graph.edges.map((e) => {
-    const a = bySlug.get(e.source)!;
-    const b = bySlug.get(e.target)!;
-    return { ...e, x1: a.x, y1: a.y, x2: b.x, y2: b.y };
-  });
+  // Tree edges: one radial bézier per parent link — the always-on skeleton.
+  const treePairs = new Set<string>();
+  const treeEdges: LaidTreeEdge[] = [];
+  for (const node of nodes) {
+    if (!node.parentSlug) continue;
+    const parent = bySlug.get(node.parentSlug);
+    if (!parent) continue;
+    treePairs.add(pairKey(node.slug, node.parentSlug));
+    treeEdges.push({
+      childSlug: node.slug,
+      parentSlug: node.parentSlug,
+      path: radialLinkPath(cx, cy, parent, node),
+    });
+  }
 
-  // Occupied ring radii (depth ≥ 1), for the guide circles. Concentric around
-  // the pinned centre, whose canvas position is the rings' origin.
+  // Cross-links: prerequisite/related edges that are NOT already a parent link.
+  // The 40-odd prerequisites that coincide with a parent edge (the parent is
+  // usually also a prerequisite) are already carried by the skeleton, so drawing
+  // them again would only muddy it; the overlay is the genuinely non-hierarchical
+  // web (currently 45 of 85 edges: 37 prerequisite, 8 related).
+  const crossEdges: LaidCrossEdge[] = [];
+  for (const e of graph.edges) {
+    if (treePairs.has(pairKey(e.source, e.target))) continue;
+    const a = bySlug.get(e.source);
+    const b = bySlug.get(e.target);
+    if (!a || !b) continue;
+    crossEdges.push({ ...e, x1: a.x, y1: a.y, x2: b.x, y2: b.y });
+  }
+
+  // Keyboard / highlight adjacency = tree parent-child ∪ every cross-link pair
+  // (both kinds, direction ignored). Built from the cross-link adjacency plus the
+  // tree links so arrow traversal can reach a node whose only connection is a
+  // cross-link *or* whose only connection is the hierarchy.
+  const adjacency = buildAdjacency(graph);
+  const addAdj = (a: string, b: string) => {
+    const la = adjacency.get(a);
+    if (la && !la.includes(b)) la.push(b);
+  };
+  for (const node of nodes) {
+    if (!node.parentSlug) continue;
+    addAdj(node.slug, node.parentSlug);
+    addAdj(node.parentSlug, node.slug);
+  }
+
+  // Occupied ring radii (depth ≥ 1), for the guide circles.
   const occupied = new Set<number>();
-  for (const d of depth.values()) if (d >= 1) occupied.add(d);
-  const ringRadii = [...occupied]
-    .sort((a, b) => a - b)
-    .map((d) => ringRadius(d, geom));
-  const centerLaid = bySlug.get(centerSlug);
-  const center = centerLaid
-    ? { x: centerLaid.x, y: centerLaid.y }
-    : { x: dx, y: dy };
+  for (const n of nodes) if (n.depth >= 1) occupied.add(n.radius);
+  const ringRadii = [...occupied].sort((a, b) => a - b);
 
   return {
     nodes,
-    edges,
+    treeEdges,
+    crossEdges,
     bySlug,
+    adjacency,
     width: maxX - minX + geom.padding * 2,
     height: maxY - minY + geom.padding * 2,
-    centerSlug,
-    center,
+    rootSlug: treeData.slug,
+    center: { x: cx, y: cy },
     ringRadii,
   };
 }
 
 /**
+ * The chain of tree edges from a node up to the root, as undirected pair keys —
+ * so the canvas can light the selected concept's path back to the centre in
+ * `--color-edge-active`. Walks `parentSlug`; stops at the root (or a broken
+ * chain, defensively).
+ */
+export function treePathToRoot(
+  slug: string,
+  bySlug: Map<string, LaidNetworkNode>
+): Set<string> {
+  const path = new Set<string>();
+  let current: string | null = slug;
+  const seen = new Set<string>();
+  while (current) {
+    if (seen.has(current)) break;
+    seen.add(current);
+    const node = bySlug.get(current);
+    if (!node || !node.parentSlug) break;
+    path.add(current < node.parentSlug ? `${current}|${node.parentSlug}` : `${node.parentSlug}|${current}`);
+    current = node.parentSlug;
+  }
+  return path;
+}
+
+/** Undirected pair key for a tree edge, matching `treePathToRoot`'s. */
+export function edgeKey(a: string, b: string): string {
+  return a < b ? `${a}|${b}` : `${b}|${a}`;
+}
+
+/**
  * Where an edge should stop so its arrowhead sits clear of the target pill
  * instead of under it: the point where the segment from (fromX, fromY) to the
- * node's centre crosses the node's box, pushed out by `gap`.
+ * node's centre crosses the node's box, pushed out by `gap`. (Unchanged from
+ * 3.3 — used to trim the cross-link overlay.)
  */
 export function trimToPill(
   fromX: number,
@@ -451,7 +391,6 @@ export function trimToPill(
   if (dx === 0 && dy === 0) return { x: node.x, y: node.y };
   const halfW = node.width / 2 + gap;
   const halfH = node.height / 2 + gap;
-  // Scale the direction vector until it first exits the padded rectangle.
   const scale = Math.min(
     dx === 0 ? Infinity : halfW / Math.abs(dx),
     dy === 0 ? Infinity : halfH / Math.abs(dy)

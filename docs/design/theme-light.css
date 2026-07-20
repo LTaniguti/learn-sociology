@@ -24,6 +24,7 @@
   --color-border-input:      #d3c4a8;
   --color-border-accent:     #b8823a;
   --color-edge:              #d0c0a0;
+  --color-edge-faint:        #ddcda8;  /* network cross-link overlay (idle) — kept well above paper so faintness stays visible on light */
   --color-edge-active:       #b8823a;
   --color-ring-guide:        #d8c9ab;
 
