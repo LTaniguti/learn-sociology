@@ -216,7 +216,18 @@ function NetworkGraph({
     const svg = svgRef.current;
     const behaviour = zoomRef.current;
     if (!svg || !behaviour) {
-      setTransform(next);
+      // The zoom behaviour is registered in a layout effect that runs *before*
+      // the initial-view layout effect (see below), so it is present by the
+      // time any transform is applied. Writing to React state here instead —
+      // the old silent fallback — would leave d3's internal __zoom at identity
+      // while the render moved, and the first gesture would snap the view back:
+      // the 3.5 first-scroll teleport. Fail loudly rather than desync quietly.
+      if (process.env.NODE_ENV !== "production") {
+        console.error(
+          "NetworkCanvas: applyTransform called before the d3-zoom behaviour " +
+            "was registered — the internal transform would desync. This is a bug."
+        );
+      }
       return;
     }
     select(svg).call(
@@ -229,7 +240,15 @@ function NetworkGraph({
   // written into React state. No d3 transitions anywhere — every zoom change
   // is instantaneous, which is also why prefers-reduced-motion has nothing to
   // suppress on this canvas.
-  useEffect(() => {
+  //
+  // This MUST be a layout effect declared **before** the initial-view layout
+  // effect: layout effects run in declaration order, and on mount the initial
+  // view calls `applyTransform`, which needs `zoomRef.current` already set so it
+  // can seed d3's internal __zoom to match. As a plain passive effect (the 3.5
+  // shape) it ran *after* the layout effects, so the initial view hit the silent
+  // fallback and d3 stayed at identity — the teleport. DOM-ref work only, no
+  // paint dependency, so a layout effect is safe here.
+  useLayoutEffect(() => {
     const svg = svgRef.current;
     if (!svg) return;
     const behaviour = zoom<SVGSVGElement, unknown>()
