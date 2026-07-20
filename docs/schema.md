@@ -48,6 +48,12 @@ modules:
 
 The platform renders Mode 1 by walking this file in order. A build check can verify that no node appears before its `prerequisites` — the manifest and the frontmatter keep each other honest.
 
+## Network placement (Mode 3)
+
+A node's position in Mode 3's network is **derived, not stored**. As of the 3.4 radial layout, the map is concentric: an editorially pinned core (`society`) sits at the centre, and every other node lands on a ring by its **distance from the core** — the number of hops along the undirected union of its `prerequisites` and `related` edges (a breadth-first depth). The innermost ring is one hop out, and each ring outward is one more degree of separation.
+
+The consequence for authors: **frontmatter *is* placement.** You never set a coordinate, a ring, or a region — you write a node's `prerequisites` and `related`, and its ring follows. A node wired to central concepts sits near the middle; one reachable only through a long dependency chain sits near the rim. A node with no path to the core at all falls to the outermost ring and is flagged as a content finding (currently none). This is what lets the coming content phase — and eventual periphery nodes bridging into adjacent disciplines — self-locate without any layout work. No schema fields are involved; this note only documents the rule.
+
 ## Discipline scoping and future expansion
 
 Every node is scoped to one primary discipline via a `discipline/` tag

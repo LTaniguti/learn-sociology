@@ -114,14 +114,16 @@ Base: background `--tree-node-bg`; border `--border-thin var(--tree-node-border)
 
 ---
 
-## Network canvas (Mode 3, shipped 3.3)
+## Network canvas (Mode 3, shipped 3.3; layout restructured 3.4)
 No hi-fi was ever drawn for this mode. Everything below is either inherited from the hierarchy canvas — deliberately, so the two modes read as one system — or improvised from `direction.md` and recorded here as the spec of record.
 
 Same rendering contract as the hierarchy: SVG-in-DOM, **d3 computes, React renders**. d3-force settles coordinates and d3-zoom supplies the gesture math; neither touches the DOM. The zoom transform is React state, applied as one `<g transform>`.
 
+- **Layout is radial: degrees of separation from a pinned core (v2, 3.4).** The core node — `CENTER_SLUG = "society"`, an editorial pin, not a computed centrality — sits at the middle. Every other node is placed on a concentric ring by its **BFS depth** over the undirected union of prerequisite + related edges: ring index *is* distance-from-core. This realises the original Mode 3 intent (central ideas at the centre, peripheral at the edge) and makes placement self-locating — a node's own frontmatter decides its ring, so future content (including eventual periphery gateway nodes) needs no layout change. v1 (3.3) settled a free force cloud with no reading of centrality; v2 replaces the aspect-shaping gravity with a dominant radial force. Unreachable nodes fall to the outermost ring and are reported as content findings (currently zero — that stays checkable).
+- **Angular coherence makes it read as branches, not a dartboard.** Ring-1 nodes spread evenly around the core; each deeper node is *seeded* at its BFS parent's angle plus a small deterministic per-slug offset (narrowing with depth), so subtrees settle into angular sectors. Seeding only — the forces take over from there.
 - **Surface, node pill, dashed non-published treatment, preview card:** identical to the hierarchy canvas — same tokens, same rules. Nodes carry a paradigm dot when tagged. There is no count badge and no expand affordance; a graph has no collapse.
 - **Selection is the one amber moment.** The selected pill takes `--tree-node-open-bg` / `--tree-node-open-border` and its label goes `--color-text-strong`; its incident edges go `--color-edge-active` at `--border-med`; its **neighbours** take `--color-surface-hover`. This is the graph's equivalent of the hierarchy's lit ancestor path — in a network, "where am I" means the local neighbourhood.
-- **Layout is deterministic.** Nodes are seeded on an explicit phyllotaxis spiral so d3's `jiggle()` never reaches for `Math.random()`; the same corpus always settles into the same picture, so spatial memory of the graph is worth something. Force constants live in `layout.ts` (see the hierarchy note on why geometry cannot be tokens) and are the design values of this mode.
+- **Layout is deterministic.** The angular seed hashes the slug (FNV-1a) rather than calling `Math.random()`, and every node lands at a distinct point so d3's `jiggle()` never fires; the same corpus always settles into the same picture, so spatial memory of the graph is worth something. Force constants live in `layout.ts` (see the hierarchy note on why geometry cannot be tokens) and are the design values of this mode. **v2 parameter set:** `ringSpacing 200` × `radialStrength 0.8` (`ringRadius(depth) = depth × 200`; the dominant positional force), `linkDistance 70` / `linkStrength 0.2` (weaker and shorter than 3.3's 95/0.35 — links no longer set position, only pull ring-siblings together tangentially), `chargeStrength −260` / `chargeDistanceMax 420` (softer than 3.3's −340/500). The 3.3 asymmetric gravity (`gravityX 0.18` / `gravityY 0.04`) is **removed** — concentric geometry is radially symmetric, so there is no letterbox to fight; the reasoning is kept beside the parameters, not deleted. The pinned core is fixed at the origin (`fx/fy`), not merely radial-pulled to radius 0.
 - **Layout is computed client-side only**, behind a mount gate — settling on the server as well would have to agree to the last float, and `Math.cos`/`Math.sin` are not required to be correctly rounded.
 
 ### Edges
@@ -131,15 +133,18 @@ Same rendering contract as the hierarchy: SVG-in-DOM, **d3 computes, React rende
 - Edges are trimmed to the pill boundary at both ends, so lines never emerge from under a label and arrowheads sit clear of the box.
 - Only `prerequisites` and `related` are drawn. **Shared-tag edges are excluded**: every node carries `discipline/sociology`, so they would produce a near-complete graph. Revisitable once the canvas has edge-class filtering.
 
+### Ring guides
+Muted dashed concentric circles behind the graph, one at each occupied ring radius, centred on the pinned core — wayfinding furniture that says "these nodes are the same distance from the core", not chrome. New token **`--color-ring-guide`** (in the edge group of every theme file), drawn at `--border-thin`, a **sparse `4 / 12` dash**, and ~0.55 opacity so they sit far behind. Deliberately **distinct from the non-published dash**: that treatment carries a node's publication status at full node-border prominence with a tight `4 / 4` dash; the two dashed meanings must never read the same. Sit below the edges and nodes in paint order, `aria-hidden`.
+
 ### Zoom controls
 Vertical stack at the canvas's top-right: `+` / `−` / `fit`. `--font-mono` `--type-control-size`, text `--color-text-meta-warm`, background `--color-surface-raised`, border `--border-thin var(--color-border-input)`, radius `--radius-sm`; 32px square, **40px at ≤640px**. Hover `--color-surface-hover`; focus ring. Muted, never amber — the selection owns amber.
 These are the accessibility floor: zoom must never require a wheel or trackpad, on desktop or touch. Double-click zoom is **off** (it fought node activation). Zoom has no transition at all, so `prefers-reduced-motion` has nothing to suppress.
 
 ### Legend
-Bottom-left corner, always visible. `--font-mono` `--type-caption-size`, text `--color-text-faint`, on `--color-surface-raised` with a `--color-border-faint` hairline. Three rows: prerequisite (line + arrow), related (line), not yet published (dashed pill outline). Muted — it explains the picture, it is not part of it.
+Bottom-left corner, always visible. `--font-mono` `--type-caption-size`, text `--color-text-faint`, on `--color-surface-raised` with a `--color-border-faint` hairline. Four rows: **rings = distance from the core** (dashed guide line, added 3.4), prerequisite (line + arrow), related (line), not yet published (dashed pill outline). Muted — it explains the picture, it is not part of it.
 
 ### Initial view
-`fit` is the initial view: seeing the whole territory is the point of the mode, and small labels at the overview are a feature — you read the shape, then zoom for names. **Exception:** when fit would land below ~0.4 scale the pills stop reading as pills (a 150px node under 60px), and the view instead centres the highest-degree node at 1:1. In practice desktop fits (~0.58 on a laptop viewport) and 390px falls back to the hub, leaving `fit` one button away.
+`fit` is the initial view: seeing the whole territory is the point of the mode, and small labels at the overview are a feature — you read the shape, then zoom for names. **Exception:** when fit would land below ~0.4 scale the pills stop reading as pills (a 150px node under 60px), and the view instead centres the **core node** at 1:1 (which, in the radial layout, is equivalent to centring the whole structure). The radial extent re-verifies the 3.4 numbers: the settled node bounding box is ~1848 × 1177 (vs 3.3's ~1693 × 967), so **height is now the binding dimension**. Desktop fits — but only just on a short viewport (~0.42 at 1218 × 564, clearing the 0.4 floor by a hair); a taller viewport fits comfortably. **390px** fits at ~0.19, well below the floor, and falls back to centring the core — the same decision 3.3 made (it fell back to the hub), one button from `fit`.
 
 ### Keyboard grammar (novel — no WAI-ARIA archetype fits a graph)
 `role="application"` on the canvas with an `aria-label` spelling out the keys, plus `aria-activedescendant` pointing at the focused node. The canvas is a **single tab stop**; none of the nodes are tabbable. Each node is `role="img"` with an `aria-label` of *title, status, connection count*. The zoom buttons are separately tabbable, as controls should be.
@@ -147,7 +152,7 @@ Bottom-left corner, always visible. `--font-mono` `--type-caption-size`, text `-
 | Key | Action |
 |---|---|
 | ↑ ↓ ← → | Move focus **along an edge** to the adjacent concept nearest that direction |
-| `Home` | Focus the highest-degree concept (the hub) |
+| `Home` | Focus the **central concept** (the pinned core — literally the middle of the map) |
 | `Enter` / `Space` | Toggle the preview card for the focused concept |
 | `Esc` | Dismiss the preview |
 | `+` / `−` | Zoom in / out (mirrors the buttons) |
@@ -155,7 +160,7 @@ Bottom-left corner, always visible. `--font-mono` `--type-caption-size`, text `-
 
 Two decisions worth keeping:
 - **Arrows traverse edges, not space.** Candidates are the focused node's neighbours inside a 90° cone around the pressed direction, nearest first; if the cone is empty, any neighbour on the correct side, best-aligned first. A grid-style spatial walk would step onto nodes that are merely *near* — exactly the claim a concept graph exists to deny. A node with no neighbour in that direction simply does not move.
-- **There is no `End`.** A graph has no last node, and inventing one (lowest degree? alphabetically last?) would be a key that means nothing. `Home` earns its place because the highest-degree node genuinely is the hub.
+- **There is no `End`.** A graph has no last node, and inventing one (outermost ring? alphabetically last?) would be a key that means nothing. `Home` earns its place because the radial layout gives it a literal target — the pinned core at the centre of the map. (Pre-3.4 it targeted the highest-degree node; the pin now makes "home" the geometric middle too.)
 
 Focus movement pans the focused node into view — pan only, never zoom, and only when it has actually left the viewport.
 
