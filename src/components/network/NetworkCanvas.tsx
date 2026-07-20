@@ -687,8 +687,12 @@ function NetworkGraph({
             </marker>
           </defs>
           {/* The single transformed group — this is where d3-zoom's output
-              lands, and the only thing that moves. */}
+              lands, and the only thing that moves. `has-selection` lets the CSS
+              dim the idle skeleton under a selection so the lit edges pop. */}
           <g
+            className={
+              selected ? "network-canvas-group has-selection" : "network-canvas-group"
+            }
             transform={`translate(${transform.x}, ${transform.y}) scale(${transform.k})`}
           >
             {/* Ring guides: muted dashed circles at each occupied ring radius,

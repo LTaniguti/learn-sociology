@@ -89,18 +89,33 @@
    ============================================================ */
 
 /* Tree edges (parent links): the always-on structural skeleton, radial béziers
-   at full --color-edge weight. Curved to match the branching aesthetic. */
+   at full --color-edge weight. Curved to match the branching aesthetic. The
+   stroke transitions so the field can recede quietly when a node is selected
+   (see .network-canvas-group.has-selection below). */
 .nwtree-edge {
   fill: none;
   stroke: var(--color-edge);
   stroke-width: var(--border-thin);
+  transition: stroke var(--transition-fast);
 }
 
 /* The selected concept's path back to the centre — the one amber wayfinding
-   moment, the radial equivalent of the hierarchy's lit ancestor path. */
+   moment, the radial equivalent of the hierarchy's lit ancestor path. Kept at
+   --border-med so the lineage reads as heavier than the incident relationship
+   cross-links, which share the amber but stay --border-thin. */
 .nwtree-edge-active {
   stroke: var(--color-edge-active);
   stroke-width: var(--border-med);
+}
+
+/* Dim the field under selection (v4). When a node is selected, every tree edge
+   that is neither the amber lineage nor incident to the selection recedes to
+   --color-edge-faint, so the lit edges pop because everything else steps back.
+   The incident relationship cross-links are separate .nwcross elements, lit
+   amber on their own; the idle cross-links are already faint. Deselect returns
+   the whole skeleton to full --color-edge. CSS only. */
+.network-canvas-group.has-selection .nwtree-edge:not(.nwtree-edge-active) {
+  stroke: var(--color-edge-faint);
 }
 
 /* Cross-links (prerequisite/related edges that are not already parent links).
@@ -118,24 +133,29 @@
   stroke: var(--color-edge-faint);
 }
 
-/* On selection the incident cross-links come up to the 3.3 treatment: the
-   directed, load-bearing prerequisite at full --color-edge weight plus an
-   arrowhead; the symmetric related link lighter and unmarked. The distinction
-   is carried by weight and the arrow, never by hue, so it survives all three
-   themes and colour vision deficiency. Related is deliberately NOT dashed — the
-   dash is spent on non-published nodes, and one surface must not use a
-   treatment for two unrelated meanings. */
+/* On selection the incident cross-links light **amber** (v4). In 3.5 they came
+   up to --color-edge / --color-border-subtle — but --color-edge is the ink of
+   all ~52 idle tree edges, so the relationships never changed hue and only the
+   amber lineage read (the reported defect). Now both go --color-edge-active: the
+   directed, load-bearing prerequisite plus an arrowhead; the symmetric related
+   link a touch quieter (opacity) and unmarked. The prerequisite/related
+   distinction is still carried by the arrow and opacity, never by hue, so it
+   survives all three themes and colour vision deficiency; the lit relationships
+   sit against a field dimmed to --color-edge-faint, so amber reads as
+   "relationships of the selection", distinct from the heavier amber lineage.
+   Related is deliberately NOT dashed — the dash is spent on non-published nodes,
+   and one surface must not use a treatment for two unrelated meanings. */
 .nwcross-prerequisite {
-  stroke: var(--color-edge);
+  stroke: var(--color-edge-active);
 }
 
 .nwcross-related {
-  stroke: var(--color-border-subtle);
-  opacity: 0.85;
+  stroke: var(--color-edge-active);
+  opacity: 0.75;
 }
 
 .nwarrow {
-  fill: var(--color-edge);
+  fill: var(--color-edge-active);
 }
 
 /* ============================================================
