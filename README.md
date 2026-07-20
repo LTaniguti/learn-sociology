@@ -44,6 +44,7 @@ Near term:
 Further out:
 - A testing/QA system for course content quality
 - Mode 4: sociologist profiles and citation network
+- Interdisciplinary gateway nodes — periphery concepts bridging into adjacent social sciences, opening future branches beyond sociology
 - Expanding Sociology stubs from the current starter set of 53
 - Stub nodes for more interdisciplinary subjects and in the far future other social sciences added to network view 
 

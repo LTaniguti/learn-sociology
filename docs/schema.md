@@ -110,6 +110,14 @@ status: draft
 
 This example is a copy of the live frontmatter in `content/sociological-imagination.md`; if the schema changes, update both.
 
+## Reserved fields
+
+The following frontmatter key is **reserved for a future phase and is not valid yet.** It is recorded here so the direction is legible, not so it can be used:
+
+- **`discipline:`** (working name; may ship as `branch:`) — a marker for **periphery gateway nodes** that bridge sociology into an adjacent social science (economics, anthropology, political science, psychology). In the radial layout (Mode 3, see *Network placement*) such nodes sit naturally on the outer rings, and this field would let the platform render and route them as gateways into a neighbouring discipline's territory — the seam along which the map can grow beyond sociology.
+
+Reserved means exactly three things: (1) it is **not part of the schema** — the ten-field budget (design principle 3) is untouched; (2) **no node may use it** until a future phase specifies its semantics (valid values, how many disciplines, tree/edge consequences); (3) the phase that activates it **owns adding linter enforcement**. Note the current gap: `scripts/lint-content.mjs` validates required and known fields but does **not** reject unknown keys — an author who added `discipline:` today would see it silently ignored, not flagged. So until activation this is a rule for authors and reviewers, not yet a mechanical gate. Until then this is a direction, not a feature.
+
 ## Resolved questions
 
 Two questions were left open in v0.1 and settled by the Stage 0 stress test (`docs/schema-review.md`):
