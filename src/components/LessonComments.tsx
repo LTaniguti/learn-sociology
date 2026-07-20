@@ -7,15 +7,26 @@ import { getTheme, THEME_EVENT, type Theme } from "@/lib/theme";
 // slug via mapping=specific — both /node/[slug] and /course/[slug] share it.
 // The script is injected client-side on mount, so exported HTML stays clean.
 
-// Borderless dark blends best into the surrounding warm-dark panel
-// (dark_dimmed's blue-gray frame clashes with the Open Commons palette), and
-// midnight is dark enough to share it. Light gets the built-in light theme.
-// TODO(post-2.9): ship a token-matched custom Giscus theme via CSS URL,
-// covering all three site themes rather than approximating them with two
-// built-ins.
+// Theme mapping (3.3, closing TODO(post-2.9)). The two dark themes now use
+// token-matched custom stylesheets instead of sharing giscus's built-in
+// `noborder_dark`, which never matched the warm palette — and which papered
+// over the difference between Open Commons and Midnight Draft entirely.
+// A URL is a valid `theme` value, so this needs no mechanism beyond the
+// existing origin-pinned setConfig postMessage below.
+//
+// The URLs are absolute and point at the deployed site because giscus loads
+// them into a cross-origin iframe: a relative path would resolve against
+// giscus.app. Consequence — local dev pulls the *deployed* CSS, so edits to
+// public/giscus/*.css are only visible after they ship. Both files carry a
+// token → hex sync map in their header.
+//
+// Light keeps the built-in: it was already a good match, and a custom file
+// would be a third palette copy to keep in sync for no visual gain.
+const GISCUS_CSS_BASE = "https://ltaniguti.github.io/learn-sociology/giscus";
+
 const GISCUS_THEME: Record<Theme, string> = {
-  default: "noborder_dark",
-  midnight: "noborder_dark",
+  default: `${GISCUS_CSS_BASE}/default.css`,
+  midnight: `${GISCUS_CSS_BASE}/midnight.css`,
   light: "light",
 };
 
