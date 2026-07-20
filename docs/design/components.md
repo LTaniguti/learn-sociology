@@ -9,7 +9,7 @@ States not shown in the mockups (hover, keyboard focus, disabled) are defined he
 
 ## Top bar
 - Height `--topbar-height` (58px); background `--color-surface-raised`; bottom border `--border-thin var(--color-border)`.
-- Left→right: wordmark, mode tabs, then search box pushed right (`margin-left:auto`).
+- Left→right: wordmark, mode tabs, then the chrome cluster pushed right (`margin-left:auto`): search box, then theme control.
 - Padding `0 var(--space-6)`; children gap `var(--space-4)`.
 
 ### Wordmark
@@ -28,6 +28,30 @@ Four tabs: **Course**, **Hierarchy** (active pair), **Network**, **Sociologists*
 - Pill: background `--color-surface`; border `--border-thin var(--color-border-input)`; radius `--radius-pill`; padding `var(--space-2) 15px`; width 240px.
 - Leading `⌕` glyph + placeholder, both `--color-text-faint`, `--font-mono` 12px. Placeholder copy: "search title / summary…".
 - *Focus:* focus ring + border → `--color-border-accent`.
+
+### Theme control (shipped 3.1)
+Three-segment control at the bar's right end. `role="radiogroup"`, `aria-label="Colour theme"`; each segment `role="radio"` with an `aria-label` spelling out the theme's full name (the visible labels are abbreviated to fit the 58px bar).
+- Frame: border `--border-thin var(--color-border-input)`; radius `--radius-sm`. Segments carry no border of their own.
+- Segment: `--font-mono` `--type-control-size`; text `--color-text-muted`; transparent background; padding `var(--space-2)`.
+  - *Hover:* background `--color-surface-hover`, text unchanged — same treatment as `.shell-tab`.
+  - **Active:** text `--color-accent`, **no** fill and no underline (direction.md rule 3 — exactly one amber treatment per element); hover on the active segment stays flat.
+  - *Focus:* the global ring, plus `position:relative; z-index:1` so the neighbouring segment's background can't paint over the box-shadow.
+- **Roving tabindex:** the group is one tab stop; ←/→/↑/↓ move within it and selection follows focus (standard radiogroup behaviour).
+- Labels are display-only. Storage semantics are independent: absence of `data-theme` on `<html>` means the default theme; stored values are `midnight` / `light`.
+
+---
+
+## Collapse toggle (course syllabus · node rail)
+One shape, mirrored: the syllabus toggle hugs the sidebar's right edge (`align-self:flex-end`, glyphs `⟨` / `⟩`), the node rail's hugs its left edge (`align-self:flex-start`, glyphs mirrored). Both sit at the top of the panel they control, against the border they collapse.
+- Button: `--font-mono` `--type-control-size`; text `--color-text-muted`; background none; border `--border-thin var(--color-border-input)`; radius `--radius-sm`; padding `var(--space-1) var(--space-2)`.
+  - *Hover:* background `--color-surface-hover`, text `--color-text-meta-warm`.
+  - *Focus:* focus ring.
+- **Collapsed panel:** width → `--rail-collapsed-width` (52px) via the grid template on the parent (`:has()`); panel padding narrows to `var(--space-6) var(--space-2)` (`--pad-rail`'s 24px sides would leave 4px of content box); `overflow:hidden`; the toggle recenters (`align-self:center`).
+  - Collapsed contents are `display:none` — removed from layout **and** from the accessibility tree, so no focus trap behind a hidden panel.
+  - Collapsing the node rail buys whitespace, not longer lines: `.node-main` keeps its 740px cap and recenters (`margin-inline:auto`) in the space gained.
+- `aria-expanded` reflects the panel state; `aria-label` swaps between "Show/Hide syllabus" and "Show/Hide details".
+- State is device-local, one localStorage key each (`lib/syllabus.ts`, `lib/rail.ts`) — deliberately **not** folded into `progress.ts`: a layout preference is a different concern from lesson completion and must not share its storage shape. Contrast the hierarchy canvas, whose collapse state is session-ephemeral React state.
+- Desktop-only affordance; at ≤640px both panels already stack and the toggle is moot.
 
 ---
 
@@ -56,21 +80,36 @@ Font `--type-body-family` 14px; padding `8px 11px`; radius `--radius-sm`.
 
 ---
 
-## Tree node (Hierarchy view)
-Base: background `--tree-node-bg`; border `--border-thin var(--tree-node-border)`; radius `--radius-md`; serif label 13.5px `--color-text-body`.
+## Hierarchy canvas (shipped 3.2)
+The canvas is SVG-in-DOM, never a `<canvas>` bitmap: canvas-based graph libraries bypass CSS tokens, theming, and focus semantics, and SVG elements keep all three for free. **d3-hierarchy computes coordinates and never touches the DOM; React renders the settled result.** Mode 3's network canvas reuses this exact split with d3-force.
+
+- **Surface:** page background `--tree-canvas-bg`; the canvas itself carries the dotted grid — `radial-gradient` dots in `--tree-dot`, `--border-thin` radius, on a `--space-6` grid. The grid lives on the inner canvas so it scrolls with the tree.
+- **Viewport:** scrolls both axes and owns the scrolling (the page is pinned to `100dvh - --topbar-height`), so the document itself never scrolls.
+- **Geometry constants live in `layout.ts`, not `tokens.css`.** Row pitch, node height, column gap, canvas padding, and the two font sizes are layout *inputs consumed by JS* — SVG text cannot be measured server-side, so pill widths come from a per-character-class estimate. They cannot be CSS variables. `DESKTOP_GEOMETRY` and `MOBILE_GEOMETRY` are the two sets; the mobile pass tightens pitch and column gap but holds `nodeHeight` at 40px to keep the tap target. Node *styling* — fills, strokes, radii, type — stays entirely in `hierarchy-canvas.css` via tokens.
+
+### Tree node
+Base: background `--tree-node-bg`; border `--border-thin var(--tree-node-border)`; radius `--radius-md`; serif label `--type-node-label-size` `--color-text-body`.
 - **Expanded (parent/root):** leading `−` in `--color-accent`; background `--tree-node-open-bg`; border `--tree-node-open-border`; label weight 600 `--color-text-strong`.
-- **Collapsed with descendants:** trailing count badge (e.g. `+5`) — `--font-mono` 10px, `--tree-badge-text`, border `--border-thin var(--tree-badge-border)`, radius `--radius-pill`. (Node-&-edge canvas shows `+5`; ruled-rows variant shows a `[+]` control plus the number.)
-- **Leaf (paradigm children):** leading paradigm dot 7px (`--paradigm-*`) + label.
-- *Hover:* background `--color-surface-hover`; raises the preview card (desktop).
-- *Focus:* focus ring.
-- **Connectors:** SVG bézier strokes; inactive `--color-edge`, path toward the open node `--color-edge-active` at `--border-med`. Cross-links / prerequisites are deliberately **not** drawn — this is a pure tree from the single `parent` field.
+- **Collapsed with descendants:** trailing count badge (e.g. `+5`) — `--font-mono` `--type-caption-size`, `--tree-badge-text`, border `--border-thin var(--tree-badge-border)`, radius `--radius-pill`. The badge **is** the expand control; the leading `−` is the collapse control. Both carry an invisible `.hcnode-hit` rect sized for touch.
+- **Leaf (paradigm children):** leading paradigm dot `--paradigm-dot-size` (`--paradigm-*`) + label. Leaves with no paradigm tag fall back to `--tree-badge-border`.
+- **Non-published (stub/draft/review):** the pill's stroke goes dashed (`stroke-dasharray: var(--space-1) var(--space-1)`) — the honesty treatment carried over from the draft banner. Status is never conveyed by colour alone.
+- **Previewed (selected):** stroke → `--tree-node-open-border`, held while the card is up.
+- *Hover:* fill `--color-surface-hover`; raises the preview card (desktop, 150ms grace period on exit so the pointer can cross the gap into the card).
+- *Focus:* **SVG adaptation of the global focus rule.** `box-shadow` does not paint on SVG elements, so the ring is drawn as a stroke on the pill instead — `--focus-ring-color` at `--focus-ring-width`, the same tokens the box-shadow ring uses, with `outline:none` on the group.
+- **Connectors:** SVG bézier `<path>` strokes; inactive `--color-edge` at `--border-thin`, the root→previewed path `--color-edge-active` at `--border-med`. Edges are `aria-hidden` — the tree semantics carry the structure. Cross-links / prerequisites are deliberately **not** drawn here: this is a pure tree from the single `parent` field. (Mode 3 is where those edges live.)
+- **Keyboard:** WAI-ARIA treeview. `role="tree"` on the SVG, `role="treeitem"` per node with `aria-level` / `aria-setsize` / `aria-posinset` / `aria-expanded`; roving tabindex makes the whole tree one tab stop. ↑/↓ walk visible rows (pre-order), → expands then descends, ← collapses then ascends, Home/End jump to first/last, Enter toggles the preview, Esc dismisses it.
+- Collapse state is **session-ephemeral React state**, not persisted — a deliberate choice keeping `progress.ts` the sole localStorage owner for content state; revisitable if users ask.
 
-## Hover preview card
-- Raised on node hover/focus (desktop). Background `--color-surface-raised`; border `--border-thin var(--color-border-accent)`; radius `--radius-lg`; padding `15px 17px`; shadow `--shadow-pop`.
-- Contents: concept title (serif 15px `--color-text-strong`) + difficulty badge (top row); one-sentence summary (serif 13px `--color-text-body`); tag chips; and an amber "Open lesson →" affordance (`--font-mono` 11.5px `--color-accent`).
+### Preview card
+- Raised on node hover/focus (desktop) or pinned by click/Enter; the pinned selection wins over a transient hover. Dismissed by Esc or an outside click.
+- Background `--color-surface-raised`; border `--border-thin var(--color-border-accent)`; radius `--radius-lg`; padding `15px 17px`; shadow `--shadow-pop`; width `21em`, capped `82vw`.
+- **Anchoring:** positioned in canvas coordinates beside the node — right of it by default, **flipping to the left** when the right side would leave the visible viewport, then clamped so the card stays on screen. Near a scrolled-in edge the flip may overlap the node; that beats being off-screen. Anchoring is inherently two-pass — the card must render hidden before its size is known.
+- Contents: concept title (serif `--type-card-title-size` `--color-text-strong`) + difficulty badge (top row); one-sentence summary (serif `--type-card-summary-size` `--color-text-body`); a `status:` line in `--status-draft-text` **only when the node is not published**; tag chips; and an amber "Open lesson →" affordance (`--font-mono` `--type-control-size` `--color-accent`, hover `--color-accent-hover`).
 
-## Canvas controls
-- Toolbar row above canvas: "Expand all" / "Collapse all" pills (`--font-mono` 11.5px, text `--color-text-meta-warm`, border `--border-thin var(--color-border-input)`, radius `--radius-sm`); a structure toggle (Node & edge / Rows); and a zoom stepper (− / % / +). Active toggle segment uses `--color-accent` bg + `--color-surface` text; idle segment `#a7997f` text.
+### Canvas controls
+- Toolbar row above the canvas: "Expand all" / "Collapse all" pills — `--font-mono` `--type-control-size`, text `--color-text-meta-warm`, border `--border-thin var(--color-border-input)`, radius `--radius-sm`; hover `--color-surface-hover`. Wraps at ≤640px.
+- The structure toggle (Node & edge / Rows) and the zoom stepper specified here pre-3.2 were **not** built: the rows variant was retired outright (see open question (a)), and zoom belongs to Mode 3's force canvas, where panning is unbounded — the hierarchy canvas scrolls instead.
+- Footnote below the canvas (`--font-mono` `--type-control-size` `--color-text-faint`) states the parent-field rule, so the missing cross-links read as a decision rather than an omission.
 
 ---
 
@@ -128,9 +167,12 @@ Pill, `--type-badge-*`, radius `--radius-pill`, padding `5px 12px`, border `--bo
 
 ## Open questions — decided answers
 
-### (a) Hierarchy: structured rows or organic node-and-edge canvas?
-**Decision: organic node-and-edge canvas is the default; structured rows are preserved as a toggle.**
-Why: the project's premise is *ideas as a connected network*, and a literal node-and-edge canvas makes that the first thing a learner sees — it's the strongest expression of the brand and reads as exploration rather than a filesystem. It costs more to build (needs a graph/layout layer — e.g. a tidy-tree layout feeding SVG bézier edges, or a library like d3-hierarchy / React Flow). The **rows** variant is kept because it is HTML/CSS-only, accessible by default, faster on low-power/touch devices, and better for dense browsing; it renders the *same* `parent`-field tree. Ship the canvas as the default Mode 2 with a "Rows" toggle in the toolbar (state persisted device-local), so no learner is blocked if the graph layer is heavy. Both draw only parent→child edges; prerequisite/related links are never drawn here.
+### (a) Hierarchy: structured rows or organic node-and-edge canvas? — **RESOLVED in 3.2**
+**Shipped decision: the node-and-edge canvas is the only hierarchy view. The rows variant was retired, not kept as a toggle.**
+
+The original answer (canvas as default, rows preserved behind a toolbar toggle) was hedged against two risks that did not materialise. Rows were justified as the accessible, low-power fallback — but the shipped canvas is SVG-in-DOM with a full WAI-ARIA treeview (roving tabindex, `aria-level`/`setsize`/`posinset`, arrow-key walk), so it is *already* the accessible rendering; a second tree would have been a second accessibility surface to maintain, not a safety net. And d3-hierarchy computing coordinates outside the DOM proved cheap enough at 53 nodes that "if the graph layer is heavy" never applied.
+
+Retiring it removed the toggle, its device-local persisted state, and a duplicate render path — the toolbar keeps only Expand/Collapse all. What survives from the original reasoning is the premise: a literal node-and-edge canvas makes *ideas as a connected network* the first thing a learner sees. The parent-field-only rule also survives — the canvas draws parent→child edges and nothing else; prerequisite and related links are Mode 3's subject.
 
 ### (b) Tap-to-preview on touch (no hover)
 The hover preview card can't exist on touch, so the tree splits the interaction into two taps:
