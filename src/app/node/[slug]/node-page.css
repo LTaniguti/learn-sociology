@@ -77,7 +77,6 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  margin-left: auto;
   width: 240px;
   padding: var(--space-2) 15px;
   background: var(--color-surface);
@@ -115,12 +114,13 @@
   box-shadow: none; /* the pill wrapper carries the ring via :focus-within */
 }
 
-/* Theme switcher (Step 3.1) — segmented control at the bar's far right.
-   No components.md spec yet; values improvised from the tab + control
-   patterns and listed in the 3.1 report for back-filling. */
+/* Theme switcher (Step 3.1; spec'd in components.md as of 3.3) — segmented
+   control. Since 3.3 it carries `margin-left: auto` and so opens the
+   right-hand chrome cluster, with search as the bar's last element. */
 .themectl {
   display: flex;
   align-items: center;
+  margin-left: auto;
   border: var(--border-thin) solid var(--color-border-input);
   border-radius: var(--radius-sm);
 }
@@ -879,8 +879,10 @@ html[data-textsize="lg"] {
     --type-body-size: var(--type-body-size-mobile);
   }
 
+  /* Search is the bar's last element (3.3), so at full width it takes a row of
+     its own; the theme control's `margin-left: auto` right-aligns it on the
+     row above, against the tab group. */
   .shell-search {
     width: 100%;
-    margin-left: 0;
   }
 }

@@ -9,14 +9,20 @@ import { getTheme, setTheme, THEMES, type Theme } from "@/lib/theme";
 // themes.md names the three characters "Open Commons", "Midnight Draft" and
 // "Light" — too long for a 58px bar beside the search pill, so the brief's
 // fallback labels are used.
+//
+// "Default" rather than "Dark" (3.3): two of the three themes are dark, so the
+// label described the wrong axis — what distinguishes this one is that it is
+// the shipped default, not that it is dark. Naming only: `theme.ts` still
+// represents this theme as the *absence* of `data-theme`, and the stored
+// values `midnight` / `light` are untouched.
 const LABELS: Record<Theme, string> = {
-  default: "Dark",
+  default: "Default",
   midnight: "Midnight",
   light: "Light",
 };
 
 const NAMES: Record<Theme, string> = {
-  default: "Open Commons dark theme",
+  default: "Open Commons default theme",
   midnight: "Midnight Draft theme",
   light: "Light theme",
 };

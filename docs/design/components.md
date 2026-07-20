@@ -30,7 +30,8 @@ Four tabs: **Course**, **Hierarchy** (active pair), **Network**, **Sociologists*
 - *Focus:* focus ring + border → `--color-border-accent`.
 
 ### Theme control (shipped 3.1)
-Three-segment control at the bar's right end. `role="radiogroup"`, `aria-label="Colour theme"`; each segment `role="radio"` with an `aria-label` spelling out the theme's full name (the visible labels are abbreviated to fit the 58px bar).
+Three-segment control opening the right-hand chrome cluster (it carries the bar's `margin-left:auto`; search follows it). `role="radiogroup"`, `aria-label="Colour theme"`; each segment `role="radio"` with an `aria-label` spelling out the theme's full name (the visible labels are abbreviated to fit the 58px bar).
+- **Labels:** `Default` · `Midnight` · `Light`, default first. `aria-label`s: "Open Commons default theme" / "Midnight Draft theme" / "Light theme". The default segment reads **Default**, not "Dark" (renamed 3.3) — two of the three themes are dark, so "Dark" named the wrong axis; what distinguishes this one is that it is the shipped default.
 - Frame: border `--border-thin var(--color-border-input)`; radius `--radius-sm`. Segments carry no border of their own.
 - Segment: `--font-mono` `--type-control-size`; text `--color-text-muted`; transparent background; padding `var(--space-2)`.
   - *Hover:* background `--color-surface-hover`, text unchanged — same treatment as `.shell-tab`.

@@ -105,15 +105,17 @@ export default async function Shell({
           Sociologists
         </span>
       </nav>
+      {/* Theme switcher (Step 3.1). Since 3.3 it opens the right-hand chrome
+          cluster and carries the `margin-left: auto` that pushes the pair
+          clear of the tab group. */}
+      <ThemeControl />
       {/* Search shipped in Step 2.10. Scope narrowed from the wireframe's
           `title` + `summary` to **title only**: summary matches surface rows
           whose visible label doesn't contain the query, which reads as noise
-          at this corpus size. Revisit if the corpus grows. */}
+          at this corpus size. Revisit if the corpus grows.
+          Rightmost as of 3.3 — it is the widest control and the one that grows
+          to a full row when the bar wraps, so it ends the line. */}
       <SearchBox index={index} />
-      {/* Theme switcher (Step 3.1). Placed after the search pill at the bar's
-          far right: the search already carries `margin-left: auto`, so the two
-          sit together as a chrome cluster, clear of the tab group. */}
-      <ThemeControl />
     </header>
   );
 }

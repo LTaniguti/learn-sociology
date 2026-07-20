@@ -1,5 +1,11 @@
 # Theme notes — Midnight Draft (alt-dark) & Light
 
+## Shipped labels
+
+The top-bar control shows **`Default` · `Midnight` · `Light`** — abbreviations of the character names below, which are too long for the 58px bar. The base theme's segment reads "Default", not "Dark" (renamed 3.3): two of the three themes are dark, so "Dark" named the wrong axis.
+
+This is naming only. `lib/theme.ts` still represents the default as the *absence* of `data-theme` on `<html>`, with `midnight` / `light` the only stored attribute values — unchanged since 3.1.
+
 ## Midnight Draft (alt-dark)
 **Character:** A higher-contrast, near-black sibling to Open Commons — canvas drops to `#050505`, text pushed lighter, amber brightened to `#f0983f` so wayfinding stays legible against the deeper ground. Reads more like a late-night research tool than lamplight.
 
