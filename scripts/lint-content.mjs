@@ -36,6 +36,22 @@ const validTags = new Set(
   [...taxonomy.matchAll(/`((?:discipline|level|type|paradigm|subfield)\/[a-z-]+)`/g)].map(m => m[1]),
 );
 
+// --- Frontmatter field allowlist: docs/schema.md is the single source ---
+// KNOWN = the backticked field names in the "Frontmatter fields" table.
+// RESERVED = the backtick-colon field names in the "Reserved fields" section
+// (currently `discipline:` / `branch:`) — recorded as a direction, valid for no
+// node until a future phase activates them. Parsed rather than hardcoded so the
+// schema doc and the gate cannot drift.
+const schema = fs.readFileSync(path.join(ROOT, "docs/schema.md"), "utf8");
+const section = name => (schema.split(/^## /m).find(s => s.startsWith(name)) ?? "");
+const KNOWN_FIELDS = new Set(
+  [...section("Frontmatter fields").matchAll(/^\| `([a-z_]+)` \|/gm)].map(m => m[1]),
+);
+const RESERVED_FIELDS = new Set(
+  [...section("Reserved fields").matchAll(/`([a-z_]+):`/g)].map(m => m[1]),
+);
+if (KNOWN_FIELDS.size === 0) errors.push("schema: could not parse the Frontmatter fields table from docs/schema.md");
+
 // --- Parse every node's frontmatter ---
 const files = fs.readdirSync(CONTENT).filter(f => f.endsWith(".md") && f !== "README.md");
 const slugs = new Set(files.map(f => f.replace(/\.md$/, "")));
@@ -62,6 +78,18 @@ for (const slug of slugs) if (!registry.has(slug)) errors.push(`registry: ${slug
 // --- Per-node frontmatter checks ---
 let rootCount = 0;
 for (const [slug, fm] of nodes) {
+  // Every frontmatter key must be a known schema field. A reserved key gets a
+  // distinct error (it is a legible future direction, not a valid field yet);
+  // any other unknown key is a typo or an invented field and is rejected by
+  // name — closing the gap where unknown keys were silently ignored.
+  for (const key of Object.keys(fm)) {
+    if (RESERVED_FIELDS.has(key)) {
+      errors.push(`${slug}: '${key}' is reserved for a future phase and is not valid yet (docs/schema.md → Reserved fields)`);
+    } else if (!KNOWN_FIELDS.has(key)) {
+      errors.push(`${slug}: unknown frontmatter key '${key}' — not a schema field (docs/schema.md → Frontmatter fields)`);
+    }
+  }
+
   for (const field of REQUIRED) {
     if (!(field in fm) || fm[field] === undefined || fm[field] === "" || fm[field] === null) {
       if (!(field === "parent" && fm.parent === null)) errors.push(`${slug}: missing required field ${field}`);
