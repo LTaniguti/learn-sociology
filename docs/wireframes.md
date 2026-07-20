@@ -77,5 +77,6 @@ Accounts and cross-device progress, the verification system, Giscus lesson forum
 ## Open questions for the PoC build
 
 1. **Tree rendering:** does Mode 2 need Cytoscape.js/D3 at all, or is a pure HTML/CSS collapsible tree enough for the PoC? The wireframe works either way; the decision belongs to the build phase, but a no-library tree would defer the graph dependency until Mode 3 actually needs it.
+   *Resolved 2026-07-19 (Phase 3.2, `docs/tasks/phase-3.2-hierarchy-canvas.md`): `d3-hierarchy` computes the tidy layout, React renders SVG nodes and bézier edges; the interim HTML/CSS ruled-rows tree is retired.*
 2. **Preview card on touch devices:** hover doesn't exist on mobile. Likely answer: first tap opens the card, second tap (or the card's button) opens the lesson — decide when a real device is in hand.
 3. **Where Mode 1 progress state lives** if the PoC is statically hosted (GitHub Pages): local storage is assumed, but the exact shape should be decided alongside the lint script so slugs are validated consistently.
