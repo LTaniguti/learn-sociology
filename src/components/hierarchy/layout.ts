@@ -96,7 +96,9 @@ export function paradigmOf(tags: string[]): string | null {
 // design wants content-sized pills (per the hi-fi), so widths come from a
 // per-character-class estimate with a small safety margin. A slightly generous
 // pill is invisible; a clipped label would not be.
-function estimateTextWidth(text: string, fontSize: number): number {
+// Exported since 3.3: the network canvas sizes the same serif pills at the same
+// token size, so it must estimate identically — two copies would drift.
+export function estimateTextWidth(text: string, fontSize: number): number {
   let units = 0;
   for (const ch of text) {
     if (/[iljft.,;:'’()| !\-]/.test(ch) || ch === " ") units += 0.34;
