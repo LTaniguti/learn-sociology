@@ -187,67 +187,9 @@
   stroke: none;
 }
 
-/* Preview card — anchored to the previewed node's coordinates. */
-.hcard {
-  position: absolute;
-  z-index: 10;
-  width: 21em;
-  max-width: 82vw;
-  padding: 15px 17px;
-  background: var(--color-surface-raised);
-  border: var(--border-thin) solid var(--color-border-accent);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-pop);
-}
-
-.hcard-head {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-3);
-  margin-bottom: var(--space-2);
-}
-
-.hcard-title {
-  font-family: var(--font-serif);
-  font-size: var(--type-card-title-size);
-  font-weight: var(--type-h2-serif-weight);
-  color: var(--color-text-strong);
-}
-
-.hcard-summary {
-  font-family: var(--font-serif);
-  font-size: var(--type-card-summary-size);
-  line-height: var(--type-lede-line);
-  color: var(--color-text-body);
-}
-
-.hcard-status {
-  margin-top: var(--space-2);
-  font-family: var(--font-mono);
-  font-size: var(--type-control-size);
-  color: var(--status-draft-text);
-}
-
-.hcard .tag-chips {
-  margin-top: var(--space-3);
-}
-
-.hcard-lesson {
-  display: inline-block;
-  margin-top: var(--space-3);
-  font-family: var(--font-mono);
-  font-size: var(--type-control-size);
-  color: var(--color-accent);
-}
-
-.hcard-lesson::after {
-  content: " →";
-}
-
-.hcard-lesson:hover {
-  color: var(--color-accent-hover);
-}
+/* The preview card (.hcard) lives in ../preview/preview-card.css since 3.3 —
+   it is shared with the network canvas. This canvas anchors it in canvas
+   coordinates; see HierarchyCanvas. */
 
 /* Canvas footnote (hi-fi) */
 .hierarchy-note {

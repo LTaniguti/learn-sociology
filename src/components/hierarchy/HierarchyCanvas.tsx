@@ -8,7 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
-import Link from "next/link";
+import PreviewCard from "../preview/PreviewCard";
 import {
   DESKTOP_GEOMETRY,
   MOBILE_GEOMETRY,
@@ -108,19 +108,34 @@ export default function HierarchyCanvas({ root }: { root: HierarchyNode }) {
   // Dismiss on outside click / Esc (node and card clicks stop propagation).
   // Esc also drops the hover preview so the card actually disappears even
   // while the pointer still rests on the node.
+  // The outside test is made on the event target rather than relying on the
+  // node handler's stopPropagation (3.3 fix). Under the App Router React's
+  // root container is `document`, so React's delegated listener and this one
+  // are on the same node — and stopPropagation does not stop a same-target
+  // listener, only stopImmediatePropagation would. This handler therefore ran
+  // even for clicks on nodes, so tapping a second node dismissed the card
+  // instead of moving the preview to it. Invisible on desktop, where hover
+  // re-opens the card immediately; a real two-tap bug on touch, and contrary
+  // to open question (b), which specifies one tap to preview.
   useEffect(() => {
     if (!selected) return;
-    const close = () => setSelected(null);
+    const onClick = (e: MouseEvent) => {
+      const target = e.target;
+      if (target instanceof Element && target.closest(".hcnode, .hcard")) {
+        return;
+      }
+      setSelected(null);
+    };
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        close();
+        setSelected(null);
         setHovered(null);
       }
     };
-    document.addEventListener("click", close);
+    document.addEventListener("click", onClick);
     document.addEventListener("keydown", onKeyDown);
     return () => {
-      document.removeEventListener("click", close);
+      document.removeEventListener("click", onClick);
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [selected]);
@@ -402,57 +417,19 @@ export default function HierarchyCanvas({ root }: { root: HierarchyNode }) {
             {layout.nodes.map(renderNode)}
           </svg>
           {previewNode && (
-            <div
-              ref={cardRef}
-              className="hcard"
-              role="group"
-              aria-label={`About ${previewNode.data.title}`}
+            <PreviewCard
+              data={previewNode.data}
+              cardRef={cardRef}
+              // Measure-then-position: rendered hidden at the origin until the
+              // layout effect above knows its size. See the effect's comment.
               style={
                 cardPos
                   ? { left: cardPos.left, top: cardPos.top }
                   : { left: 0, top: 0, visibility: "hidden" }
               }
-              onClick={(e) => e.stopPropagation()}
               onMouseEnter={() => setHoveredDebounced(previewNode.data.slug)}
               onMouseLeave={() => setHoveredDebounced(null)}
-            >
-              <div className="hcard-head">
-                <span className="hcard-title">{previewNode.data.title}</span>
-                <span
-                  className={`difficulty-badge difficulty-${previewNode.data.difficulty}`}
-                >
-                  {previewNode.data.difficulty}
-                </span>
-              </div>
-              <p className="hcard-summary">{previewNode.data.summary}</p>
-              {previewNode.data.status !== "published" && (
-                <p className="hcard-status">
-                  status: {previewNode.data.status}
-                </p>
-              )}
-              {previewNode.data.tags.length > 0 && (
-                <ul className="tag-chips">
-                  {previewNode.data.tags.map((tag) => (
-                    <li
-                      key={tag}
-                      className={
-                        tag.startsWith("paradigm/")
-                          ? "tag-chip tag-chip-paradigm"
-                          : "tag-chip"
-                      }
-                    >
-                      {tag}
-                    </li>
-                  ))}
-                </ul>
-              )}
-              <Link
-                className="hcard-lesson"
-                href={`/node/${previewNode.data.slug}`}
-              >
-                Open lesson
-              </Link>
-            </div>
+            />
           )}
         </div>
       </div>

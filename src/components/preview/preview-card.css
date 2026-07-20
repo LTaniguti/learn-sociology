@@ -1,0 +1,74 @@
+/* Concept preview card — shared by the hierarchy canvas (3.2) and the network
+   canvas (3.3). Moved out of hierarchy-canvas.css in 3.3 when the card became
+   a shared component; the rules are unchanged. All values from tokens.css.
+
+   The card is positioned by its caller (absolute, inside a positioned canvas
+   or viewport), so this file styles the box and never places it. */
+
+.hcard {
+  position: absolute;
+  z-index: 10;
+  width: 21em;
+  max-width: 82vw;
+  /* Never taller than the surface it is anchored inside. On a 390px screen a
+     long summary plus five tag chips overran the canvas and pushed the
+     "Open lesson" link — the card's only action — off the bottom edge. The
+     card scrolls instead. On the hierarchy canvas, whose positioned ancestor
+     is the full-height tree, this never binds. */
+  max-height: calc(100% - var(--space-4));
+  overflow-y: auto;
+  padding: 15px 17px;
+  background: var(--color-surface-raised);
+  border: var(--border-thin) solid var(--color-border-accent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+}
+
+.hcard-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.hcard-title {
+  font-family: var(--font-serif);
+  font-size: var(--type-card-title-size);
+  font-weight: var(--type-h2-serif-weight);
+  color: var(--color-text-strong);
+}
+
+.hcard-summary {
+  font-family: var(--font-serif);
+  font-size: var(--type-card-summary-size);
+  line-height: var(--type-lede-line);
+  color: var(--color-text-body);
+}
+
+.hcard-status {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--type-control-size);
+  color: var(--status-draft-text);
+}
+
+.hcard .tag-chips {
+  margin-top: var(--space-3);
+}
+
+.hcard-lesson {
+  display: inline-block;
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--type-control-size);
+  color: var(--color-accent);
+}
+
+.hcard-lesson::after {
+  content: " →";
+}
+
+.hcard-lesson:hover {
+  color: var(--color-accent-hover);
+}

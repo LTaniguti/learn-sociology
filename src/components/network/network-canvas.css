@@ -1,0 +1,304 @@
+/* Mode 3 — the concept network canvas (Phase 3.3). Every value from
+   tokens.css. Coordinates are computed in layout.ts and arrive as SVG
+   attributes; the zoom transform arrives as an inline transform on one <g>.
+   Everything visual — fills, strokes, radii, type — is a token, so all three
+   themes work untouched and there is no theme-conditional code.
+
+   The visual language is deliberately the hierarchy canvas's: same pill, same
+   edge tokens, same dotted grid, same dashed non-published treatment. What is
+   new here (zoom controls, legend, edge-direction arrows) is improvised from
+   direction.md and listed in the 3.3 report for components.md back-fill. */
+
+.network-page {
+  /* Matches .hierarchy-page: pin to the space under the top bar so the canvas
+     owns its area and the document never scrolls. */
+  flex: none;
+  display: flex;
+  min-height: 0;
+  height: calc(100vh - var(--topbar-height));
+  height: calc(100dvh - var(--topbar-height));
+  padding: var(--space-5) var(--space-7) var(--space-6);
+  background: var(--tree-canvas-bg);
+}
+
+.network-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* The zoom/pan surface. Unlike the hierarchy viewport this never scrolls —
+   d3-zoom owns both axes — so overflow is hidden and the controls, legend and
+   preview card are positioned against it. */
+.network-viewport {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background-image: radial-gradient(
+    circle,
+    var(--tree-dot) var(--border-thin),
+    transparent var(--border-thin)
+  );
+  background-size: var(--space-6) var(--space-6);
+  border: var(--border-thin) solid var(--color-border-faint);
+  border-radius: var(--radius-lg);
+}
+
+.network-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* Pan is a drag gesture, so the browser must not claim it for scrolling;
+     pinch-zoom still reaches d3-zoom. */
+  touch-action: none;
+  cursor: grab;
+}
+
+.network-svg:active {
+  cursor: grabbing;
+}
+
+.network-svg:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-lg);
+}
+
+/* ============================================================
+   Edges
+   ============================================================ */
+
+.nwedge {
+  fill: none;
+  stroke: var(--color-edge);
+  stroke-width: var(--border-thin);
+}
+
+/* Prerequisites are the directed, load-bearing claim: full-weight stroke plus
+   an arrowhead. Related links are symmetric and softer, so they read lighter.
+   The distinction is carried by stroke weight and by the presence of the
+   arrow — never by hue, so it survives all three themes and colour vision
+   deficiency alike.
+
+   Related edges are deliberately NOT dashed, though "lighter" would suggest
+   it: this canvas already spends the dash on non-published nodes, and one
+   surface should not use the same treatment for two unrelated meanings. */
+.nwedge-prerequisite {
+  stroke: var(--color-edge);
+}
+
+.nwedge-related {
+  stroke: var(--color-border-subtle);
+  stroke-width: var(--border-thin);
+  opacity: 0.85;
+}
+
+.nwedge-active {
+  stroke: var(--color-edge-active);
+  stroke-width: var(--border-med);
+}
+
+.nwarrow {
+  fill: var(--color-edge);
+}
+
+.nwarrow-active {
+  fill: var(--color-edge-active);
+}
+
+/* ============================================================
+   Nodes — same pill as the hierarchy canvas
+   ============================================================ */
+
+.nwnode {
+  cursor: pointer;
+}
+
+.nwnode-box {
+  fill: var(--tree-node-bg);
+  stroke: var(--tree-node-border);
+  stroke-width: var(--border-thin);
+  rx: var(--radius-md);
+  transition: fill var(--transition-fast), stroke var(--transition-fast);
+}
+
+.nwnode:hover > .nwnode-box {
+  fill: var(--color-surface-hover);
+}
+
+/* Neighbours of the selection take the hover surface — the graph's equivalent
+   of the hierarchy's lit ancestor path. */
+.nwnode-neighbour > .nwnode-box {
+  fill: var(--color-surface-hover);
+}
+
+/* The selected node is the one amber moment on the canvas. */
+.nwnode-selected > .nwnode-box {
+  fill: var(--tree-node-open-bg);
+  stroke: var(--tree-node-open-border);
+}
+
+.nwnode-selected > .nwnode-label {
+  fill: var(--color-text-strong);
+  font-weight: var(--type-h2-serif-weight);
+}
+
+/* Non-published carries the dashed honesty treatment, as in 3.2. */
+.nwnode-unpublished > .nwnode-box {
+  stroke-dasharray: var(--space-1) var(--space-1);
+}
+
+/* Focus ring: box-shadow does not paint on SVG, so the ring is a stroke in the
+   same tokens — the SVG adaptation established in 3.2. Focus lives on the
+   canvas (one tab stop) and is *reported* here via aria-activedescendant, so
+   this is driven by a class rather than :focus-visible. */
+.nwnode-focused > .nwnode-box {
+  stroke: var(--focus-ring-color);
+  stroke-width: var(--focus-ring-width);
+}
+
+.nwnode-label {
+  font-family: var(--font-serif);
+  font-size: var(--type-node-label-size);
+  fill: var(--color-text-body);
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.nwnode-dot {
+  fill: var(--tree-badge-border);
+}
+
+.nwnode-paradigm-functionalism > .nwnode-dot {
+  fill: var(--paradigm-functionalism);
+}
+
+.nwnode-paradigm-conflict > .nwnode-dot {
+  fill: var(--paradigm-conflict);
+}
+
+.nwnode-paradigm-interactionism > .nwnode-dot {
+  fill: var(--paradigm-interactionism);
+}
+
+/* ============================================================
+   Zoom controls — muted, never amber (the selection owns amber)
+   ============================================================ */
+
+.network-zoom {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.network-zoom button {
+  width: 32px;
+  height: 32px;
+  font-family: var(--font-mono);
+  font-size: var(--type-control-size);
+  color: var(--color-text-meta-warm);
+  background: var(--color-surface-raised);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.network-zoom button:hover {
+  background: var(--color-surface-hover);
+}
+
+/* ============================================================
+   Legend
+   ============================================================ */
+
+.network-legend {
+  position: absolute;
+  left: var(--space-3);
+  bottom: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface-raised);
+  border: var(--border-thin) solid var(--color-border-faint);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--type-caption-size);
+  color: var(--color-text-faint);
+}
+
+.network-legend > div {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.network-legend dt {
+  display: flex;
+  align-items: center;
+  width: 34px;
+}
+
+.network-legend svg {
+  width: 34px;
+  overflow: visible;
+}
+
+/* The legend swatch is a pill outline, so it needs the dash without the fill
+   games the real node does. */
+.nwnode-legend-dashed {
+  fill: none;
+  stroke-dasharray: var(--space-1) var(--space-1);
+  rx: var(--radius-xs);
+}
+
+/* ============================================================
+   Footnote
+   ============================================================ */
+
+.network-note {
+  margin-top: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--type-control-size);
+  color: var(--color-text-faint);
+}
+
+.network-note strong {
+  color: var(--color-text-muted);
+}
+
+/* ============================================================
+   Responsive (390px pass)
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .network-page {
+    height: auto;
+    padding: var(--space-3) var(--space-3) var(--space-4);
+  }
+
+  .network-viewport {
+    height: var(--tree-viewport-mobile-height);
+    flex: none;
+  }
+
+  /* Tap targets: the zoom buttons are the accessibility floor on touch too,
+     so they grow rather than shrink. */
+  .network-zoom button {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* The legend costs vertical space the graph needs more; it stays, but
+     tightened. */
+  .network-legend {
+    font-size: var(--type-caption-size);
+    padding: var(--space-1) var(--space-2);
+  }
+}

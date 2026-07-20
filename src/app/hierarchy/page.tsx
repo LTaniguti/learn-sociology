@@ -10,6 +10,7 @@ import {
 } from "../../../lib/content";
 // Shell / badge / chip styles live with the node route (see CourseView).
 import "@/app/node/[slug]/node-page.css";
+import "@/components/preview/preview-card.css";
 import "@/components/hierarchy/hierarchy-canvas.css";
 
 // Mode 2 hierarchy view — the node-and-edge canvas (Phase 3.2). The tree's
