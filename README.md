@@ -39,7 +39,7 @@ The proof of concept is live with Modes 1, 2 and 3. The current focus is **conte
 Near term:
 - Content push — stub nodes → published lessons ready for peer review 
 - Structured "Perspectives" rendering — paradigm columns driven by content-pipeline hooks
-- A testing/QA system for course content quality
+- Mode 4: sociologist profiles and citation network
 
 Further out:
 - Mode 4: sociologist profiles and citation network
