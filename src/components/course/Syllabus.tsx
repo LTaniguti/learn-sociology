@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import LessonCheck from "./LessonCheck";
+import ModuleProgress from "./ModuleProgress";
 import ProgressCount from "./ProgressCount";
 import {
   getSyllabusCollapsed,
@@ -62,7 +63,10 @@ export default function Syllabus({
             className="syllabus-module"
             open={mod.lessons.some((l) => l.slug === currentSlug)}
           >
-            <summary className="syllabus-module-title">{mod.title}</summary>
+            <summary className="syllabus-module-title">
+              <span className="syllabus-module-name">{mod.title}</span>
+              <ModuleProgress slugs={mod.lessons.map((l) => l.slug)} />
+            </summary>
             <ol className="syllabus-lessons">
               {mod.lessons.map((lesson) => (
                 <li key={lesson.slug} className="syllabus-lesson">

@@ -63,10 +63,15 @@
   margin-bottom: var(--space-2);
 }
 
-/* Module header (components.md "Sidebar — module header") */
+/* Module header (components.md "Sidebar — module header"). Flex row so the
+   per-module rollup (4.2) can sit at the trailing edge while the ▸/▾ marker
+   and title hold the leading edge. */
 .syllabus-module-title {
   list-style: none;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   font-family: var(--type-eyebrow-family);
   font-size: var(--type-module-size);
   font-weight: var(--type-eyebrow-weight);
@@ -78,12 +83,17 @@
   transition: background var(--transition-fast);
 }
 
+.syllabus-module-name {
+  min-width: 0;
+}
+
 .syllabus-module-title::-webkit-details-marker {
   display: none;
 }
 
 .syllabus-module-title::before {
-  content: "▸ ";
+  content: "▸";
+  flex: none;
   color: var(--color-text-faint);
 }
 
@@ -97,8 +107,41 @@
 }
 
 .syllabus-module[open] > .syllabus-module-title::before {
-  content: "▾ ";
+  content: "▾";
   color: var(--color-accent);
+}
+
+/* Per-module rollup (4.2): a quiet "n of m" and a thin fill bar, the footer's
+   ProgressCount track/fill scaled down and reused. Trailing edge of the header,
+   visible collapsed or expanded. Mono, un-cased — it is data, not an eyebrow. */
+.module-progress {
+  flex: none;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--type-tag-size);
+  font-weight: var(--type-body-weight);
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--color-text-faint);
+}
+
+.module-progress-track {
+  width: 40px;
+  height: 3px;
+  background: var(--progress-track);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.module-progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--progress-fill);
+  border-radius: var(--radius-sm);
+  transition: width var(--transition-fast);
 }
 
 /* Lesson items */
@@ -130,14 +173,22 @@
   color: var(--color-text-body);
 }
 
-/* … complete ✓ when the LessonCheck decorator is present … */
+/* … complete ✓ when the LessonCheck decorator is present. Completion now reads
+   as state, not a de-emphasis (4.2): the row takes the --state-complete tint,
+   the check leads in --state-complete-mark, the title in --state-complete-text.
+   The row background transitions (see .syllabus-lesson) so mark-complete lands
+   as a quiet swap, instant under prefers-reduced-motion. */
+.syllabus-lesson:has(.lesson-check) {
+  background: var(--state-complete-bg);
+}
+
 .syllabus-lesson:has(.lesson-check)::before {
   content: "✓";
   color: var(--state-complete-mark);
 }
 
 .syllabus-lesson:has(.lesson-check) a {
-  color: var(--state-upcoming-text); /* done & de-emphasised */
+  color: var(--state-complete-text);
 }
 
 /* The decorator glyph itself is redrawn above; keep it for screen readers. */
