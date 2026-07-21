@@ -21,11 +21,15 @@ import "./self-check.css";
 // (the loader filters drafts out of the payload), so this component never has
 // to reason about status.
 //
-// Open-book by design: this is self-assessment, not certification. No gating,
-// no badges, no confetti — the quiz informs, it never marks a lesson complete.
-// Answered state persists via quiz-progress and rehydrates AFTER mount (the
-// LessonCheck no-mismatch pattern): the server HTML and first client render
-// show every question unanswered, matching until storage is read.
+// Open-book by design: this is self-assessment, not certification. No badges,
+// no confetti. As of 4.3 (doctrine reversal from 4.1) a published quiz DOES
+// gate its lesson's completion in course mode — but only by UNLOCKING the
+// MarkCompleteButton once every choice question is correct; this component never
+// marks a lesson complete itself. On /node/[slug] there is no such button, so
+// the quiz is purely informative there. Answered state persists via
+// quiz-progress and rehydrates AFTER mount (the LessonCheck no-mismatch
+// pattern): the server HTML and first client render show every question
+// unanswered, matching until storage is read.
 
 const PARADIGM_LABEL: Record<string, string> = {
   functionalism: "Functionalism",
@@ -43,7 +47,7 @@ export default function SelfCheck({ slug, quiz }: { slug: string; quiz: Quiz }) 
       </h2>
       <p className="self-check-intro">
         A few questions to test yourself. Open-book and device-local — nothing is
-        graded, sent, or counted toward completion.
+        graded elsewhere or sent off your device.
       </p>
 
       <ol className="self-check-list">
@@ -83,6 +87,12 @@ function ChoiceQuestion({
   }, [slug, index]);
 
   const graded = chosen !== null;
+  // Sticky-correct (4.3): a correct answer is terminal for the stored attempt —
+  // no "try again", options disabled, the `why` set stays readable. Retry
+  // renders only on a miss. Re-take/reset belongs to the deferred
+  // spaced-repetition work and is deliberately not offered here.
+  const answeredCorrectly =
+    graded && question.options[chosen].correct === true;
   const paradigm = question.paradigm
     ? PARADIGM_LABEL[question.paradigm] ?? question.paradigm
     : null;
@@ -119,6 +129,7 @@ function ChoiceQuestion({
                 type="button"
                 className={classes.join(" ")}
                 aria-pressed={isChosen}
+                disabled={answeredCorrectly}
                 onClick={() => grade(optIndex)}
               >
                 <span className="self-check-mark" aria-hidden="true">
@@ -139,7 +150,7 @@ function ChoiceQuestion({
         })}
       </ul>
 
-      {graded && (
+      {graded && !answeredCorrectly && (
         <button
           type="button"
           className="self-check-retry"
@@ -184,12 +195,24 @@ function SummaryLine({ slug, total }: { slug: string; total: number }) {
   // Quiet, and only once every choice question has been answered.
   if (score.answered < total) return null;
 
+  // The gate (4.3): only published quizzes render this component, so every
+  // choice question correct means the lesson can now be marked complete. Plain
+  // text acknowledgment — the button enables live; no celebration here.
+  const finished = score.correct === total;
+
   return (
     <p className="self-check-summary" role="status">
       <span className="self-check-score">
         {score.correct} of {total}
       </span>
-      <span className="self-check-score-note"> · self-check · device-local</span>
+      {finished ? (
+        <span className="self-check-score-note">
+          {" "}
+          — you can mark this lesson complete
+        </span>
+      ) : (
+        <span className="self-check-score-note"> · self-check · device-local</span>
+      )}
     </p>
   );
 }

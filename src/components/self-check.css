@@ -121,6 +121,13 @@
   cursor: default;
 }
 
+/* Sticky-correct (4.3) disables the option buttons once a question is answered
+   correctly — a correct answer is terminal. Keep the graded look exactly as
+   designed; no UA dimming. */
+.self-check-option:disabled {
+  opacity: 1;
+}
+
 /* Correct option revealed on grading — the --state-complete green shared with
    the prerequisite chips, syllabus rows, and canvas pills (one meaning, one
    family). The ✓ mark is the non-colour cue. */
