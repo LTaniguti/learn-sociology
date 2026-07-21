@@ -206,3 +206,11 @@ discipline (a schema proven only against placeholders is unproven):
 No rule had to *bend* to ship the two real quizzes beyond finding (1), which was
 resolved rather than worked around. Findings (2) and (3) are shape observations,
 not blockers.
+
+**4.3 doctrine note (schema unchanged).** 4.1's "a quiz result never gates lesson
+completion" was **reversed by owner decision in 4.3**: a `status: published` quiz
+now **gates** its lesson's completion in course mode (it *unlocks* the
+mark-complete button once every `choice` question is answered correctly; it never
+auto-marks). The schema itself is untouched — but `status: published` now carries
+a second meaning worth naming: it is also the **gate trigger**. Publishing a quiz
+makes it required for that lesson's completion.

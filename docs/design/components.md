@@ -64,7 +64,7 @@ One shape, mirrored: the syllabus toggle hugs the sidebar's right edge (`align-s
 
 ## Sidebar — lesson item
 Font `--type-body-family` 14px; padding `8px 11px`; radius `--radius-sm`.
-- **Complete (upgraded 4.2):** completion reads as *state*, not a de-emphasis. Leading `✓` in `--state-complete-mark`; **row background `--state-complete-bg`**; label `--state-complete-text` — the same `--state-complete-*` family as the prerequisite chips and the canvas pills. (Was: dimmed `--state-upcoming-text` with no fill.) The row already transitions `background var(--transition-fast)`, so mark-complete lands as a quiet tint while the module fill advances over the same `--transition-fast`. **That row-tint + fill-advance is the entire animation budget** for completion — no confetti, no pulse; the reward register stays with gamification's future phase. Under `prefers-reduced-motion` the global `transition:none` rule swaps every state instantly. `LessonCheck` is **kept as the glyph renderer** — a visually-hidden `.lesson-check` span the row's `:has()` selector keys off — so the write path and the `PROGRESS_EVENT` wiring are untouched; only the CSS treatment changed.
+- **Complete (upgraded 4.2, reworked 4.3):** completion reads as *state*, not a de-emphasis. The leading mark is now the drawn **[completion seal](#completion-seal-43)** (was a text `✓` in `--state-complete-mark`); **row background `--state-complete-bg`**; label `--state-complete-text` — the same `--state-complete-*` family as the prerequisite chips and the canvas pills. (Was: dimmed `--state-upcoming-text` with no fill.) The row already transitions `background var(--transition-fast)`, so mark-complete lands as a quiet tint while the module fill advances over the same `--transition-fast`. **That row-tint + fill-advance is the entire animation budget** for completion — no confetti, no pulse; the reward register stays with gamification's future phase. Under `prefers-reduced-motion` the global `transition:none` rule swaps every state instantly. `LessonCheck` is **kept as the mark renderer** — as of 4.3 it renders the seal SVG inside the `.lesson-check` span (moved to the leading edge via `order:-1`; `--seal-ink` = the sidebar paper `--color-surface-sunken`), and the row's `:has()` selector still keys off that span. The **current** row keeps `●` winning over the seal (the seal is hidden on `aria-current` rows, 4.2 precedence). Write path and `PROGRESS_EVENT` wiring untouched.
 - **Current:** leading `●` in `--state-current-bar`; label `--state-current-text` weight 600; background `--state-current-bg`; left bar `--border-accent solid --state-current-bar`, radius `0 --radius-sm --radius-sm 0`. **Current wins over complete** (higher `:has()` specificity): the current lesson keeps its amber bar even when also complete, with the `✓` preserved.
 - **Upcoming:** leading `○` in `--state-upcoming-mark`; label `--color-text-body`.
   - *Hover (any non-current):* background `--color-surface-hover`.
@@ -96,7 +96,7 @@ Base: background `--tree-node-bg`; border `--border-thin var(--tree-node-border)
 - **Collapsed with descendants:** trailing count badge (e.g. `+5`) — `--font-mono` `--type-caption-size`, `--tree-badge-text`, border `--border-thin var(--tree-badge-border)`, radius `--radius-pill`. The badge **is** the expand control; the leading `−` is the collapse control. Both carry an invisible `.hcnode-hit` rect sized for touch.
 - **Leaf (paradigm children):** leading paradigm dot `--paradigm-dot-size` (`--paradigm-*`) + label. Leaves with no paradigm tag fall back to `--tree-badge-border`.
 - **Non-published (stub/draft/review):** the pill's stroke goes dashed (`stroke-dasharray: var(--space-1) var(--space-1)`) — the honesty treatment carried over from the draft banner. Status is never conveyed by colour alone.
-- **Completed (4.2):** a completed node reads as done. Fill `--state-complete-bg`, border `--state-complete-border`, label `--state-complete-text` — the one `--state-complete-*` green shared with the syllabus, the prerequisite chips, and the network canvas (one meaning, one family, every surface). **Non-hue cue:** a `✓` check stamp (`--state-complete-mark`, the syllabus `✓` vocabulary) in the pill's **top-trailing corner** — kept clear of the leading paradigm dot / expand glyph, and identical on the network canvas. The corner check (a shape, presence/absence) is the cue that survives colour-vision deficiency; colour never carries completion alone. Paint only — completion feeds no layout, so the deterministic fingerprint is identical with progress present or absent. Completion is read after mount and re-read on `PROGRESS_EVENT` (the `LessonCheck` pattern), so it lights without a reload and the empty first render matches the server's. `aria-hidden` on the check — completion is announced in the course view, not re-spoken per pill.
+- **Completed (4.2):** a completed node reads as done. Fill `--state-complete-bg`, border `--state-complete-border`, label `--state-complete-text` — the one `--state-complete-*` green shared with the syllabus, the prerequisite chips, and the network canvas (one meaning, one family, every surface). **Non-hue cue:** the drawn **[completion seal](#completion-seal-43)** (4.3; was a text `✓` stamp) in the pill's **top-trailing corner** — kept clear of the leading paradigm dot / expand glyph, and identical on the network canvas. Its `--seal-ink` is the canvas fill `--tree-canvas-bg`; `size=15` (canvas stamp). The corner seal (a shape, presence/absence) is the cue that survives colour-vision deficiency; colour never carries completion alone. Paint only (`pointer-events:none`) — completion feeds no layout, so the deterministic fingerprint is identical with progress present or absent. Completion is read after mount and re-read on `PROGRESS_EVENT` (the `LessonCheck` pattern), so it lights without a reload and the empty first render matches the server's. `aria-hidden` on the check — completion is announced in the course view, not re-spoken per pill.
   - **State interplay** (cascade order in `hierarchy-canvas.css`): completed is placed *after* `expanded` (a completed parent — the root is a lesson — keeps its green) and *before* `previewed` / `focus` (selecting a completed pill still swaps its border to the selection edge / focus ring; completion never swallows the selection cue). Fill+border only, so the non-published dash (a different property) still shows through: a completed-but-unpublished node is green + dashed + check. On the amber lineage path, the pill stays green + check while its edge goes `--color-edge-active`. None of these pairs become ambiguous.
 - **Previewed (selected):** stroke → `--tree-node-open-border`, held while the card is up (ordered after the completed rule, so selection wins the border over a completed pill).
 - *Hover:* fill `--color-surface-hover`; raises the preview card (desktop, 150ms grace period on exit so the pointer can cross the gap into the card).
@@ -134,7 +134,7 @@ Same rendering contract as the hierarchy: SVG-in-DOM, **d3 computes, React rende
   - **Per-ring, data-driven radii** (`minRingGap 260`, `sepGapArc 44`, `closeGap 0.06`). Each ring's radius is computed from its own angular gaps and pill widths: the minimum radius at which no adjacent pair overlaps (`angularGap × r ≥ (wᵃ + wᵇ)/2 + sepGapArc` — the chord ≈ arc bound, binding near the 12/6-o'clock seams), floored at `radius(d−1) + minRingGap` so rings never crowd each other radially. Pure function of the deterministic angles/widths. **Resolved radii: ring 1 = 517, ring 2 = 1035, ring 3 = 1552** (vs 3.5's 600 / 1200 / 1800); ring 1 (10 nodes) lands far closer in, ring 2 (30 nodes) is the binding ring. **Settled extent ~3153 × 2903** (desktop `padding 80`) / **~3073 × 2823** (mobile `padding 40`), down from ~3744 × 3576. Zero pill overlaps ring by ring (verified pair-by-pair as the acceptance test, not just the arc heuristic). Ring guides are drawn from the node radii, so they move to the computed radii automatically.
 - **Effect ordering (3.6 P0 fix).** The d3-zoom behaviour is registered in a `useLayoutEffect` declared **before** the initial-view layout effect, because layout effects run in declaration order and the initial view calls `applyTransform`, which must find `zoomRef.current` already set to seed d3's internal `__zoom` to match the render. In 3.5 the registration was a *passive* effect (runs after layout effects), so the initial view hit `applyTransform`'s silent fallback, d3 stayed at identity, and the first wheel/drag/pinch gesture snapped the view toward identity — the "first-scroll teleport." The **silent fallback is removed**: if the behaviour is missing when a transform is applied, `applyTransform` fails loudly in dev (`console.error`) rather than desync quietly, which makes the whole class of drift bug impossible to reintroduce.
 - **Surface, node pill, dashed non-published treatment, preview card:** identical to the hierarchy canvas — same tokens, same rules. Nodes carry a paradigm dot when tagged. There is no count badge and no expand affordance; a graph has no collapse.
-- **Completed (4.2):** identical to the hierarchy canvas — `--state-complete-bg`/`--state-complete-border`/`--state-complete-text` pill with the same `✓` corner stamp (`--state-complete-mark`), one meaning across both canvases. Paint only (layout untouched; the deterministic fingerprint is unchanged with progress present or absent), read after mount and re-read on `PROGRESS_EVENT`. Cascade order in `network-canvas.css`: completed sits *after* hover/neighbour (a completed neighbour keeps its green) and *before* `selected`/`focused`, so **selecting a completed pill still takes the amber selection surface** and the focus ring — the check persists, so completion stays legible under selection. The corner check is legible at `fit` zoom and 1:1.
+- **Completed (4.2, reworked 4.3):** identical to the hierarchy canvas — `--state-complete-bg`/`--state-complete-border`/`--state-complete-text` pill with the same drawn **[completion seal](#completion-seal-43)** corner stamp (`--seal-ink` = `--tree-canvas-bg`, `size=15`), one meaning across both canvases. Paint only (`pointer-events:none`; layout untouched; the deterministic fingerprint is unchanged with progress present or absent), read after mount and re-read on `PROGRESS_EVENT`. Cascade order in `network-canvas.css`: completed sits *after* hover/neighbour (a completed neighbour keeps its green) and *before* `selected`/`focused`, so **selecting a completed pill still takes the amber selection surface** and the focus ring — **the seal persists** (a sibling of the box, unaffected by the fill swap), so completion stays legible under selection. The seal is legible at `fit` zoom and 1:1.
 - **Selection is the one amber moment.** The selected pill takes `--tree-node-open-bg` / `--tree-node-open-border` and its label goes `--color-text-strong`; its **neighbours** take `--color-surface-hover`; its lineage and incident relationships light amber (see Edges). This is the graph's equivalent of the hierarchy's lit ancestor path — in a network, "where am I" means the local neighbourhood.
 - **Layout is computed client-side only**, behind a mount gate — settling on the server as well would have to agree to the last float, and `Math.cos`/`Math.sin` are not required to be correctly rounded.
 
@@ -260,7 +260,9 @@ the token set, and recorded as the spec of record. Component `SelfCheck.tsx` +
   reads as a lesson section, not an island. Heading "Self-check" reuses the
   article's mono `##` eyebrow register (`--type-h2-mono-*`, `--color-text-muted`).
   Intro line: mono `--type-tag-size` `--color-text-faint`, stating open-book +
-  device-local + not-counted.
+  device-local + not-sent. (Was "not counted toward completion" in 4.1; dropped
+  in 4.3 because a published quiz now **does** gate completion in course mode —
+  see *The completion gate* below.)
 - **Choice question.** Prompt in serif `--type-body-*` `--color-text-strong`.
   Options are **real `<button>`s** (keyboard-reachable, the global focus ring
   applies): `--color-surface-sunken` fill, `--color-border-input` edge,
@@ -274,7 +276,13 @@ the token set, and recorded as the spec of record. Component `SelfCheck.tsx` +
     register (`--diff-advanced-text` / `--diff-advanced-border`) with a `✗` mark.
     **Colour never carries state alone** — the `✓`/`✗` glyph is the non-hue cue.
   - **"Try again"** (mono control pill, `--color-border-input`) clears that one
-    question's stored attempt and returns it to the answerable state.
+    question's stored attempt and returns it to the answerable state. **Sticky-
+    correct (4.3):** it renders **only on an incorrectly-answered question**. A
+    correct answer is **terminal** for the stored attempt — the option `<button>`s
+    are `disabled`, the `why` set stays readable, and there is no retry. A learner
+    cannot re-test a question already answered correctly; **re-take / reset is
+    deliberately not offered** here (it belongs to the deferred spaced-repetition
+    work and must not be improvised as a "reset quiz" button).
 - **Paradigm attribution chip** (improvisation). When a question's `paradigm`
   field is non-null, an "According to {paradigm}" chip sits above the prompt in
   the amber tag-chip treatment (`--color-accent` on `--color-border-accent`,
@@ -286,26 +294,108 @@ the token set, and recorded as the spec of record. Component `SelfCheck.tsx` +
   `:focus-visible`), and a mono `--color-text-faint` notice that the text is
   **never stored or sent**. Confirmed: typing writes nothing to any storage key.
 - **Summary line** (improvisation). Once **every** choice question is answered, a
-  quiet mono line "`{correct} of {total}` · self-check · device-local"
-  (`--color-text-meta-warm` score, `--color-text-faint` note) above a subtle
-  divider. **No confetti, no badges, no gating** — the reward register stays with
-  the future gamification phase; this line is data, not a trophy.
+  quiet mono line "`{correct} of {total}`" (`--color-text-meta-warm` score). When
+  not all correct it trails "· self-check · device-local" (`--color-text-faint`);
+  when **all correct** it instead acknowledges the gate — "`{n} of {n}` — you can
+  mark this lesson complete" — plain text, no celebration. **No confetti, no
+  badges** — the reward register stays with the future gamification phase; this
+  line is data, not a trophy.
+- **The completion gate (4.3 — doctrine reversal).** 4.1 established "a quiz
+  result never marks a lesson complete; the quiz informs, it does not gate," and
+  deferred quiz-gated completion. **The owner deliberately reversed this in 4.3.**
+  The gate below is the new doctrine; a future phase must not "restore" the old
+  rule. In **course mode**, a lesson **with a published quiz** keeps its
+  `MarkCompleteButton` **locked until the self-check is finished**. On
+  `/node/[slug]` there is no such button, so the quiz stays purely informative
+  there.
+  - **Finished** = **every `choice` question's stored state is `correct: true`**.
+    `reflect` questions never gate (ungraded, never stored). Derived on read by
+    `isQuizFinished(slug, choiceCount)` in `quiz-progress.ts` — **no stored
+    rollup, no "finished" flag** (the completion invariant holds for quiz state
+    too). A reflect-only quiz (`choiceCount === 0`) does not gate. With
+    sticky-correct, finished is monotonic within the stored attempt.
+  - **Unlock, never auto-mark.** Reaching finished **enables** the button live
+    (`QUIZ_EVENT` fires on every quiz write, so the final correct answer enables
+    it in the same interaction frame — no reload); the learner still clicks.
+    Completion stays a deliberate act; no lesson silently completes mid-quiz.
+  - **Locked treatment.** The button renders `disabled`
+    (`--color-surface-raised` fill, `--color-text-disabled` label,
+    `--color-border` edge, `not-allowed` cursor) with a quiet one-line caption
+    below it in the `--state-*-label` register (`--state-complete-label`,
+    `--type-caption-family` `--type-tag-size`), **not** a warning banner. Copy as
+    shipped: **"Finish the self-check below to mark this lesson complete."**
+  - **Grandfathering.** A lesson **already complete** in storage stays complete
+    and its button stays usable (for unmarking) regardless of quiz state — the
+    gate governs the *act of marking*, not stored history. Unmarking is always
+    allowed. **Re-marking** a grandfathered-then-unmarked lesson goes through the
+    gate like anyone else (acceptable and simpler than tracking provenance).
+  - **Wiring.** `hasPublishedQuiz` is **`getQuiz(slug) !== null`** — the loader's
+    published filter already serves as the gate trigger, so no separate
+    `content.ts` helper was added (the brief allowed one only "if `getQuiz`
+    truthiness doesn't already serve"). `CourseView` (server) passes
+    `hasPublishedQuiz` and the choice-only count into `MarkCompleteButton`, which
+    keys the gate off the same loader, **never off file existence**. Draft quizzes
+    do not render and do not gate.
 - **Storage & independence.** Its own module `src/lib/quiz-progress.ts`, its own
   key `learn-sociology:quiz:v1`, its own `QUIZ_EVENT`. It **never touches
   `progress.ts` or the completion key**: answering a quiz and marking a lesson
-  complete are visibly independent acts, and **a quiz result never marks a
-  lesson complete** (the quiz informs, it does not gate). Corrupt reads → empty.
-  State is read **after mount** and re-read on `QUIZ_EVENT` (the `LessonCheck`
-  no-mismatch pattern), so the server HTML and first client render show every
-  question unanswered and hydration never mismatches.
+  complete remain **separate storage shapes and separate acts** — the gate is
+  **derived** from the two existing stores, adding **no keys and no shape
+  changes**. (The 4.3 gate couples the two *behaviourally* in course mode via
+  `isQuizFinished`, but never in storage.) Corrupt reads → empty. State is read
+  **after mount** and re-read on `QUIZ_EVENT` (the `LessonCheck` no-mismatch
+  pattern), so the server HTML and first client render show every question
+  unanswered and hydration never mismatches.
 - **Determinism.** Question and option order render exactly as authored — no
   shuffling anywhere in v1.
 
 **Improvisations introduced here** (no prior token/treatment existed): the
 paradigm-attribution chip; the chosen-wrong state borrowing the clay-red
 advanced-difficulty tokens as the only "error" register in the palette; the
-`self-check` section frame; the summary line. All reuse existing tokens — no new
-tokens were added.
+`self-check` section frame; the summary line; **(4.3)** the completion-gate
+locked-button treatment + caption, and the completion seal (below). All reuse
+existing tokens — **no new tokens were added**.
+
+## Completion seal (4.3)
+
+The single drawn mark for "done", shared by **all four surfaces**: hierarchy
+pills, network pills, syllabus rows, and the `MarkCompleteButton` completed
+state. It **replaces the 4.2 text `✓` glyph**, which read cheap against designed
+surfaces and rendered inconsistently across font stacks. The concept (a non-hue
+completion cue — the CVD rule) was right; the glyph was the defect.
+
+- **One source of truth.** `src/components/CompletionSeal.tsx` — one component,
+  one geometry, consumed by every surface. "Done" gets exactly one face.
+- **Geometry.** An `<svg viewBox="0 0 20 20">`: a disc (`<circle>` r=9, filled
+  `--state-complete-mark`) carrying a check (`<path>`, `stroke-width` 2.25,
+  **rounded caps and joins**) in the surface's own background token. The check
+  colour is `var(--seal-ink)` — each surface sets it so the check reads as **cut
+  out of the disc**: **syllabus** paper `--color-surface-sunken`; **canvas
+  pills** canvas fill `--tree-canvas-bg`; **button** the completed fill
+  `--state-complete-bg` (default `--color-surface`).
+- **Sizes.** Two variants scale the *same* geometry: **canvas stamp** `size=15`
+  user units (top-trailing corner, `x=node.width-18 y=3`; legend swatch
+  `size=10`); **row / button mark** `≈14px` (syllabus `width/height:
+  --type-lesson-size`; button `1.05em`, `≈12px`). Reported per the brief.
+- **Placement** holds from 4.2: top-trailing corner on canvas pills (clear of the
+  leading paradigm dot / collapse glyph), leading edge on syllabus rows
+  (`order:-1`).
+- **Interplay re-verified (4.3)** with the new mark, all three themes, `fit` zoom
+  and 1:1: complete × dashed-non-published (seal + dash coexist); × selected
+  (amber wins the fill, **seal persists** — it is a sibling of the box); × focus
+  ring; × amber lineage path. The **midnight faint-tint** finding from 4.2 stands
+  as flagged — the seal carrying the meaning where the tint is faint is **by
+  design**; the token is deliberately not patched in this phase.
+- **Scope divergence (recorded).** The prerequisite chips in the "Before this
+  lesson" callout (`node-page.css`) were **out of 4.3 scope** and still draw a
+  text `✓` via their own `::before`. `LessonCheck` renders the seal into its span
+  on every surface, but that span stays visually hidden in the prereq context, so
+  the prereq mark is unchanged. A future phase may bring the prereq chip onto the
+  seal for full consistency.
+- **`aria-hidden`** on every seal; the surrounding markup carries the spoken
+  state (the syllabus `.lesson-check` span's `aria-label="completed"`, the
+  button's "Completed" text, the canvas node's label). Paint only — feeds no
+  layout, so the canvas fingerprint is identical with progress present or absent.
 
 ---
 

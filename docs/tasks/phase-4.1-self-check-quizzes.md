@@ -19,7 +19,7 @@ Tokens + hex grep (`public/giscus` exempt); improvisations reported for `compone
 1. **Schema design principle 3:** the ten-field frontmatter budget is spent. Quizzes therefore live in **companion files**, not frontmatter — `content/quizzes/<slug>.yml`, where `<slug>` is the node's filename ID. "The filename is the ID" extends: a quiz belongs to exactly the node whose slug it bears. Quizzes are optional per node.
 2. **Design principle 4:** a quiz file must make sense viewed raw on GitHub — plain YAML, prose-like prompts, no encoding tricks.
 3. **Multi-perspective by design, at the question level:** **no question may grade a paradigm-contested claim as simply correct.** Contested content must either carry paradigm attribution in the prompt ("According to conflict theory, …" — structurally, via the `paradigm:` field) or be posed as an ungraded `reflect` question. This is the quiz-level counterpart of the body's `## Perspectives` heading. The linter cannot verify it mechanically; it is an authoring rule enforced editorially (Item 1's checklist) and at review.
-4. **`progress.ts` is the sole owner of its storage shape.** Quiz state gets its own module and key. **Quiz results never auto-mark a lesson complete** — completion remains the learner's manual act (`MarkCompleteButton`); the quiz informs, it does not gate.
+4. **`progress.ts` is the sole owner of its storage shape.** Quiz state gets its own module and key. **Quiz results never auto-mark a lesson complete** — completion remains the learner's manual act (`MarkCompleteButton`); the quiz informs, it does not gate. **[Partially reversed in 4.3 by owner decision:** a published quiz now **gates** completion in course mode — but only by *unlocking* `MarkCompleteButton`; it still never *auto-marks*, and quiz state still has its own module/key (the gate is derived, no storage change). The storage-ownership half of this constraint stands; the "does not gate" half was deliberately overturned. See `phase-4.3-quiz-gate-and-seal.md`.**]**
 
 ## Item 1 — Quiz schema (`docs/quiz-schema.md` + the format itself)
 
@@ -126,7 +126,7 @@ Commit: `Docs: quiz system — schema cross-refs, components entry, contributor 
 
 ## Explicitly deferred (name them in the report so they stay deferred)
 
-Multi-select and true/false question types; option shuffling; attempt history and spaced repetition; cross-node review decks; points/streaks/badges; quiz-gated completion; any server or account dependency; completing the placeholder quizzes (that is the content phase's work, tracked there).
+Multi-select and true/false question types; option shuffling; attempt history and spaced repetition; cross-node review decks; points/streaks/badges; ~~quiz-gated completion~~ **(implemented in 4.3 — owner reversed the deferral; the gate unlocks, never auto-marks)**; any server or account dependency; completing the placeholder quizzes (that is the content phase's work, tracked there).
 
 ## Verification (the whole gate, in order)
 

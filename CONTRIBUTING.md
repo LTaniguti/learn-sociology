@@ -40,6 +40,10 @@ self-assessment, not a test.
 - **Placeholders** are welcome: a `status: draft` file with one `PLACEHOLDER —`
   `choice` and one `reflect` passes the linter and reserves the slot. Only
   `published` quizzes render on the site.
+- **Publishing gates completion (since 4.3):** setting a quiz to `status:
+  published` makes finishing it **required** to mark that lesson complete in the
+  course view (the learner must answer every `choice` question correctly before
+  the mark-complete button unlocks) — so publish deliberately.
 - **Lint before you push:** `npm run lint:content` validates quizzes alongside
   nodes.
 
