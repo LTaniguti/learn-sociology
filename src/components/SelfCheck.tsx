@@ -11,8 +11,10 @@ import {
   setAnswer,
   clearAnswer,
   scoreFor,
+  isQuizFinished,
   QUIZ_EVENT,
 } from "@/lib/quiz-progress";
+import { isComplete, setComplete } from "@/lib/progress";
 import "./self-check.css";
 
 // Self-check quiz (Phase 4.1), rendered below the lesson body on BOTH hosts of
@@ -22,14 +24,29 @@ import "./self-check.css";
 // to reason about status.
 //
 // Open-book by design: this is self-assessment, not certification. No badges,
-// no confetti. As of 4.3 (doctrine reversal from 4.1) a published quiz DOES
-// gate its lesson's completion in course mode — but only by UNLOCKING the
-// MarkCompleteButton once every choice question is correct; this component never
-// marks a lesson complete itself. On /node/[slug] there is no such button, so
-// the quiz is purely informative there. Answered state persists via
-// quiz-progress and rehydrates AFTER mount (the LessonCheck no-mismatch
-// pattern): the server HTML and first client render show every question
-// unanswered, matching until storage is read.
+// no confetti. Doctrine has moved three times: 4.1 said a quiz never gates; 4.3
+// made it gate but kept completion a deliberate click (it UNLOCKED the button);
+// 4.4 makes a published choice-quiz THE completion mechanism — the moment every
+// choice question is stored correct, this component marks the lesson complete
+// itself, through the lib/progress setter (no new storage, no "finished" flag).
+// The invariant "isQuizFinished ⇒ complete" is enforced at two points below (see
+// the mastery effect): the flip on the final correct answer, and a mount
+// reconciliation that heals any historical hole (a 4.3-era learner who finished
+// but never clicked, or finished-then-unmarked). Because SelfCheck renders on
+// BOTH hosts, mastery completion now works from /node/[slug] too — a graph-
+// arrival learner can complete a lesson without ever opening the course view.
+//
+// Reflect-only published quizzes (choiceCount === 0) are the exception: finished
+// would be vacuously true, so auto-completing on mount would be wrong. Such a
+// lesson stays in MANUAL mode (the effect no-ops, the course view keeps the
+// button). Grandfathering is one-directional: this effect only ever WRITES
+// completion, never removes it — a lesson marked complete before its quiz was
+// published stays complete; the quiz just shows its own answered state.
+//
+// Answered state persists via quiz-progress and rehydrates AFTER mount (the
+// LessonCheck no-mismatch pattern): the server HTML and first client render show
+// every question unanswered, matching until storage is read. The mastery effect
+// is likewise a post-mount localStorage read, so it raises no hydration mismatch.
 
 const PARADIGM_LABEL: Record<string, string> = {
   functionalism: "Functionalism",
@@ -39,6 +56,31 @@ const PARADIGM_LABEL: Record<string, string> = {
 
 export default function SelfCheck({ slug, quiz }: { slug: string; quiz: Quiz }) {
   const choiceCount = quiz.questions.filter((q) => q.type === "choice").length;
+
+  // The mastery invariant (4.4): for a published choice-quiz lesson,
+  // isQuizFinished ⇒ marked complete. Enforced here, on both hosts.
+  //   • The flip — QUIZ_EVENT fires on every quiz write, so the final correct
+  //     answer transitions finished false→true and marks in the same frame;
+  //     PROGRESS_EVENT then propagates to the syllabus, module fill, and both
+  //     canvases with no reload.
+  //   • Mount reconciliation — the same check runs once on mount, healing any
+  //     lesson that was finished but left unmarked (4.3-era, or finished-then-
+  //     unmarked), so the invariant holds unconditionally, not just for post-
+  //     deploy interactions.
+  // Idempotent by the isComplete guard (marking an already-complete slug is a
+  // no-op). Writes ONLY complete, never removes — grandfathering stays one-way.
+  // Reflect-only quizzes are excluded: choiceCount === 0 keeps the lesson manual.
+  useEffect(() => {
+    if (choiceCount <= 0) return; // reflect-only: manual mode, never auto-complete
+    const reconcile = () => {
+      if (isQuizFinished(slug, choiceCount) && !isComplete(slug)) {
+        setComplete(slug, true);
+      }
+    };
+    reconcile();
+    window.addEventListener(QUIZ_EVENT, reconcile);
+    return () => window.removeEventListener(QUIZ_EVENT, reconcile);
+  }, [slug, choiceCount]);
 
   return (
     <section className="self-check" aria-labelledby="self-check-heading">
@@ -195,9 +237,12 @@ function SummaryLine({ slug, total }: { slug: string; total: number }) {
   // Quiet, and only once every choice question has been answered.
   if (score.answered < total) return null;
 
-  // The gate (4.3): only published quizzes render this component, so every
-  // choice question correct means the lesson can now be marked complete. Plain
-  // text acknowledgment — the button enables live; no celebration here.
+  // Mastery (4.4): only published quizzes render this component, and this line
+  // shows only once every choice question is answered. All correct IS the
+  // completion moment now — the mastery effect above marks the lesson in the
+  // same frame — so the copy reads as done, not as an invitation to click. Plain
+  // text; the celebration is the row tint + module fill (the 4.2 animation
+  // budget still stands), not anything here.
   const finished = score.correct === total;
 
   return (
@@ -208,7 +253,7 @@ function SummaryLine({ slug, total }: { slug: string; total: number }) {
       {finished ? (
         <span className="self-check-score-note">
           {" "}
-          — you can mark this lesson complete
+          — lesson complete
         </span>
       ) : (
         <span className="self-check-score-note"> · self-check · device-local</span>
