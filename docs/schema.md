@@ -48,6 +48,10 @@ modules:
 
 The platform renders Mode 1 by walking this file in order. A build check can verify that no node appears before its `prerequisites` — the manifest and the frontmatter keep each other honest.
 
+> **Completion invariant.** Per-learner state is stored per **node**, never per course, module, or discipline. Every rollup — course %, module counts, a future discipline's progress — is *derived* at read time from a manifest (or tag query) intersected with node progress. A future phase adding courses or disciplines adds manifests and derivations; it must not add stored rollup state. Phases that violate this reopen a storage-migration problem this note exists to prevent.
+
+In code, the single derivation is `completionFor(slugs)` in `src/lib/progress.ts`; every rollup (the course footer, each module's "n of m", and later a discipline's progress — `completionFor(nodes tagged discipline/x)`) routes through it. The storage shape (`learn-sociology:progress:v1`, flat slug → bool) and key are frozen; expansion is more manifests and more calls, never a new stored field.
+
 ## Network placement (Mode 3)
 
 A node's position in Mode 3's network is **derived, not stored**. As of the 3.4 radial layout, the map is concentric: an editorially pinned core (`society`) sits at the centre, and every other node lands on a ring by its **distance from the core** — the number of hops along the undirected union of its `prerequisites` and `related` edges (a breadth-first depth). The innermost ring is one hop out, and each ring outward is one more degree of separation.

@@ -45,7 +45,18 @@ export function setComplete(slug: string, complete: boolean): void {
   window.dispatchEvent(new Event(PROGRESS_EVENT));
 }
 
-export function countComplete(slugs: string[]): number {
+// The single completion-rollup derivation (Phase 4.2 invariant, docs/schema.md).
+// Completion is stored per *node* and never per course, module, or discipline;
+// every rollup — the course footer, a module's "n of m", and a future
+// discipline's progress (`completionFor(nodes tagged discipline/x)`) — is
+// derived here from a slug list intersected with node progress. Expansion is
+// more manifests and more calls to this function, never new stored state. No
+// consumer may count completion outside this function.
+export function completionFor(slugs: string[]): { done: number; total: number } {
   const progress = getProgress();
-  return slugs.filter((slug) => progress[slug] === true).length;
+  let done = 0;
+  for (const slug of slugs) {
+    if (progress[slug] === true) done += 1;
+  }
+  return { done, total: slugs.length };
 }
