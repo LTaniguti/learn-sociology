@@ -177,14 +177,12 @@
   stroke: var(--tree-node-open-border);
 }
 
-/* The non-hue completion cue: a check stamp, the syllabus ✓ vocabulary, in the
-   top-trailing corner clear of the leading paradigm dot / expand glyph. */
-.hcnode-check {
-  font-family: var(--font-mono);
-  font-size: var(--type-caption-size);
-  fill: var(--state-complete-mark);
-  dominant-baseline: central;
-  text-anchor: middle;
+/* The non-hue completion cue (4.3): the drawn completion seal in the pill's
+   top-trailing corner, clear of the leading paradigm dot / expand glyph. The
+   check punches to the canvas fill; the disc carries --state-complete-mark
+   (set in globals). Paint only, so it never intercepts a pill click. */
+.hcnode-seal {
+  --seal-ink: var(--tree-canvas-bg);
   pointer-events: none;
 }
 

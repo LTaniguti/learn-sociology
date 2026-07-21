@@ -182,22 +182,40 @@
   background: var(--state-complete-bg);
 }
 
+/* Complete: the drawn seal (LessonCheck) is the leading mark now, so the
+   pseudo-glyph steps aside. The current-row rule below still wins with ● when
+   the open lesson is also complete (higher specificity), and hides the seal. */
 .syllabus-lesson:has(.lesson-check)::before {
-  content: "✓";
-  color: var(--state-complete-mark);
+  content: none;
 }
 
 .syllabus-lesson:has(.lesson-check) a {
   color: var(--state-complete-text);
 }
 
-/* The decorator glyph itself is redrawn above; keep it for screen readers. */
+/* The seal itself (4.3): moved to the leading edge (order:-1), the position the
+   pseudo-mark held, and sized to the lesson type. Its check punches to the
+   sidebar paper. Was visually hidden in 4.2 (text ✓ came from ::before). */
 .syllabus-lesson .lesson-check {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
+  order: -1;
+  flex: none;
+  align-self: center;
+  width: var(--type-lesson-size);
+  height: var(--type-lesson-size);
+  line-height: 0;
+  --seal-ink: var(--color-surface-sunken);
+}
+
+.syllabus-lesson .lesson-check .completion-seal {
+  width: 100%;
+  height: 100%;
+  vertical-align: baseline;
+}
+
+/* The current lesson: ● wins over the seal (4.2 precedence). Hide the seal so
+   the row shows one mark. */
+.syllabus-lesson:has(a[aria-current="page"]) .lesson-check {
+  display: none;
 }
 
 /* … current ● wins over both. */
@@ -275,8 +293,18 @@
 }
 
 /* Mark complete — the screen's single amber action (rule 3) */
+.mark-complete-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: flex-start;
+}
+
 .mark-complete {
   align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
   font-family: var(--font-mono);
   font-size: var(--type-control-size);
   background: var(--color-accent);
@@ -297,6 +325,34 @@
   background: var(--state-complete-bg);
   color: var(--state-complete-text);
   border-color: var(--state-complete-border);
+}
+
+/* The completion seal on the button's done state punches to the button fill. */
+.mark-complete-seal {
+  width: 1.05em;
+  height: 1.05em;
+  --seal-ink: var(--state-complete-bg);
+}
+
+/* Gated + unfinished (4.3): the button is disabled, not hidden — the learner
+   sees the action and why it is not yet available. Quiet, not a warning. */
+.mark-complete:disabled {
+  background: var(--color-surface-raised);
+  color: var(--color-text-disabled);
+  border-color: var(--color-border);
+  cursor: not-allowed;
+}
+
+.mark-complete:disabled:hover {
+  background: var(--color-surface-raised);
+}
+
+/* The locked caption: --state-*-label register (a caption, not a banner). */
+.mark-complete-hint {
+  font-family: var(--type-caption-family);
+  font-size: var(--type-tag-size);
+  color: var(--state-complete-label);
+  margin: 0;
 }
 
 /* Prev/Next cards */

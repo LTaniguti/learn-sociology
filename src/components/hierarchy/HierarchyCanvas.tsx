@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import PreviewCard from "../preview/PreviewCard";
+import CompletionSeal from "@/components/CompletionSeal";
 import { getProgress, PROGRESS_EVENT } from "@/lib/progress";
 import {
   DESKTOP_GEOMETRY,
@@ -393,14 +394,17 @@ export default function HierarchyCanvas({ root }: { root: HierarchyNode }) {
           </g>
         )}
         {isComplete && (
-          // Non-hue completion cue: a check stamp in the pill's top-trailing
-          // corner (matching the syllabus check's ✓ vocabulary), clear of the
-          // leading paradigm dot and expand glyph. Identical on the network
-          // canvas. aria-hidden — completion is spoken by the course view, not
+          // Non-hue completion cue: the drawn completion seal (4.3) in the
+          // pill's top-trailing corner, clear of the leading paradigm dot and
+          // expand glyph. One geometry, shared with the syllabus, network, and
+          // button. aria-hidden — completion is spoken by the course view, not
           // re-announced per pill here.
-          <text className="hcnode-check" x={node.width - 11} y={11} aria-hidden="true">
-            ✓
-          </text>
+          <CompletionSeal
+            className="hcnode-seal"
+            x={node.width - 18}
+            y={3}
+            size={15}
+          />
         )}
       </g>
     );
@@ -433,9 +437,12 @@ export default function HierarchyCanvas({ root }: { root: HierarchyNode }) {
                   width="32"
                   height="12"
                 />
-                <text className="hcnode-check" x="27" y="7">
-                  ✓
-                </text>
+                <CompletionSeal
+                  className="hcnode-seal"
+                  x={22}
+                  y={2}
+                  size={10}
+                />
               </svg>
             </dt>
             <dd>completed</dd>

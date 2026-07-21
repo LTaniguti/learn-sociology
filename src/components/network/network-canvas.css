@@ -213,14 +213,11 @@
   font-weight: var(--type-h2-serif-weight);
 }
 
-/* The non-hue completion cue: the syllabus ✓ in the pill's top-trailing corner,
-   identical to the hierarchy canvas. */
-.nwnode-check {
-  font-family: var(--font-mono);
-  font-size: var(--type-caption-size);
-  fill: var(--state-complete-mark);
-  dominant-baseline: central;
-  text-anchor: middle;
+/* The non-hue completion cue (4.3): the drawn completion seal in the pill's
+   top-trailing corner, identical to the hierarchy canvas. The check punches to
+   the canvas fill. Paint only, so it never intercepts a pill click. */
+.nwnode-seal {
+  --seal-ink: var(--tree-canvas-bg);
   pointer-events: none;
 }
 

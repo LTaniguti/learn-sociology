@@ -67,6 +67,28 @@ summary:focus-visible,
   box-shadow: var(--focus-ring);
 }
 
+/* The completion seal (4.3): one drawn mark for "done", shared by the syllabus
+   rows, both canvases, and the MarkCompleteButton (see CompletionSeal.tsx). The
+   disc is the one completion green; the check is the surface behind the mark, so
+   it reads as cut out of the disc. Each surface sets --seal-ink to its own
+   background (paper, canvas fill, button fill); the default covers any surface
+   that forgets. Paint only — the CVD non-hue cue, never a hue-only signal. */
+.completion-seal {
+  display: inline-block;
+  flex: none;
+  vertical-align: -0.15em;
+  overflow: visible; /* rounded caps sit inside the viewBox, but be safe */
+}
+
+.completion-seal-disc {
+  fill: var(--state-complete-mark);
+}
+
+.completion-seal-check {
+  stroke: var(--seal-ink, var(--color-surface));
+  stroke-width: 2.25;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

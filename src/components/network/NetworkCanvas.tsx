@@ -11,6 +11,7 @@ import {
 import { select } from "d3-selection";
 import { zoom, zoomIdentity, type ZoomBehavior } from "d3-zoom";
 import PreviewCard from "../preview/PreviewCard";
+import CompletionSeal from "@/components/CompletionSeal";
 import { getProgress, PROGRESS_EVENT } from "@/lib/progress";
 import { type GraphData } from "./graph";
 import {
@@ -663,17 +664,15 @@ function NetworkGraph({
               ))}
         </text>
         {isComplete && (
-          // Non-hue completion cue: the same check stamp as the hierarchy canvas,
-          // top-trailing corner, the syllabus ✓ vocabulary. aria-hidden — the
-          // node's aria-label carries status; completion is spoken in the course.
-          <text
-            className="nwnode-check"
-            x={node.width - 11}
-            y={11}
-            aria-hidden="true"
-          >
-            ✓
-          </text>
+          // Non-hue completion cue: the same drawn completion seal (4.3) as the
+          // hierarchy canvas, top-trailing corner. aria-hidden — the node's
+          // aria-label carries status; completion is spoken in the course.
+          <CompletionSeal
+            className="nwnode-seal"
+            x={node.width - 18}
+            y={3}
+            size={15}
+          />
         )}
       </g>
     );
@@ -822,9 +821,12 @@ function NetworkGraph({
                   width="32"
                   height="12"
                 />
-                <text className="nwnode-check" x="27" y="7">
-                  ✓
-                </text>
+                <CompletionSeal
+                  className="nwnode-seal"
+                  x={22}
+                  y={2}
+                  size={10}
+                />
               </svg>
             </dt>
             <dd>completed</dd>
