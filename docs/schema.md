@@ -95,6 +95,17 @@ After the frontmatter, the lesson body uses a consistent set of headings:
 - **Examples** — 1–3 concrete illustrations; sociology concepts land through cases.
 - **Further reading** — external links or primary texts.
 
+## Self-check quizzes (companion files)
+
+A node may carry an optional **self-check quiz** — a small set of questions
+rendered below the lesson body, graded client-side. Quizzes live in a **separate
+file**, `content/quizzes/<slug>.yml`, *not* in node frontmatter: the ten-field
+budget (design principle 3) is spent, so this is precisely how a whole feature
+was added with the node schema left **completely untouched**. Their format,
+field rules, and the quiz-level multi-perspective (contested-claim) rule are
+specified in [`docs/quiz-schema.md`](quiz-schema.md). Per-attempt learner state
+is stored per node under its own key, honouring the *Completion invariant* below.
+
 ## Example frontmatter
 
 ```yaml

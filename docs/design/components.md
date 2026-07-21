@@ -241,6 +241,72 @@ Pill, `--type-badge-*`, radius `--radius-pill`, padding `5px 12px`, border `--bo
 ## Reserved discussion region (deferred — do not build)
 - A dashed placeholder below Examples: border `--border-thin dashed var(--color-border-input)`, radius `--radius-md`, mono `--color-text-disabled` note "// reserved — lesson discussion (Giscus, deferred)". Holds the space; ships empty.
 
+## Self-check quiz (SelfCheck — 4.1)
+
+A quiz surface rendered below the lesson body, inside `NodeArticle` — so it
+appears identically on **both** hosts (`/node/[slug]` and the course lesson
+view). No hi-fi existed; everything here is improvised from `direction.md` and
+the token set, and recorded as the spec of record. Component `SelfCheck.tsx` +
+`self-check.css`; data is server-loaded at build (`getQuiz(slug)` in
+`lib/content.ts`) and passed as a prop — no client fetching on a static export.
+
+- **Published-only render.** The loader returns a quiz **only when `status:
+  published`**; a draft or missing quiz returns `null` and no section renders —
+  not even an empty shell. The filter is in the loader, so **draft quiz content
+  never ships in the page payload** (verified by grepping the export). A
+  `published` quiz on a `stub` node is a lint error, so that case cannot ship.
+- **Section frame.** Top border `--border-thin var(--color-border)`, `--space-8`
+  top margin — the same rule that separates the attribution footer, so the quiz
+  reads as a lesson section, not an island. Heading "Self-check" reuses the
+  article's mono `##` eyebrow register (`--type-h2-mono-*`, `--color-text-muted`).
+  Intro line: mono `--type-tag-size` `--color-text-faint`, stating open-book +
+  device-local + not-counted.
+- **Choice question.** Prompt in serif `--type-body-*` `--color-text-strong`.
+  Options are **real `<button>`s** (keyboard-reachable, the global focus ring
+  applies): `--color-surface-sunken` fill, `--color-border-input` edge,
+  `--radius-md`. *Hover only while unanswered:* `--color-surface-hover` +
+  `--color-border-accent`.
+  - **On select, grade immediately.** The chosen option is marked, the correct
+    option is revealed, and **every option's `why` becomes readable** (wrong-answer
+    rationales are content, not secrets). Correct reveal uses the shared
+    `--state-complete-*` green (the syllabus / prereq-chip / canvas family) with a
+    `✓` mark; the chosen-wrong option uses the clay-red **advanced-difficulty**
+    register (`--diff-advanced-text` / `--diff-advanced-border`) with a `✗` mark.
+    **Colour never carries state alone** — the `✓`/`✗` glyph is the non-hue cue.
+  - **"Try again"** (mono control pill, `--color-border-input`) clears that one
+    question's stored attempt and returns it to the answerable state.
+- **Paradigm attribution chip** (improvisation). When a question's `paradigm`
+  field is non-null, an "According to {paradigm}" chip sits above the prompt in
+  the amber tag-chip treatment (`--color-accent` on `--color-border-accent`,
+  `--radius-xs`) — the visible half of the quiz's contested-claim rule, so the
+  reader sees the question grades a paradigm's reading, not a neutral fact. It
+  reuses the `paradigm/*` tag-chip look; the amber is the same wayfinding accent.
+- **Reflect question.** A "Reflect" label chip (muted, *not* amber — nothing is
+  graded), prompt, a plain `<textarea>` (`--color-surface-sunken`, focus ring on
+  `:focus-visible`), and a mono `--color-text-faint` notice that the text is
+  **never stored or sent**. Confirmed: typing writes nothing to any storage key.
+- **Summary line** (improvisation). Once **every** choice question is answered, a
+  quiet mono line "`{correct} of {total}` · self-check · device-local"
+  (`--color-text-meta-warm` score, `--color-text-faint` note) above a subtle
+  divider. **No confetti, no badges, no gating** — the reward register stays with
+  the future gamification phase; this line is data, not a trophy.
+- **Storage & independence.** Its own module `src/lib/quiz-progress.ts`, its own
+  key `learn-sociology:quiz:v1`, its own `QUIZ_EVENT`. It **never touches
+  `progress.ts` or the completion key**: answering a quiz and marking a lesson
+  complete are visibly independent acts, and **a quiz result never marks a
+  lesson complete** (the quiz informs, it does not gate). Corrupt reads → empty.
+  State is read **after mount** and re-read on `QUIZ_EVENT` (the `LessonCheck`
+  no-mismatch pattern), so the server HTML and first client render show every
+  question unanswered and hydration never mismatches.
+- **Determinism.** Question and option order render exactly as authored — no
+  shuffling anywhere in v1.
+
+**Improvisations introduced here** (no prior token/treatment existed): the
+paradigm-attribution chip; the chosen-wrong state borrowing the clay-red
+advanced-difficulty tokens as the only "error" register in the palette; the
+`self-check` section frame; the summary line. All reuse existing tokens — no new
+tokens were added.
+
 ---
 
 ## Open questions — decided answers

@@ -21,6 +21,28 @@ Before you start writing, **comment on the relevant module Issue** to claim the 
 - **Adapt — never copy — OpenStax material.** Restructure and rewrite it to fit the node, and record the source in the `adapted_from` frontmatter field (e.g. `"OpenStax Introduction to Sociology 3e, Section 3.2"`).
 - Set `status: draft` in your pull request. Maintainer review moves the node through `review` → `published`.
 
+## How to add a self-check quiz
+
+A node may carry an optional **self-check quiz** — a few questions shown below
+the lesson, graded in the browser with immediate feedback. It is
+self-assessment, not a test.
+
+- **File location:** `content/quizzes/<slug>.yml`, where `<slug>` is the node's
+  filename (the quiz belongs to exactly that node). The node schema is untouched
+  — quizzes are companion files.
+- **Format:** follow [`docs/quiz-schema.md`](docs/quiz-schema.md) — `version: 1`,
+  `status: draft | published`, and 1–8 `choice`/`reflect` questions. Every
+  `choice` option needs a `why` (the wrong-answer explanations are where the
+  teaching happens).
+- **The contested-claim rule (most important):** no question may grade a
+  paradigm-contested claim as neutral fact — attribute it (`paradigm:` + "According
+  to conflict theory, …" in the prompt) or make it an ungraded `reflect` question.
+- **Placeholders** are welcome: a `status: draft` file with one `PLACEHOLDER —`
+  `choice` and one `reflect` passes the linter and reserves the slot. Only
+  `published` quizzes render on the site.
+- **Lint before you push:** `npm run lint:content` validates quizzes alongside
+  nodes.
+
 ## Multi-perspective standard
 
 Sociology's major paradigms are competing lenses, not settled facts. Contested topics must present each major paradigm's reading fairly — functionalist, conflict, and interactionist at minimum where they differ — and **no single framing may be presented as neutral fact**.
