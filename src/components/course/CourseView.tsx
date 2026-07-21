@@ -3,6 +3,7 @@ import Shell from "@/components/Shell";
 import NodeArticle from "@/components/NodeArticle";
 import Syllabus, { type SyllabusModule } from "./Syllabus";
 import MarkCompleteButton from "./MarkCompleteButton";
+import LessonStatus from "./LessonStatus";
 import { getAllNodes, getCourse, getQuiz } from "../../../lib/content";
 // The article styles live with the /node route; Mode 1 renders the same
 // article and reuses them (the import is deduplicated by the bundler).
@@ -46,14 +47,20 @@ export default async function CourseView({ slug }: { slug: string }) {
   const prevSlug = flatIndex > 0 ? flat[flatIndex - 1] : null;
   const nextSlug = flatIndex < flat.length - 1 ? flat[flatIndex + 1] : null;
 
-  // The completion gate (4.3): getQuiz already returns null for missing/draft
-  // quizzes (the published filter lives there), so its truthiness IS
-  // hasPublishedQuiz — no separate content.ts helper needed. The choice-only
-  // count is what the gate must reach.
+  // The two modes (4.4). getQuiz already returns null for missing/draft quizzes
+  // (the published filter lives there), so its truthiness IS hasPublishedQuiz —
+  // no separate content.ts helper needed. A lesson is in MASTERY mode when it
+  // has a published quiz with at least one choice question: completion is derived
+  // from that quiz (SelfCheck marks it), so the manual button is replaced by a
+  // status line. Everything else — no quiz, or a reflect-only published quiz
+  // (choiceCount === 0, which would auto-complete vacuously) — stays in MANUAL
+  // mode with the button. The mode split mirrors the SelfCheck mastery effect's
+  // own choiceCount guard, so the two never disagree.
   const quiz = getQuiz(slug);
   const choiceCount = quiz
     ? quiz.questions.filter((q) => q.type === "choice").length
     : 0;
+  const masteryMode = quiz !== null && choiceCount > 0;
 
   return (
     <>
@@ -72,11 +79,11 @@ export default async function CourseView({ slug }: { slug: string }) {
             }
             afterArticle={
               <div className="course-controls">
-                <MarkCompleteButton
-                  slug={slug}
-                  hasPublishedQuiz={quiz !== null}
-                  choiceCount={choiceCount}
-                />
+                {masteryMode ? (
+                  <LessonStatus slug={slug} />
+                ) : (
+                  <MarkCompleteButton slug={slug} />
+                )}
                 <nav className="prev-next" aria-label="Previous and next lessons">
                   {prevSlug ? (
                     <Link

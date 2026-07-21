@@ -2,33 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { isComplete, setComplete, PROGRESS_EVENT } from "@/lib/progress";
-import { isQuizFinished, QUIZ_EVENT } from "@/lib/quiz-progress";
 import CompletionSeal from "@/components/CompletionSeal";
 
-// The single write path for lesson completion. Renders the not-complete state
-// until mounted so static HTML and hydration agree.
-//
-// The quiz gate (4.3, reversing 4.1's "quiz never gates"): a lesson WITH a
-// published quiz keeps this button locked until the self-check is finished
-// (every choice question stored correct). The gate UNLOCKS the button — it
-// never auto-marks; the learner still clicks. Lessons without a published quiz
-// (hasPublishedQuiz false) mark exactly as before. Grandfathering: an already
-// complete lesson keeps a usable button (for unmarking) regardless of quiz
-// state — the gate governs the act of marking, not stored history.
-export default function MarkCompleteButton({
-  slug,
-  hasPublishedQuiz = false,
-  choiceCount = 0,
-}: {
-  slug: string;
-  // Server-known at build (the loader filters drafts, so this keys off the same
-  // published filter, never off file existence). choiceCount is the gradable
-  // total the gate must reach.
-  hasPublishedQuiz?: boolean;
-  choiceCount?: number;
-}) {
+// The manual-mode completion control (Phase 4.4). Renders ONLY for lessons with
+// no published choice-quiz — the course view branches on that and shows a
+// LessonStatus line instead when a lesson is in mastery mode. So by construction
+// this button never has a quiz to gate on: the 4.3 lock (props hasPublishedQuiz
+// /choiceCount, the isQuizFinished effect, the disabled `locked` state and its
+// hint caption) is dead here and was removed. What remains is the plain 4.2
+// toggle — the single write path for manual completion, marking and unmarking
+// freely. Renders the not-complete state until mounted so static HTML and
+// hydration agree.
+export default function MarkCompleteButton({ slug }: { slug: string }) {
   const [complete, setCompleteState] = useState(false);
-  const [finished, setFinished] = useState(false);
 
   useEffect(() => {
     const update = () => setCompleteState(isComplete(slug));
@@ -37,27 +23,12 @@ export default function MarkCompleteButton({
     return () => window.removeEventListener(PROGRESS_EVENT, update);
   }, [slug]);
 
-  useEffect(() => {
-    if (!hasPublishedQuiz) return;
-    // QUIZ_EVENT fires on every quiz write, so the final correct answer enables
-    // the button in the same interaction frame — no reload.
-    const update = () => setFinished(isQuizFinished(slug, choiceCount));
-    update();
-    window.addEventListener(QUIZ_EVENT, update);
-    return () => window.removeEventListener(QUIZ_EVENT, update);
-  }, [slug, hasPublishedQuiz, choiceCount]);
-
-  // Locked only when a published quiz is unfinished AND the lesson is not
-  // already complete (grandfathering keeps the unmark path open).
-  const locked = hasPublishedQuiz && !complete && !finished;
-
   return (
     <div className="mark-complete-wrap">
       <button
         type="button"
         className="mark-complete"
         aria-pressed={complete}
-        disabled={locked}
         onClick={() => setComplete(slug, !complete)}
       >
         {complete ? (
@@ -69,11 +40,6 @@ export default function MarkCompleteButton({
           "Mark complete"
         )}
       </button>
-      {locked && (
-        <p className="mark-complete-hint">
-          Finish the self-check below to mark this lesson complete.
-        </p>
-      )}
     </div>
   );
 }

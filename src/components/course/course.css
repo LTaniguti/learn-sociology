@@ -334,25 +334,39 @@
   --seal-ink: var(--state-complete-bg);
 }
 
-/* Gated + unfinished (4.3): the button is disabled, not hidden — the learner
-   sees the action and why it is not yet available. Quiet, not a warning. */
-.mark-complete:disabled {
-  background: var(--color-surface-raised);
-  color: var(--color-text-disabled);
-  border-color: var(--color-border);
-  cursor: not-allowed;
+/* Mastery-mode status line (4.4): the lesson host swaps the button for this when
+   completion is derived from a published choice-quiz. Same slot, same top
+   register — but no control, since there is nothing to click. It swaps a caption
+   for the seal + label when the quiz flips the lesson complete; the colour
+   transition rides --transition-fast (global reduced-motion makes it instant). */
+.lesson-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  min-height: var(--space-6); /* holds the row height across the caption↔seal swap */
+  transition: color var(--transition-fast);
 }
 
-.mark-complete:disabled:hover {
-  background: var(--color-surface-raised);
-}
-
-/* The locked caption: --state-*-label register (a caption, not a banner). */
-.mark-complete-hint {
+/* Not yet finished: a caption, not a banner and not a disabled control. */
+.lesson-status-caption {
   font-family: var(--type-caption-family);
   font-size: var(--type-tag-size);
+  color: var(--color-text-muted);
+}
+
+/* Finished: the shared completion seal + label, in the --state-complete
+   vocabulary the button's done state and the syllabus rows use. */
+.lesson-status-label {
+  font-family: var(--font-mono);
+  font-size: var(--type-control-size);
   color: var(--state-complete-label);
-  margin: 0;
+}
+
+.lesson-status-seal {
+  width: 1.05em;
+  height: 1.05em;
+  --seal-ink: var(--color-canvas);
 }
 
 /* Prev/Next cards */
