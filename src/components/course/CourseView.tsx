@@ -3,7 +3,7 @@ import Shell from "@/components/Shell";
 import NodeArticle from "@/components/NodeArticle";
 import Syllabus, { type SyllabusModule } from "./Syllabus";
 import MarkCompleteButton from "./MarkCompleteButton";
-import { getAllNodes, getCourse } from "../../../lib/content";
+import { getAllNodes, getCourse, getQuiz } from "../../../lib/content";
 // The article styles live with the /node route; Mode 1 renders the same
 // article and reuses them (the import is deduplicated by the bundler).
 import "@/app/node/[slug]/node-page.css";
@@ -46,6 +46,15 @@ export default async function CourseView({ slug }: { slug: string }) {
   const prevSlug = flatIndex > 0 ? flat[flatIndex - 1] : null;
   const nextSlug = flatIndex < flat.length - 1 ? flat[flatIndex + 1] : null;
 
+  // The completion gate (4.3): getQuiz already returns null for missing/draft
+  // quizzes (the published filter lives there), so its truthiness IS
+  // hasPublishedQuiz — no separate content.ts helper needed. The choice-only
+  // count is what the gate must reach.
+  const quiz = getQuiz(slug);
+  const choiceCount = quiz
+    ? quiz.questions.filter((q) => q.type === "choice").length
+    : 0;
+
   return (
     <>
       <Shell active="course" />
@@ -63,7 +72,11 @@ export default async function CourseView({ slug }: { slug: string }) {
             }
             afterArticle={
               <div className="course-controls">
-                <MarkCompleteButton slug={slug} />
+                <MarkCompleteButton
+                  slug={slug}
+                  hasPublishedQuiz={quiz !== null}
+                  choiceCount={choiceCount}
+                />
                 <nav className="prev-next" aria-label="Previous and next lessons">
                   {prevSlug ? (
                     <Link

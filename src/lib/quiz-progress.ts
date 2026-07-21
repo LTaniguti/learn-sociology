@@ -84,3 +84,21 @@ export function scoreFor(slug: string): { answered: number; correct: number } {
   }
   return { answered, correct };
 }
+
+// The quiz gate (4.3, doctrine reversal from 4.1): a published quiz makes its
+// lesson's completion depend on finishing the self-check. Finished = EVERY
+// choice question is stored as correct. reflect questions never gate — they are
+// ungraded and never stored, so `choiceCount` is the choice-only total the
+// caller derives from the loaded quiz. Derived at read like every other quiz
+// fact: no stored rollup, no "finished" flag (the completion invariant holds
+// for quiz state too). With sticky-correct (4.3) a correct answer is terminal,
+// so once this returns true it cannot regress within the stored attempt.
+export function isQuizFinished(slug: string, choiceCount: number): boolean {
+  if (choiceCount <= 0) return true; // reflect-only quiz: nothing to gate on
+  const forSlug = read()[slug] ?? {};
+  let correct = 0;
+  for (const key of Object.keys(forSlug)) {
+    if (forSlug[key].correct) correct += 1;
+  }
+  return correct >= choiceCount;
+}
