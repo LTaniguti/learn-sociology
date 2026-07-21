@@ -184,7 +184,25 @@
   fill: var(--color-surface-hover);
 }
 
-/* The selected node is the one amber moment on the canvas. */
+/* Completed nodes read as done (4.2): the --state-complete family, the same
+   one green as the syllabus and the hierarchy canvas. Paint only. Ordered after
+   hover / neighbour so a completed neighbour keeps its green, and *before* the
+   selected / focus rules so selecting a completed pill still takes the amber
+   selection surface and the focus ring — completion never swallows the selection
+   cue. Fill + border only, so the non-published dash (a different property)
+   still shows through on a completed-but-unpublished node. The box already
+   transitions fill + stroke. */
+.nwnode-complete > .nwnode-box {
+  fill: var(--state-complete-bg);
+  stroke: var(--state-complete-border);
+}
+
+.nwnode-complete > .nwnode-label {
+  fill: var(--state-complete-text);
+}
+
+/* The selected node is the one amber moment on the canvas — after the complete
+   rule so selection wins fill + border + label over a completed pill. */
 .nwnode-selected > .nwnode-box {
   fill: var(--tree-node-open-bg);
   stroke: var(--tree-node-open-border);
@@ -193,6 +211,17 @@
 .nwnode-selected > .nwnode-label {
   fill: var(--color-text-strong);
   font-weight: var(--type-h2-serif-weight);
+}
+
+/* The non-hue completion cue: the syllabus ✓ in the pill's top-trailing corner,
+   identical to the hierarchy canvas. */
+.nwnode-check {
+  font-family: var(--font-mono);
+  font-size: var(--type-caption-size);
+  fill: var(--state-complete-mark);
+  dominant-baseline: central;
+  text-anchor: middle;
+  pointer-events: none;
 }
 
 /* Non-published carries the dashed honesty treatment, as in 3.2. */
@@ -306,6 +335,17 @@
   fill: none;
   stroke-dasharray: var(--space-1) var(--space-1);
   rx: var(--radius-xs);
+}
+
+/* Completed swatch: the pill tint the completed node carries, with the check. */
+.nwnode-legend-swatch {
+  rx: var(--radius-xs);
+  stroke-width: var(--border-thin);
+}
+
+.nwnode-legend-complete {
+  fill: var(--state-complete-bg);
+  stroke: var(--state-complete-border);
 }
 
 /* ============================================================

@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import PreviewCard from "../preview/PreviewCard";
+import { getProgress, PROGRESS_EVENT } from "@/lib/progress";
 import {
   DESKTOP_GEOMETRY,
   MOBILE_GEOMETRY,
@@ -50,6 +51,12 @@ export default function HierarchyCanvas({ root }: { root: HierarchyNode }) {
   // Roving tabindex — the single tab stop within the tree.
   const [focused, setFocused] = useState<string>(root.slug);
   const [mobile, setMobile] = useState(false);
+  // Completed slugs (4.2). Paint only — never feeds layout, so the deterministic
+  // fingerprint is identical with progress present or absent. Read after mount
+  // and re-read on PROGRESS_EVENT (the LessonCheck pattern), so a mark-complete
+  // click anywhere lights the matching pill here without a reload, and the empty
+  // first render matches the server's.
+  const [complete, setComplete] = useState<Set<string>>(new Set());
 
   const viewportRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -76,6 +83,18 @@ export default function HierarchyCanvas({ root }: { root: HierarchyNode }) {
     apply();
     query.addEventListener("change", apply);
     return () => query.removeEventListener("change", apply);
+  }, []);
+
+  useEffect(() => {
+    const update = () => {
+      const progress = getProgress();
+      setComplete(
+        new Set(Object.keys(progress).filter((slug) => progress[slug] === true))
+      );
+    };
+    update();
+    window.addEventListener(PROGRESS_EVENT, update);
+    return () => window.removeEventListener(PROGRESS_EVENT, update);
   }, []);
 
   // Deep link: /hierarchy#slug expands the ancestor path, previews the node,
@@ -268,11 +287,13 @@ export default function HierarchyCanvas({ root }: { root: HierarchyNode }) {
       descendantCount: node.data.descendantCount,
       status: node.data.status,
     };
+    const isComplete = complete.has(slug);
     const classes = [
       "hcnode",
       node.expanded && "hcnode-expanded",
       status !== "published" && "hcnode-unpublished",
       previewSlug === slug && "hcnode-previewed",
+      isComplete && "hcnode-complete",
       node.paradigm && `hcnode-paradigm-${node.paradigm}`,
     ]
       .filter(Boolean)
@@ -371,6 +392,16 @@ export default function HierarchyCanvas({ root }: { root: HierarchyNode }) {
             </text>
           </g>
         )}
+        {isComplete && (
+          // Non-hue completion cue: a check stamp in the pill's top-trailing
+          // corner (matching the syllabus check's ✓ vocabulary), clear of the
+          // leading paradigm dot and expand glyph. Identical on the network
+          // canvas. aria-hidden — completion is spoken by the course view, not
+          // re-announced per pill here.
+          <text className="hcnode-check" x={node.width - 11} y={11} aria-hidden="true">
+            ✓
+          </text>
+        )}
       </g>
     );
   };
@@ -387,6 +418,43 @@ export default function HierarchyCanvas({ root }: { root: HierarchyNode }) {
         >
           Collapse all
         </button>
+        {/* Node-state key (4.2). This canvas had no legend; the completed and
+            not-yet-published pill treatments now get one, matching the network
+            legend's muted mono register. Canvas chrome, so it rides the controls
+            row and does not scroll away with the tree. */}
+        <dl className="hierarchy-legend">
+          <div>
+            <dt>
+              <svg viewBox="0 0 34 14" aria-hidden="true">
+                <rect
+                  className="hcnode-legend-swatch hcnode-legend-complete"
+                  x="1"
+                  y="1"
+                  width="32"
+                  height="12"
+                />
+                <text className="hcnode-check" x="27" y="7">
+                  ✓
+                </text>
+              </svg>
+            </dt>
+            <dd>completed</dd>
+          </div>
+          <div>
+            <dt>
+              <svg viewBox="0 0 34 14" aria-hidden="true">
+                <rect
+                  className="hcnode-legend-swatch hcnode-legend-dashed"
+                  x="1"
+                  y="1"
+                  width="32"
+                  height="12"
+                />
+              </svg>
+            </dt>
+            <dd>not yet published</dd>
+          </div>
+        </dl>
       </div>
       <div className="hierarchy-viewport" ref={viewportRef}>
         <div

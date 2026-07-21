@@ -11,6 +11,7 @@ import {
 import { select } from "d3-selection";
 import { zoom, zoomIdentity, type ZoomBehavior } from "d3-zoom";
 import PreviewCard from "../preview/PreviewCard";
+import { getProgress, PROGRESS_EVENT } from "@/lib/progress";
 import { type GraphData } from "./graph";
 import {
   MOBILE_NETWORK_GEOMETRY,
@@ -136,6 +137,11 @@ function NetworkGraph({
   const [transform, setTransform] = useState<Transform>({ k: 1, x: 0, y: 0 });
   const [selected, setSelected] = useState<string | null>(null);
   const [focused, setFocused] = useState<string | null>(null);
+  // Completed slugs (4.2). Paint only — never feeds the layout, so the
+  // deterministic fingerprint is unchanged with progress present or absent.
+  // Re-read on PROGRESS_EVENT so a mark-complete anywhere lights the pill here
+  // without a reload.
+  const [complete, setComplete] = useState<Set<string>>(new Set());
   const [cardPos, setCardPos] = useState<{ left: number; top: number } | null>(
     null
   );
@@ -145,6 +151,18 @@ function NetworkGraph({
   const cardRef = useRef<HTMLDivElement>(null);
   const zoomRef = useRef<ZoomBehavior<SVGSVGElement, unknown> | null>(null);
   const didInitialView = useRef(false);
+
+  useEffect(() => {
+    const update = () => {
+      const progress = getProgress();
+      setComplete(
+        new Set(Object.keys(progress).filter((slug) => progress[slug] === true))
+      );
+    };
+    update();
+    window.addEventListener(PROGRESS_EVENT, update);
+    return () => window.removeEventListener(PROGRESS_EVENT, update);
+  }, []);
 
   const geometry = mobile ? MOBILE_NETWORK_GEOMETRY : NETWORK_GEOMETRY;
   const layout = useMemo(
@@ -589,9 +607,11 @@ function NetworkGraph({
 
   const renderNode = (node: LaidNetworkNode) => {
     const isSelected = selected === node.slug;
+    const isComplete = complete.has(node.slug);
     const classes = [
       "nwnode",
       node.status !== "published" && "nwnode-unpublished",
+      isComplete && "nwnode-complete",
       isSelected && "nwnode-selected",
       focused === node.slug && "nwnode-focused",
       neighbours.has(node.slug) && "nwnode-neighbour",
@@ -642,6 +662,19 @@ function NetworkGraph({
                 </tspan>
               ))}
         </text>
+        {isComplete && (
+          // Non-hue completion cue: the same check stamp as the hierarchy canvas,
+          // top-trailing corner, the syllabus ✓ vocabulary. aria-hidden — the
+          // node's aria-label carries status; completion is spoken in the course.
+          <text
+            className="nwnode-check"
+            x={node.width - 11}
+            y={11}
+            aria-hidden="true"
+          >
+            ✓
+          </text>
+        )}
       </g>
     );
   };
@@ -778,6 +811,23 @@ function NetworkGraph({
               </svg>
             </dt>
             <dd>relationship (shown on select)</dd>
+          </div>
+          <div>
+            <dt>
+              <svg viewBox="0 0 34 14" aria-hidden="true">
+                <rect
+                  className="nwnode-legend-swatch nwnode-legend-complete"
+                  x="1"
+                  y="1"
+                  width="32"
+                  height="12"
+                />
+                <text className="nwnode-check" x="27" y="7">
+                  ✓
+                </text>
+              </svg>
+            </dt>
+            <dd>completed</dd>
           </div>
           <div>
             <dt>

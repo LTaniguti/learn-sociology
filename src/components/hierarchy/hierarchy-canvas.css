@@ -48,6 +48,51 @@
   background: var(--color-surface-hover);
 }
 
+/* Node-state legend (4.2). Muted mono, right of the controls — chrome that
+   explains the picture without being part of it, the network legend's register. */
+.hierarchy-legend {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--type-caption-size);
+  color: var(--color-text-faint);
+}
+
+.hierarchy-legend > div {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.hierarchy-legend dt {
+  display: flex;
+  align-items: center;
+}
+
+.hierarchy-legend svg {
+  width: 34px;
+  height: 14px;
+  overflow: visible;
+}
+
+.hcnode-legend-swatch {
+  rx: var(--radius-xs);
+  stroke-width: var(--border-thin);
+}
+
+.hcnode-legend-complete {
+  fill: var(--state-complete-bg);
+  stroke: var(--state-complete-border);
+}
+
+.hcnode-legend-dashed {
+  fill: none;
+  stroke: var(--tree-node-border);
+  stroke-dasharray: var(--space-1) var(--space-1);
+}
+
 /* Scrollable viewport, both axes; the dotted grid lives on the inner canvas
    so it scrolls with the tree. */
 .hierarchy-viewport {
@@ -108,9 +153,39 @@
   stroke: var(--tree-node-open-border);
 }
 
-/* Previewed (selected) node keeps the accent edge while its card is up. */
+/* Completed nodes read as done (4.2): the --state-complete family, one green,
+   the same meaning as the syllabus check and prerequisite chips. Paint only —
+   layout is untouched. Ordered after `expanded` so a completed parent (the
+   root is a lesson) keeps its green fill, and *before* `previewed` / `focus` so
+   selecting a completed pill still swaps its border to the selection edge / the
+   focus ring — completion never swallows the selection cue. Fill + border only,
+   so the non-published dash (a different property) still shows through on a
+   completed-but-unpublished node. The box already transitions fill + stroke, so
+   mark-complete lands as a quiet tint. */
+.hcnode-complete > .hcnode-box {
+  fill: var(--state-complete-bg);
+  stroke: var(--state-complete-border);
+}
+
+.hcnode-complete > .hcnode-label {
+  fill: var(--state-complete-text);
+}
+
+/* Previewed (selected) node keeps the accent edge while its card is up — after
+   the complete rule so selection wins the border over a completed pill. */
 .hcnode-previewed > .hcnode-box {
   stroke: var(--tree-node-open-border);
+}
+
+/* The non-hue completion cue: a check stamp, the syllabus ✓ vocabulary, in the
+   top-trailing corner clear of the leading paradigm dot / expand glyph. */
+.hcnode-check {
+  font-family: var(--font-mono);
+  font-size: var(--type-caption-size);
+  fill: var(--state-complete-mark);
+  dominant-baseline: central;
+  text-anchor: middle;
+  pointer-events: none;
 }
 
 /* Non-published nodes carry the dashed honesty treatment (draft banner). */
