@@ -12,6 +12,7 @@ import { load } from "js-yaml";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONTENT_DIR = path.join(ROOT, "content");
+const QUIZ_DIR = path.join(CONTENT_DIR, "quizzes");
 
 export type NodeFrontmatter = {
   title: string;
@@ -33,6 +34,27 @@ export type ConceptNode = NodeFrontmatter & {
 
 export type CourseModule = { title: string; nodes: string[] };
 export type Course = { course: string; modules: CourseModule[] };
+
+// ===== Self-check quizzes (companion files; see docs/quiz-schema.md) =====
+// Quizzes live in content/quizzes/<slug>.yml, never in node frontmatter — the
+// ten-field frontmatter budget is spent. The schema is validated by
+// scripts/lint-quizzes.mjs; these types mirror the shapes it enforces.
+
+export type QuizChoiceOption = { text: string; correct: boolean; why: string };
+export type QuizChoiceQuestion = {
+  type: "choice";
+  prompt: string;
+  paradigm: string | null;
+  options: QuizChoiceOption[];
+};
+export type QuizReflectQuestion = { type: "reflect"; prompt: string };
+export type QuizQuestion = QuizChoiceQuestion | QuizReflectQuestion;
+export type Quiz = {
+  version: number;
+  status: "draft" | "published";
+  adapted_from?: string;
+  questions: QuizQuestion[];
+};
 
 export type TreeNode = { slug: string; title: string; children: TreeNode[] };
 
@@ -111,6 +133,22 @@ export async function getAllNodes(): Promise<ConceptNode[]> {
 
   allNodesCache = nodes;
   return nodes;
+}
+
+// ===== Quiz (published only) =====
+
+// Returns the quiz for a node, or null when there is no quiz file or the quiz
+// is not `status: published`. The draft filter lives HERE, in the loader, not
+// in the component: a draft quiz must never ship in the page payload at all.
+// A `published` quiz on a `stub` node is a lint error (scripts/lint-quizzes.mjs),
+// so that case cannot reach a build.
+export function getQuiz(slug: string): Quiz | null {
+  const filePath = path.join(QUIZ_DIR, `${slug}.yml`);
+  if (!fs.existsSync(filePath)) return null;
+
+  const quiz = load(fs.readFileSync(filePath, "utf8")) as Quiz;
+  if (!quiz || quiz.status !== "published") return null;
+  return quiz;
 }
 
 // ===== Course Manifest =====

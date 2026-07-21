@@ -2,9 +2,11 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   getAllNodes,
+  getQuiz,
   type ConceptNode,
 } from "../../lib/content";
 import LessonCheck from "@/components/course/LessonCheck";
+import SelfCheck from "@/components/SelfCheck";
 import LessonComments from "@/components/LessonComments";
 import TextSizeControl from "@/components/TextSizeControl";
 import NodeRail from "@/components/NodeRail";
@@ -92,6 +94,11 @@ export default async function NodeArticle({
   const prerequisites = resolve(node.prerequisites, nodeMap, "prerequisites", slug);
   const related = resolve(node.related ?? [], nodeMap, "related", slug);
   const banner = STATUS_BANNERS[node.status];
+  // Only published quizzes come back; draft/missing quizzes return null and no
+  // section renders (the filter lives in the loader, so draft content never
+  // ships in the payload). Rendered here — inside the single content renderer —
+  // so both /node/[slug] and the course lesson view get the same surface.
+  const quiz = getQuiz(slug);
 
   return (
     <div className="node-layout">
@@ -161,6 +168,8 @@ export default async function NodeArticle({
           className="node-body"
           dangerouslySetInnerHTML={{ __html: node.html }}
         />
+
+        {quiz && <SelfCheck slug={node.slug} quiz={quiz} />}
 
         <LessonComments slug={node.slug} />
 

@@ -1,0 +1,241 @@
+/* Self-check quiz (Phase 4.1). Kin to the prerequisite chips and syllabus rows,
+   not a new design island: every value references docs/design/tokens.css, so
+   all three themes follow for free. Improvisations (no hi-fi existed) are
+   recorded in docs/design/components.md. */
+
+.self-check {
+  margin-top: var(--space-8);
+  border-top: var(--border-thin) solid var(--color-border);
+  padding-top: var(--space-6);
+}
+
+.self-check .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+/* Heading reuses the mono eyebrow register of the article's ## headings so the
+   section reads as part of the lesson, not a bolt-on. */
+.self-check-heading {
+  font-family: var(--type-h2-mono-family);
+  font-size: var(--type-h2-mono-size);
+  line-height: var(--type-h2-mono-line);
+  font-weight: var(--type-h2-mono-weight);
+  letter-spacing: var(--type-h2-mono-tracking);
+  text-transform: var(--type-h2-mono-transform);
+  color: var(--color-text-muted);
+}
+
+.self-check-intro {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--type-tag-size);
+  line-height: var(--type-caption-line);
+  color: var(--color-text-faint);
+}
+
+.self-check-list {
+  list-style: none;
+  padding: 0;
+  margin: var(--space-6) 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.self-check-question {
+  margin: 0;
+}
+
+/* --- Shared prompt --- */
+.self-check-prompt {
+  font-family: var(--type-body-family);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  color: var(--color-text-strong);
+  margin: 0 0 var(--space-4);
+}
+
+/* Paradigm attribution chip — the visible half of the contested-claim rule.
+   Amber, like the paradigm/* tag chips, so the reader sees the question is
+   grading a paradigm's reading, not a neutral fact. */
+.self-check-paradigm,
+.self-check-reflect-label {
+  display: inline-block;
+  font-family: var(--type-badge-family);
+  font-size: var(--type-badge-size);
+  font-weight: var(--type-badge-weight);
+  letter-spacing: var(--type-badge-tracking);
+  text-transform: var(--type-badge-transform);
+  border: var(--border-thin) solid var(--color-border-accent);
+  border-radius: var(--radius-xs);
+  padding: 3px 8px;
+  margin-bottom: var(--space-3);
+  color: var(--color-accent);
+}
+
+/* Reflect label is muted rather than amber — nothing is graded, so it does not
+   claim the wayfinding accent. */
+.self-check-reflect-label {
+  border-color: var(--color-border-input);
+  color: var(--color-text-muted);
+}
+
+/* --- Choice options --- */
+.self-check-options {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.self-check-option {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  width: 100%;
+  text-align: left;
+  font-family: var(--type-body-family);
+  font-size: var(--type-related-size);
+  line-height: var(--type-related-line);
+  color: var(--color-text-body);
+  background: var(--color-surface-sunken);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+/* Hover only while the question is still answerable. */
+.self-check-choice:not(.self-check-graded) .self-check-option:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-accent);
+}
+
+.self-check-graded .self-check-option {
+  cursor: default;
+}
+
+/* Correct option revealed on grading — the --state-complete green shared with
+   the prerequisite chips, syllabus rows, and canvas pills (one meaning, one
+   family). The ✓ mark is the non-colour cue. */
+.self-check-option-correct {
+  background: var(--state-complete-bg);
+  border-color: var(--state-complete-border);
+  color: var(--state-complete-text);
+}
+
+/* The chosen-wrong option — clay red (the advanced-difficulty register), the
+   only "error" hue in the token set. The ✗ mark carries it without relying on
+   colour alone. */
+.self-check-option-wrong {
+  border-color: var(--diff-advanced-border);
+  color: var(--diff-advanced-text);
+}
+
+.self-check-mark {
+  flex: 0 0 auto;
+  width: 1em;
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.self-check-option-correct .self-check-mark {
+  color: var(--state-complete-mark);
+}
+
+.self-check-option-wrong .self-check-mark {
+  color: var(--diff-advanced-text);
+}
+
+.self-check-option-text {
+  flex: 1 1 auto;
+}
+
+/* Distractor rationale — content, not a secret; every option's why is shown
+   once graded. Quiet serif under its option. */
+.self-check-why {
+  font-family: var(--type-related-family);
+  font-size: var(--type-related-size-sm);
+  line-height: var(--type-body-line);
+  color: var(--color-text-muted);
+  margin: var(--space-2) 0 0 var(--space-6);
+}
+
+.self-check-retry {
+  margin-top: var(--space-4);
+  font-family: var(--font-mono);
+  font-size: var(--type-control-size);
+  color: var(--color-text-meta-warm);
+  background: none;
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  cursor: pointer;
+  transition: background var(--transition-fast), border-color var(--transition-fast);
+}
+
+.self-check-retry:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-accent);
+}
+
+/* --- Reflect --- */
+.self-check-reflect-label {
+  display: block;
+  width: fit-content;
+}
+
+.self-check-textarea {
+  width: 100%;
+  font-family: var(--type-body-family);
+  font-size: var(--type-related-size);
+  line-height: var(--type-body-line);
+  color: var(--color-text-body);
+  background: var(--color-surface-sunken);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  resize: vertical;
+}
+
+.self-check-textarea::placeholder {
+  color: var(--color-text-faint);
+}
+
+.self-check-textarea:focus-visible {
+  outline: none;
+  border-color: var(--color-border-accent);
+  box-shadow: var(--focus-ring);
+}
+
+.self-check-notice {
+  margin-top: var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+  color: var(--color-text-faint);
+}
+
+/* --- Summary --- */
+.self-check-summary {
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: var(--border-thin) solid var(--color-border-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--type-tag-size);
+  color: var(--color-text-muted);
+}
+
+.self-check-score {
+  color: var(--color-text-meta-warm);
+}
+
+.self-check-score-note {
+  color: var(--color-text-faint);
+}
