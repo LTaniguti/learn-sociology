@@ -175,8 +175,12 @@ live site.
 Multi-select and true/false question types; option shuffling (question and
 option order render exactly as authored — no shuffling anywhere in v1); attempt
 history and spaced repetition (v1 stores the last attempt only); cross-node
-review decks; points, streaks, and badges; quiz-gated completion; any server or
-account dependency. See the Phase 4.1 brief for the full deferred list.
+review decks; points, streaks, and badges; **quiz reset / re-take** (with
+sticky-correct and 4.4's mastery mode, this is now the *only* path to
+un-completing a mastery-mode lesson — see the doctrine trail below); any server
+or account dependency. (Quiz-gated completion was *itself* deferred at 4.1; it
+shipped in 4.3 and became derived-from-mastery in 4.4.) See the Phase 4.1 brief
+for the full original deferred list.
 
 ## Schema findings (for a future v1.1)
 
@@ -207,10 +211,23 @@ No rule had to *bend* to ship the two real quizzes beyond finding (1), which was
 resolved rather than worked around. Findings (2) and (3) are shape observations,
 not blockers.
 
-**4.3 doctrine note (schema unchanged).** 4.1's "a quiz result never gates lesson
-completion" was **reversed by owner decision in 4.3**: a `status: published` quiz
-now **gates** its lesson's completion in course mode (it *unlocks* the
-mark-complete button once every `choice` question is answered correctly; it never
-auto-marks). The schema itself is untouched — but `status: published` now carries
-a second meaning worth naming: it is also the **gate trigger**. Publishing a quiz
-makes it required for that lesson's completion.
+**Doctrine trail (schema unchanged throughout).** The completion doctrine has
+three states, each an owner decision — recorded here in order so none reads as
+accidental:
+
+- **4.1 — informs.** A quiz result never marks a lesson complete; the quiz
+  informs, it does not gate.
+- **4.3 — gates with a click.** A `status: published` quiz **gates** its lesson's
+  completion in course mode: it *unlocks* the mark-complete button once every
+  `choice` question is answered correctly, but never auto-marks — the learner
+  still clicks.
+- **4.4 — derived from mastery.** For a `status: published` quiz with ≥1 `choice`
+  question, completion is **derived**: the moment every `choice` question is
+  correct the lesson **auto-marks complete** (on both hosts), and the manual
+  button is removed. A reflect-only published quiz (`choiceCount === 0`) is
+  exempt — it keeps the lesson in manual mode.
+
+The schema itself is untouched across all three — but `status: published` now
+carries a second meaning worth naming: for a quiz with choice questions it is the
+**completion mechanism** for its lesson. Publishing such a quiz makes mastery of
+it *the* way that lesson gets completed. Publish deliberately.

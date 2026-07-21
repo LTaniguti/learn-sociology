@@ -81,6 +81,36 @@ Font `--type-body-family` 14px; padding `8px 11px`; radius `--radius-sm`.
 - *Hover:* border `--color-border-accent`, background `--color-surface-hover`.
 - *Disabled (no prev/next at ends):* text `--color-text-disabled`, no hover, `cursor:default`.
 
+## Lesson host — completion control (Course view, two modes as of 4.4)
+
+The course view's `course-controls` block branches on the lesson's mode (see
+*Two modes* under [Self-check quiz](#self-check-quiz-selfcheck--41) for the full
+doctrine). The node page has no completion control in either mode and gains none.
+
+- **Manual mode** (no published quiz, or a reflect-only one) — the
+  **`MarkCompleteButton`**, the screen's single amber action: `--color-accent`
+  fill, `--color-surface` label, `--font-mono` `--type-control-size`, `--radius-sm`
+  (hover `--color-accent-hover`). Done state flips to `aria-pressed="true"` —
+  `--state-complete-bg` fill, `--state-complete-text` label,
+  `--state-complete-border` edge — carrying the [completion seal](#completion-seal-43)
+  (`1.05em`, `--seal-ink` = `--state-complete-bg`) after the "Completed" text.
+  Marks and unmarks freely. The 4.3 lock (disabled state + caption) was **stripped**
+  in 4.4 — a manual-mode lesson has no published choice-quiz to lock on.
+- **Mastery mode** (published quiz, `choiceCount > 0`) — **no button**. In the
+  same slot, a **status line** (`LessonStatus`), house register, not a control (a
+  control that can never be clicked is not a control):
+  - *Not yet finished:* **"Complete the self-check below to finish this lesson."** —
+    caption vocabulary (`--type-caption-family` `--type-tag-size`,
+    `--color-text-muted`), not a banner, not a disabled button.
+  - *Finished:* the [completion seal](#completion-seal-43) (`1.05em`, `--seal-ink`
+    = `--color-canvas`) + **"Lesson complete."** in the `--state-complete` label
+    vocabulary (`--font-mono` `--type-control-size`, `--state-complete-label`).
+  - The line reads completion from the one store (`isComplete`, re-read on
+    `PROGRESS_EVENT`) and swaps between the two states over `--transition-fast`;
+    the global `prefers-reduced-motion` rule makes it instant. A `min-height` of
+    `--space-6` holds the row across the swap. Renders the caption state until
+    mounted, so static HTML and hydration agree.
+
 ---
 
 ## Hierarchy canvas (shipped 3.2)
@@ -261,8 +291,8 @@ the token set, and recorded as the spec of record. Component `SelfCheck.tsx` +
   article's mono `##` eyebrow register (`--type-h2-mono-*`, `--color-text-muted`).
   Intro line: mono `--type-tag-size` `--color-text-faint`, stating open-book +
   device-local + not-sent. (Was "not counted toward completion" in 4.1; dropped
-  in 4.3 because a published quiz now **does** gate completion in course mode —
-  see *The completion gate* below.)
+  in 4.3 because a published quiz now **does** gate completion, and as of 4.4 a
+  published choice-quiz **is** the completion mechanism — see *Two modes* below.)
 - **Choice question.** Prompt in serif `--type-body-*` `--color-text-strong`.
   Options are **real `<button>`s** (keyboard-reachable, the global focus ring
   applies): `--color-surface-sunken` fill, `--color-border-input` edge,
@@ -296,65 +326,97 @@ the token set, and recorded as the spec of record. Component `SelfCheck.tsx` +
 - **Summary line** (improvisation). Once **every** choice question is answered, a
   quiet mono line "`{correct} of {total}`" (`--color-text-meta-warm` score). When
   not all correct it trails "· self-check · device-local" (`--color-text-faint`);
-  when **all correct** it instead acknowledges the gate — "`{n} of {n}` — you can
-  mark this lesson complete" — plain text, no celebration. **No confetti, no
-  badges** — the reward register stays with the future gamification phase; this
-  line is data, not a trophy.
-- **The completion gate (4.3 — doctrine reversal).** 4.1 established "a quiz
-  result never marks a lesson complete; the quiz informs, it does not gate," and
-  deferred quiz-gated completion. **The owner deliberately reversed this in 4.3.**
-  The gate below is the new doctrine; a future phase must not "restore" the old
-  rule. In **course mode**, a lesson **with a published quiz** keeps its
-  `MarkCompleteButton` **locked until the self-check is finished**. On
-  `/node/[slug]` there is no such button, so the quiz stays purely informative
-  there.
+  when **all correct** it reads as the completion moment — "`{n} of {n}` — lesson
+  complete" (was "you can mark this lesson complete" in 4.3; **all correct now
+  *is* completion**, not an invitation to click) — plain text, no celebration.
+  **No confetti, no badges** — the reward register stays with the future
+  gamification phase; the celebration is the row tint + module fill (the 4.2
+  animation budget), never anything on this line.
+- **Two modes (4.4 — doctrine's third state).** The completion doctrine has moved
+  three times, and all three states are on the record: **4.1** — a quiz never
+  gates ("the quiz informs, it does not gate"); **4.3** — a published quiz gates,
+  but completion stays a **deliberate click** (the quiz *unlocked* the button);
+  **4.4** — for a published choice-quiz, completion is **derived from mastery**.
+  The owner directed each reversal; a future phase must not "restore" an earlier
+  rule. A lesson now runs in exactly one of two modes:
+  - **Manual mode** — no published quiz, *or* a reflect-only published quiz
+    (`choiceCount === 0`). The `MarkCompleteButton` behaves as in 4.2: the learner
+    marks and unmarks freely. (This is the current majority — 52 of 53 lessons.)
+  - **Mastery mode** — a published quiz with **≥1 choice question**. The manual
+    button is **removed entirely**; completion is driven by the quiz. There is
+    **no hand mark/unmark control** in this mode.
+  - **The mastery invariant.** For a mastery-mode lesson, **`isQuizFinished` ⇒
+    marked complete**, enforced in `SelfCheck` (which renders on **both** hosts)
+    at two points:
+    - **The flip** — `QUIZ_EVENT` fires on every quiz write, so the moment the
+      final `choice` question goes correct (finished false→true) `SelfCheck` calls
+      `setComplete(slug, true)` through the `lib/progress` setter. `PROGRESS_EVENT`
+      then propagates as always — syllabus row tints, module fill advances, both
+      canvases seal — in the same frame, no reload, no click. Idempotent: an
+      `isComplete` guard makes marking an already-complete slug a no-op.
+    - **Mount reconciliation** — the same check runs once on mount (post-hydration,
+      the established `LessonCheck` pattern), so a lesson that was finished but left
+      unmarked (a 4.3-era learner who never clicked, or finished-then-unmarked)
+      heals. The invariant holds **unconditionally**, not only for post-deploy
+      interactions.
   - **Finished** = **every `choice` question's stored state is `correct: true`**.
     `reflect` questions never gate (ungraded, never stored). Derived on read by
     `isQuizFinished(slug, choiceCount)` in `quiz-progress.ts` — **no stored
     rollup, no "finished" flag** (the completion invariant holds for quiz state
-    too). A reflect-only quiz (`choiceCount === 0`) does not gate. With
-    sticky-correct, finished is monotonic within the stored attempt.
-  - **Unlock, never auto-mark.** Reaching finished **enables** the button live
-    (`QUIZ_EVENT` fires on every quiz write, so the final correct answer enables
-    it in the same interaction frame — no reload); the learner still clicks.
-    Completion stays a deliberate act; no lesson silently completes mid-quiz.
-  - **Locked treatment.** The button renders `disabled`
-    (`--color-surface-raised` fill, `--color-text-disabled` label,
-    `--color-border` edge, `not-allowed` cursor) with a quiet one-line caption
-    below it in the `--state-*-label` register (`--state-complete-label`,
-    `--type-caption-family` `--type-tag-size`), **not** a warning banner. Copy as
-    shipped: **"Finish the self-check below to mark this lesson complete."**
-  - **Grandfathering.** A lesson **already complete** in storage stays complete
-    and its button stays usable (for unmarking) regardless of quiz state — the
-    gate governs the *act of marking*, not stored history. Unmarking is always
-    allowed. **Re-marking** a grandfathered-then-unmarked lesson goes through the
-    gate like anyone else (acceptable and simpler than tracking provenance).
-  - **Wiring.** `hasPublishedQuiz` is **`getQuiz(slug) !== null`** — the loader's
-    published filter already serves as the gate trigger, so no separate
-    `content.ts` helper was added (the brief allowed one only "if `getQuiz`
-    truthiness doesn't already serve"). `CourseView` (server) passes
-    `hasPublishedQuiz` and the choice-only count into `MarkCompleteButton`, which
-    keys the gate off the same loader, **never off file existence**. Draft quizzes
-    do not render and do not gate.
-- **Storage & independence.** Its own module `src/lib/quiz-progress.ts`, its own
-  key `learn-sociology:quiz:v1`, its own `QUIZ_EVENT`. It **never touches
-  `progress.ts` or the completion key**: answering a quiz and marking a lesson
-  complete remain **separate storage shapes and separate acts** — the gate is
-  **derived** from the two existing stores, adding **no keys and no shape
-  changes**. (The 4.3 gate couples the two *behaviourally* in course mode via
-  `isQuizFinished`, but never in storage.) Corrupt reads → empty. State is read
-  **after mount** and re-read on `QUIZ_EVENT` (the `LessonCheck` no-mismatch
-  pattern), so the server HTML and first client render show every question
-  unanswered and hydration never mismatches.
+    too). With sticky-correct, finished is monotonic within the stored attempt.
+  - **Node-page completion is new (4.4).** Because `SelfCheck` renders on
+    `/node/[slug]` too, a **graph-arrival learner can now complete a lesson without
+    ever opening the course view** — the button lived only in the course view, but
+    the mastery mark does not depend on it. Intended.
+  - **Reflect-only exception.** A reflect-only published quiz (`choiceCount === 0`)
+    would make finished **vacuously true**, so auto-completing on mount would be
+    wrong. Such a lesson **stays in manual mode** (the `SelfCheck` effect no-ops on
+    `choiceCount <= 0`; the course view keeps the button). No such content exists
+    yet; if a linter for it ever appears, this rule governs.
+  - **Grandfathering is one-directional.** The mastery effect only ever **writes**
+    completion, never removes it (`setComplete(slug, false)` is never called here).
+    A lesson **marked complete before its quiz was published stays complete** —
+    publishing content never retroactively unmarks anyone; the quiz UI simply shows
+    its own answered/unanswered state independently.
+  - **Permanence (owner-accepted consequence).** With sticky-correct (4.3) a
+    correct answer cannot regress, and mastery mode has **no unmark control**, so a
+    mastery-mode completion is **effectively permanent**. The only future escape
+    hatch is the deferred **quiz reset/re-take** feature — *not* improvised here.
+  - **Removed: the 4.3 lock.** The `MarkCompleteButton`'s locked path is **gone** —
+    its `hasPublishedQuiz`/`choiceCount` props, the `isQuizFinished` effect, the
+    `disabled` `locked` state, and the caption "Finish the self-check below to mark
+    this lesson complete" were all deleted (with their `.mark-complete:disabled` /
+    `.mark-complete-hint` CSS). A manual-mode lesson by definition has no published
+    choice-quiz to lock on, so the lock was dead. The button is now the plain 4.2
+    toggle taking only `slug`.
+  - **Wiring.** `getQuiz(slug) !== null` is `hasPublishedQuiz` (the loader's
+    published filter is the mode trigger, **never file existence**); `masteryMode`
+    = that **and** `choiceCount > 0`. `CourseView` (server) branches on
+    `masteryMode`, rendering `LessonStatus` (mastery) or `MarkCompleteButton`
+    (manual). Draft quizzes never render and never drive completion.
+- **Storage & independence.** Quiz state keeps its own module
+  `src/lib/quiz-progress.ts`, its own key `learn-sociology:quiz:v1`, its own
+  `QUIZ_EVENT`, and **still stores no completion**: there is **no "finished"
+  flag**, no new key, no shape change. 4.4's auto-mark writes completion **through
+  the existing `lib/progress` public setter** (`setComplete`) — the *only* write
+  path — so completion stays readable from the one store by `completionFor`, both
+  canvases, and the syllabus with zero changes to any of them; `progress.ts`
+  itself has **no diff**. The two stores are coupled **behaviourally** (mastery
+  derives from `isQuizFinished`, then writes completion) but **never in storage**.
+  Corrupt reads → empty. Quiz state is read **after mount** and re-read on
+  `QUIZ_EVENT`, and the mastery effect is likewise a post-mount read (the
+  `LessonCheck` no-mismatch pattern), so the server HTML and first client render
+  show every question unanswered and hydration never mismatches.
 - **Determinism.** Question and option order render exactly as authored — no
   shuffling anywhere in v1.
 
 **Improvisations introduced here** (no prior token/treatment existed): the
 paradigm-attribution chip; the chosen-wrong state borrowing the clay-red
 advanced-difficulty tokens as the only "error" register in the palette; the
-`self-check` section frame; the summary line; **(4.3)** the completion-gate
-locked-button treatment + caption, and the completion seal (below). All reuse
-existing tokens — **no new tokens were added**.
+`self-check` section frame; the summary line; **(4.3)** the completion seal
+(below); **(4.4)** the mastery-mode status line (`LessonStatus`, see *Lesson host*
+under *Previous / Next controls*). The 4.3 locked-button treatment + caption was
+**removed** in 4.4. All reuse existing tokens — **no new tokens were added**.
 
 ## Completion seal (4.3)
 

@@ -40,10 +40,16 @@ self-assessment, not a test.
 - **Placeholders** are welcome: a `status: draft` file with one `PLACEHOLDER —`
   `choice` and one `reflect` passes the linter and reserves the slot. Only
   `published` quizzes render on the site.
-- **Publishing gates completion (since 4.3):** setting a quiz to `status:
-  published` makes finishing it **required** to mark that lesson complete in the
-  course view (the learner must answer every `choice` question correctly before
-  the mark-complete button unlocks) — so publish deliberately.
+- **Publishing makes the quiz the completion mechanism (since 4.4):** setting a
+  quiz with at least one `choice` question to `status: published` makes **mastery
+  of it** *the* way that lesson is completed. The manual mark-complete button is
+  removed; the lesson **auto-marks complete** the moment the learner answers every
+  `choice` question correctly (on the node page as well as in the course view).
+  With sticky-correct answers and no unmark control, that completion is
+  effectively permanent — so publish deliberately. (History: 4.1 quizzes never
+  gated; 4.3 gated but kept a deliberate click; 4.4 derives completion from
+  mastery. A reflect-only published quiz is exempt and leaves the manual button in
+  place.)
 - **Lint before you push:** `npm run lint:content` validates quizzes alongside
   nodes.
 
