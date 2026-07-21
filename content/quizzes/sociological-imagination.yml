@@ -1,0 +1,74 @@
+version: 1
+status: published
+adapted_from: "OpenStax Introduction to Sociology 3e, Section 1.1 review"
+questions:
+  - type: choice
+    prompt: >-
+      According to C. Wright Mills, the sociological imagination is the capacity
+      to connect which two things?
+    paradigm: null
+    options:
+      - text: Personal troubles and public issues
+        correct: true
+        why: >-
+          Mills's core move: biography meets history — a private experience read
+          against the way society is organized.
+      - text: Quantitative and qualitative methods
+        correct: false
+        why: >-
+          A real distinction in research design, but it is methodological, not
+          Mills's troubles-to-issues pairing.
+      - text: In-groups and out-groups
+        correct: false
+        why: >-
+          Group-boundary language belongs to Sumner's group concepts, a
+          different lineage from Mills's argument.
+  - type: choice
+    prompt: >-
+      One autoworker losing a job can be a personal trouble. Mills argued that
+      when millions lose their jobs in the same year, the better explanation
+      lies in —
+    paradigm: null
+    options:
+      - text: The structure of the economy — it has become a public issue
+        correct: true
+        why: >-
+          No single biography can hold a mass pattern; when the rate moves with
+          social conditions, the cause is structural, and the trouble is now a
+          public issue.
+      - text: The poor choices of the individuals affected
+        correct: false
+        why: >-
+          This is exactly the individual-level framing Mills called incomplete
+          for patterned outcomes — it cannot explain why the number rose all at
+          once.
+      - text: Bad luck spread across many people at the same time
+        correct: false
+        why: >-
+          Coincidence cannot produce a rate that rises and falls with social
+          conditions; a patterned outcome points to structure, not chance.
+  - type: choice
+    prompt: >-
+      Mills's habit of "de-familiarization" asks a sociologist to —
+    paradigm: null
+    options:
+      - text: Treat familiar practices as social arrangements that could be otherwise
+        correct: true
+        why: >-
+          Seeing the taken-for-granted as strange reveals that a practice has a
+          history — and therefore alternatives.
+      - text: Accept common-sense explanations of why people act as they do
+        correct: false
+        why: >-
+          The opposite: the sociological imagination is precisely what separates
+          sociological thinking from common sense.
+      - text: Explain outcomes by the moral character of the individuals involved
+        correct: false
+        why: >-
+          That is the common-sense move Mills contrasts with structural
+          explanation — it points at the people, not the arrangement around them.
+  - type: reflect
+    prompt: >-
+      Pick one daily routine — your commute, your meals, your working hours — and
+      trace it to a social structure that shaped it. Where does your biography
+      meet history?

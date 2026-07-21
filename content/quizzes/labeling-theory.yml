@@ -1,0 +1,83 @@
+version: 1
+status: draft
+adapted_from: "OpenStax Introduction to Sociology 3e, Section 7.2 review"
+questions:
+  - type: choice
+    prompt: >-
+      Edwin Lemert distinguished two stages of deviance. In his terms, secondary
+      deviance is best described as —
+    paradigm: null
+    options:
+      - text: >-
+          Rule-breaking a person organizes their identity around after being
+          labeled
+        correct: true
+        why: >-
+          Lemert's point exactly: the societal reaction, not the original act,
+          drives this stage — the label reorganizes opportunities and
+          self-concept.
+      - text: The first, often minor rule-breaking act, before any label is applied
+        correct: false
+        why: >-
+          That is primary deviance — situational, common, and usually without
+          lasting effect on identity. Most people commit it and move on.
+      - text: Any act serious enough to be labeled a crime rather than a mistake
+        correct: false
+        why: >-
+          Seriousness is not Lemert's axis. The primary/secondary split turns on
+          whether the label has reorganized identity, not on how grave the act is.
+  - type: choice
+    prompt: >-
+      The lesson's Perspectives section records a functionalist response to
+      labeling theory. According to functionalism, the central objection is that
+      labeling theory —
+    paradigm: functionalism
+    options:
+      - text: Cannot explain rule-breaking that occurs before any societal reaction
+        correct: true
+        why: >-
+          Functionalists grant Durkheim's point that deviance is normal and
+          boundary-defining, but object that some acts threaten order regardless
+          of labels — and that labeling is silent on why the first act happened.
+      - text: Overstates how strongly a label shapes a person's later behavior
+        correct: false
+        why: >-
+          That critique targets the theory's downstream causal claim, but it is
+          not the functionalist objection the lesson records — functionalists
+          dispute the *origin* of deviance, not the label's force.
+      - text: Ignores how labeling serves the interests of powerful groups
+        correct: false
+        why: >-
+          That is the conflict-theory extension, not the functionalist response —
+          and it radicalizes the theory rather than objecting to it.
+  - type: choice
+    prompt: >-
+      Conflict theorists embrace labeling theory's claim that labeling is
+      selective. On their reading, that selectivity —
+    paradigm: conflict-theory
+    options:
+      - text: >-
+          Systematically serves powerful groups — criminalizing the poor while
+          normalizing comparable elite harms
+        correct: true
+        why: >-
+          Conflict theory radicalizes the selectivity claim: compare street crime
+          with wage theft or corporate pollution — the labeling tracks power, not
+          just behavior.
+      - text: Is mostly random noise that better data collection would remove
+        correct: false
+        why: >-
+          The conflict reading is that the pattern is systematic, not noise — it
+          tracks social position, so sharper data would confirm it, not erase it.
+      - text: Proves that deviance is normal and defines a society's moral boundaries
+        correct: false
+        why: >-
+          That is Durkheim's functionalist insight, not the conflict extension of
+          the selectivity claim — a different paradigm answering a different
+          question.
+  - type: reflect
+    prompt: >-
+      The lesson describes a "master status" — a label that overrides every other
+      identity a person holds. Think of a label (from the news, fiction, or your
+      own life) that came to define someone that way. What opportunities did it
+      open, and which did it close?

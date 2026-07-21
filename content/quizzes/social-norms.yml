@@ -1,0 +1,27 @@
+version: 1
+status: draft
+questions:
+  - type: choice
+    prompt: >-
+      PLACEHOLDER — this quiz is a draft scaffold and does not yet ship. Which
+      of the following is a placeholder answer?
+    paradigm: null
+    options:
+      - text: This one — the schema-complete placeholder answer
+        correct: true
+        why: >-
+          Placeholder rationale. The real quiz will separate folkways, mores, and
+          laws by the strength of reaction their violation provokes.
+      - text: A plausible-looking distractor
+        correct: false
+        why: >-
+          Placeholder rationale for a wrong option, replaced when the social-norms
+          lesson is reviewed.
+      - text: Another plausible distractor
+        correct: false
+        why: >-
+          Placeholder rationale for a wrong option.
+  - type: reflect
+    prompt: >-
+      PLACEHOLDER — reflect prompt. This will ask you to name a folkway you broke
+      by accident and describe how people around you reacted.

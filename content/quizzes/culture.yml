@@ -1,0 +1,28 @@
+version: 1
+status: draft
+questions:
+  - type: choice
+    prompt: >-
+      PLACEHOLDER — this quiz is a draft scaffold and does not yet ship. Which
+      of the following is a placeholder answer?
+    paradigm: null
+    options:
+      - text: This one — the schema-complete placeholder answer
+        correct: true
+        why: >-
+          Placeholder rationale. Real distractor rationales arrive with the
+          content phase; this file exists to exercise the pipeline, not to teach.
+      - text: A plausible-looking distractor
+        correct: false
+        why: >-
+          Placeholder rationale for a wrong option. The real quiz will explain
+          the misconception a learner brings to this concept.
+      - text: Another plausible distractor
+        correct: false
+        why: >-
+          Placeholder rationale for a wrong option. Replaced when the culture
+          lesson is written and reviewed.
+  - type: reflect
+    prompt: >-
+      PLACEHOLDER — reflect prompt. Once the culture lesson is written, this will
+      ask you to trace one everyday object to the shared way of life that made it.
