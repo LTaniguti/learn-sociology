@@ -2,6 +2,8 @@
 
 **Status:** Draft v0.1 — Stage 0. Expect small revisions after the first sample nodes are written; expect additions (not restructuring) as content grows.
 
+**Docs-sync:** any phase that changes this file, `docs/schema.md`, or `docs/quiz-schema.md` must check [`docs/writing-a-lesson.md`](writing-a-lesson.md) for staleness **in the same commit** — the contributor tutorial paraphrases these three contracts for teachability and rots if they drift.
+
 This is the controlled vocabulary for the `tags` field in node frontmatter (see `docs/schema.md`). Tags power filtering and the Mode 3 concept network: shared tags create graph proximity, and tag frequency drives node centrality in force-directed layouts. Free-form tags fragment the graph — **every tag on every node must come from this file.**
 
 ## Tag format

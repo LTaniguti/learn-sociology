@@ -2,6 +2,8 @@
 
 **Status:** Draft v0.2 — Stage 0. Stress-tested against three fully written sample nodes (`sociological-imagination`, `social-norms`, `labeling-theory`); see `docs/schema-review.md` for the findings that produced this revision.
 
+**Docs-sync:** any phase that changes this file, `docs/taxonomy.md`, or `docs/quiz-schema.md` must check [`docs/writing-a-lesson.md`](writing-a-lesson.md) for staleness **in the same commit** — the contributor tutorial paraphrases these three contracts for teachability and rots if they drift.
+
 Every unit of content in this platform is a **concept node**: a single Markdown file in `/content` with a YAML frontmatter block (structured metadata) followed by the lesson body (prose). The frontmatter is what the platform reads to build its navigation graphs; the body is what the learner reads.
 
 ## Design principles
