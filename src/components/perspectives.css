@@ -8,10 +8,41 @@
    and card bodies inherit the article's `.node-body` typography — this file is
    card chrome only, never a new typography scope. */
 
+/* Container treatment (4.9): the section — the element spanning the article
+   grid's breakout track — is a visually framed feature band (the editorial
+   "popout" pattern), not bare cards at an unexplained width. Everything from
+   the existing token set (the standing rule — no new hex): the tint is
+   --color-surface, one subtle step off the --color-canvas the article sits on
+   in all three themes, with both card surfaces (--color-surface-sunken and the
+   --paradigm-*-surface tints) still distinct on it; the hairline and radius
+   are the prereq callout's — the article's established framed container — so
+   the two in-article bands speak one language (cards inside keep their
+   smaller --radius-md, the same container/card radius step the callout and
+   its chips use). */
 .perspectives {
-  /* The `## Perspectives` heading inside carries the same `.node-body h2`
-     margin, so the section needs none of its own. */
-  margin: 0;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-lg);
+  /* Internal inset: cards never touch the container edge. */
+  padding: var(--space-4);
+  /* The heading's 34px top margin used to carry the prose→section boundary;
+     inside the band it is zeroed (below) and the band's own margin re-pins
+     the boundary at the same 34px. */
+  margin: var(--space-8) 0 0;
+}
+
+/* In-band heading: the band's padding supplies the top inset, so the h2's
+   --space-8 margin is zeroed (:first-child outspecifies `.node-body h2`
+   regardless of import order). Its bottom margin and border-bottom rule are
+   unchanged. */
+/* Anchor jump (4.8 rail chips → #perspectives, the heading's id): the heading
+   now sits 16px inside the band, so a plain jump would land it at the viewport
+   top with the band's top edge cropped above the fold. The scroll margin
+   equals the band padding: the framed edge lands at the viewport top, the
+   heading 16px in — the same landing, now showing the container it opens. */
+.perspectives > h2:first-child {
+  margin-top: 0;
+  scroll-margin-top: var(--space-4);
 }
 
 /* Intro prose sits directly under the heading, as any paragraph would. Spacing

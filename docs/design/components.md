@@ -354,19 +354,58 @@ dropped):
   (trailing period trimmed).
 - Card bodies inherit `.node-body` prose (links, bold, inline code) — the card is
   a container, not a new typography scope.
-- Layout (reworked 4.8): the section spans the article grid's **breakout
-  track** (`grid-column: breakout` — see *Article panel*), so the grid sizes
-  against up to 832px instead of the old ≤660px prose width, where
-  3×220 + 2×16 = 692px could never fit and the trio always wrapped
-  two-over-one. Tracks stay `repeat(auto-fit, minmax(min(100%, 220px), 1fr))`
-  — the paradigm trio sits **three-across at desktop** (1440: 266px cards;
-  1024: 224px — the 220px readability floor untouched), collapsing to a
-  single stacked column at ≤640px (explicit `1fr`); the `min(100%, …)` guard
-  prevents horizontal overflow at 390px. **Wrap thresholds (correct
-  behaviour, not defects):** below a 724px article column the trio renders
-  two-across; below a 640px viewport, one. (In the course view the column
-  crosses 724px at ≈1012px viewport while the rail is stacked, and again at
-  ≈1300px once the rail returns inline at >1150px.)
+- **Container treatment (4.9):** the section — the element carrying
+  `grid-column: breakout` — is a **visually framed feature band** (the
+  editorial "popout" pattern), not bare cards at an unexplained width.
+  Entirely from the existing token set (standing rule — no new hex):
+  background `--color-surface` (one subtle step off the `--color-canvas` the
+  article sits on in **all three themes**, with both card surfaces —
+  `--color-surface-sunken` and the `--paradigm-*-surface` tints — still
+  distinct on it); hairline `--border-thin var(--color-border-input)` and
+  radius `--radius-lg` — the prereq callout's frame, so the two in-article
+  containers speak one language (cards inside keep `--radius-md`, the same
+  container/card radius step the callout and its chips use); internal padding
+  `--space-4`, so cards never touch the container edge. The in-band heading's
+  `--space-8` top margin is zeroed and the band's own `--space-8` top margin
+  re-pins the prose→section boundary at the same 34px. The heading keeps its
+  stable `id="perspectives"`; a `scroll-margin-top` equal to the band padding
+  makes the rail-chip jump land the **framed top edge** at the viewport top
+  (verified ≈0, subpixel) with the heading its 17px inset in (without it the
+  band's edge would crop above the fold). Prose-fallback nodes render no
+  section and therefore no band (verified: `sociological-imagination` renders
+  zero `.perspectives` elements and zero rail chips).
+- Layout (reworked 4.8, re-bounded 4.9): the section spans the article grid's
+  **breakout track** (`grid-column: breakout` — see *Article panel*), so the
+  band sizes against up to 93ch = 767.25px (default step) and the card grid
+  against that minus the band's 16px×2 padding and 1px×2 hairline — up to
+  **733.25px**. Tracks stay `repeat(auto-fit, minmax(min(100%, 220px),
+  1fr))` — the paradigm trio sits **three-across at desktop** (1440:
+  **233.75px cards, both hosts** — the hosts now agree at desktop because
+  the shared bound caps both; 768: 223.33px — the 220px readability floor
+  untouched), collapsing to a single stacked column at ≤640px (explicit
+  `1fr`); the `min(100%, …)` guard prevents horizontal overflow at 390px
+  (band 358px wide, cards 324px).
+- **Wrap thresholds (re-derived 4.9, pinned live — correct behaviour, not
+  defects).** The trio needs 3×220 + 2×16 = 692px of grid, i.e. a **758px
+  article column** (692 + band padding 32 + hairline 2 + panel padding 32;
+  was 724px before the band). Below that it renders two-across; below a
+  640px viewport, one. Host by host (default text step, boundaries verified
+  ±1px):
+  - **/node** (rail inline >900px): trio at **≥1046px** viewport (column =
+    viewport − 288); two-across through the 900–1046 band; trio again
+    **758–900** with the rail stacked; two-across 640–758.
+  - **Course** (syllabus stacks ≤900, rail stacks ≤1150): trio at **≥1334px**
+    (column = viewport − 576); **the 1150 flip still exists** — two-across
+    through 1150–1334 when the rail returns inline, trio **1046–1150** with
+    the rail stacked (column = viewport − 288), two-across 900–1046, trio
+    **758–900** with both chrome columns stacked, two-across 640–758.
+  - Consequence recorded: at a 1024 viewport both hosts now render the trio
+    two-across (327px cards; 4.8 rendered it three-across there) — the
+    band's 34px of internal inset moved the threshold past 1024. The framed
+    band was judged worth it (the alternative — cards touching the container
+    edge — violates the treatment's own premise), and the trio still holds
+    at every stacked-rail width from 758 up and from 1046 with the rail
+    inline.
 - Two-item sections (theory nodes): the grid box is capped at `2×43ch + gap`
   and centred (4.9; was `2×360px + gap` — the comfort cap re-expressed in the
   measure's unit, **354.75px per card at default**, so it scales with the
