@@ -426,6 +426,40 @@ a.prev-next-card:hover .prev-next-title {
    Responsive: sidebar collapses below the content
    ============================================================ */
 
+/* The 4.8 audit's dead band: between 900 and 1150 the course view held BOTH
+   288px chrome columns and squeezed the article into the remainder — 368px of
+   prose (45ch) at 1024, 294px (36ch) at 950: a desktop grid rendering
+   mobile-scale content. Through that band the node rail now stacks below the
+   article (the same treatment node-page.css applies at 900); the syllabus —
+   the course view's wayfinding — holds until the 900px stack. /node has no
+   syllabus and keeps its own 900px threshold. */
+@media (max-width: 1150px) {
+  .course-main .node-layout,
+  .course-main .node-layout:has(.node-rail-collapsed) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .course-main .node-rail {
+    border-left: none;
+    border-top: var(--border-thin) solid var(--color-border);
+  }
+
+  /* Collapse is a side-by-side affordance — stacked, hiding the rail would
+     only cost the reader content (the node-page.css 900px rationale). */
+  .course-main .node-rail-toggle {
+    display: none;
+  }
+
+  .course-main .node-rail.node-rail-collapsed {
+    padding: var(--pad-rail);
+    overflow: visible;
+  }
+
+  .course-main .node-rail-collapsed .node-rail-content {
+    display: block;
+  }
+}
+
 @media (max-width: 900px) {
   .course-layout {
     grid-template-columns: minmax(0, 1fr);

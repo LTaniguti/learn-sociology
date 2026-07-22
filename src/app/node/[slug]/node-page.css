@@ -288,16 +288,59 @@ html[data-textsize="lg"] {
   grid-template-columns: minmax(0, 1fr) var(--rail-collapsed-width);
 }
 
+/* The article panel (reworked 4.8): a named-track grid — gutter | prose |
+   gutter — with the full span addressable as `breakout`. Prose keeps its
+   reading measure; wide elements (the Perspectives cards) stop pretending to
+   be prose and span breakout instead.
+
+   The prose track is the recorded measure: 70ch at body size. The 4.8 audit
+   found the old 660px cap ≈ 80ch / ~88 real characters per line — past the
+   60–75 range body prose reads best at — so the measure came DOWN, never
+   widened to "fill" the viewport. `ch` resolves against this container's
+   font (the body serif), so the text-size control scales the column with the
+   type and characters-per-line holds across steps. */
 .node-main {
-  padding: var(--pad-panel);
-  max-width: 740px; /* ~660px text + panel padding (rule 9) */
+  --prose-measure: 70ch;
+  /* Gutter floor: + the 16px padding = the 40px prose inset the old
+     --pad-panel gave. Breakout escapes the gutters but not the padding. */
+  --prose-gutter: var(--space-6);
+  display: grid;
+  grid-template-columns:
+    [breakout-start] minmax(var(--prose-gutter), 1fr)
+    [prose-start] minmax(0, var(--prose-measure))
+    [prose-end] minmax(var(--prose-gutter), 1fr)
+    [breakout-end];
+  align-content: start;
+  padding: var(--space-7) var(--space-4) var(--space-8);
+  /* Breakout bound: the course view's article column at 1440 (1440 − 2×288
+     chrome columns), so both hosts share one panel maximum. */
+  max-width: 864px;
   width: 100%;
+  /* Centered in its column always (was: only when the rail collapsed — the
+     audit's 412px /node dead gap and the course view's 124px gap). The
+     gutters now frame the reading column symmetrically at every width. */
+  margin-inline: auto;
 }
 
-/* Hiding the rail buys whitespace, not longer lines: the measure stays capped
-   at 740px and the column recenters in the space it just gained. */
-.node-layout:has(.node-rail-collapsed) .node-main {
-  margin-inline: auto;
+.node-main > * {
+  grid-column: prose;
+}
+
+/* Grid items do not collapse margins the way the old block flow did. Re-pin
+   the article's two edges: its first element's top margin used to collapse
+   away (the preceding callout's 34px won), its last element's bottom used to
+   collapse into the self-check's 34px. Zeroing them restores the old gaps.
+   The div selectors reach into the htmlBefore/htmlAfter fragment wrappers of
+   a split article (NodeArticle's Perspectives path), whose edge margins the
+   wrappers would otherwise contain. */
+.node-body > :first-child,
+.node-body > div:first-child > :first-child {
+  margin-top: 0;
+}
+
+.node-body > :last-child,
+.node-body > div:last-of-type > :last-child {
+  margin-bottom: 0;
 }
 
 /* Breadcrumb */
@@ -832,10 +875,6 @@ html[data-textsize="lg"] {
   .node-rail-collapsed .node-rail-content {
     display: block;
   }
-
-  .node-layout:has(.node-rail-collapsed) .node-main {
-    margin-inline: 0;
-  }
 }
 
 /* The theme control (3.1) widened the bar's natural content past the tablet
@@ -864,6 +903,10 @@ html[data-textsize="lg"] {
 
 @media (max-width: 640px) {
   .node-main {
+    /* Phones spend everything on the prose: the gutter floor drops to zero
+       and the 16px padding is the whole inset (matching the pre-4.8 mobile
+       geometry — prose keeps its 358px at 390). */
+    --prose-gutter: 0px;
     padding: var(--space-5) var(--space-4) var(--space-6);
   }
 
