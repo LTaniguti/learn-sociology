@@ -4,12 +4,14 @@
 
 **Docs-sync:** any phase that changes this file, `docs/taxonomy.md`, or `docs/quiz-schema.md` must check [`docs/writing-a-lesson.md`](writing-a-lesson.md) for staleness **in the same commit** — the contributor tutorial paraphrases these three contracts for teachability and rots if they drift.
 
-Every unit of content in this platform is a **concept node**: a single Markdown file in `/content` with a YAML frontmatter block (structured metadata) followed by the lesson body (prose). The frontmatter is what the platform reads to build its navigation graphs; the body is what the learner reads.
+Every unit of content in this platform is a **concept node**: a single Markdown file under `/content` with a YAML frontmatter block (structured metadata) followed by the lesson body (prose). The frontmatter is what the platform reads to build its navigation graphs; the body is what the learner reads.
+
+Nodes are grouped by discipline one folder deep — `content/sociology/<slug>.md`, with a node's self-check quiz in a `quizzes/` folder beside it (`content/sociology/quizzes/<slug>.yml`). A second discipline lands as a sibling folder (`content/anthropology/…`). Two rules make this safe: **the directory is for humans browsing the repo — it carries no meaning to the platform**, and **the slug is the filename basename (without `.md`) and is globally unique across all of `content/`**, present and future. Every navigation graph, both completion stores, prerequisites, and cross-references key on that slug, so the loader finds a node by basename at any depth and the linter rejects a duplicate basename anywhere under `content/`.
 
 ## Design principles
 
 1. **Every field must power a feature.** No metadata is collected "just in case." Each field below maps directly to one of the four navigation modes, the attribution requirement, or the contribution workflow.
-2. **The filename is the ID.** Files are named in lowercase kebab-case (e.g. `sociological-imagination.md`), and other nodes reference each other by that filename (without `.md`). This keeps links stable and human-readable with no database.
+2. **The filename is the ID — at any depth.** Files are named in lowercase kebab-case (e.g. `sociological-imagination.md`), and other nodes reference each other by that basename (without `.md`, and without any directory prefix). The discipline folder is organizational only; the basename alone is the identity and must be unique across all of `content/`. This keeps links stable and human-readable with no database.
 3. **Ten fields is the ceiling — and the budget is now spent.** With the addition of `parent` (v0.2), the schema sits at exactly ten fields. Any future field must demonstrate need across multiple nodes *and* replace an existing field, not extend the list. Authoring cost is the dominant cost of this project.
 4. **Readable with zero software.** A node must make sense when viewed raw on GitHub, before any site exists.
 
@@ -93,7 +95,7 @@ After the frontmatter, the lesson body uses a consistent set of headings:
 
 - **Definition** — a tight, standalone explanation (2–4 sentences). A learner arriving from a graph click should get the core idea without scrolling.
 - **In depth** — the main lesson prose. Adapted OpenStax material lives here, restructured to fit the node.
-- **Perspectives** — where a concept is read differently by major paradigms (functionalism, conflict theory, symbolic interactionism), each reading gets a short subsection. This implements the project's **multi-perspective by design** principle at the schema level rather than leaving it to author discretion. For `type/theory` nodes that themselves belong to a paradigm, this section instead records how the *other* paradigms respond to, critique, or extend the theory — see `content/labeling-theory.md` for the pattern. As of Phase 4.5 this section renders **structurally** — as paradigm-accented cards — and both authoring shapes are recognized: a `###` subsection per reading, or a bold-led bullet (`- **Functionalist response.** …`). Lead each with the paradigm's name to earn its accent; any unrecognized content degrades gracefully to plain prose, exactly as before, so authors never need to fear the renderer.
+- **Perspectives** — where a concept is read differently by major paradigms (functionalism, conflict theory, symbolic interactionism), each reading gets a short subsection. This implements the project's **multi-perspective by design** principle at the schema level rather than leaving it to author discretion. For `type/theory` nodes that themselves belong to a paradigm, this section instead records how the *other* paradigms respond to, critique, or extend the theory — see `content/sociology/labeling-theory.md` for the pattern. As of Phase 4.5 this section renders **structurally** — as paradigm-accented cards — and both authoring shapes are recognized: a `###` subsection per reading, or a bold-led bullet (`- **Functionalist response.** …`). Lead each with the paradigm's name to earn its accent; any unrecognized content degrades gracefully to plain prose, exactly as before, so authors never need to fear the renderer.
 - **Examples** — 1–3 concrete illustrations; sociology concepts land through cases.
 - **Further reading** — external links or primary texts.
 
@@ -101,7 +103,7 @@ After the frontmatter, the lesson body uses a consistent set of headings:
 
 A node may carry an optional **self-check quiz** — a small set of questions
 rendered below the lesson body, graded client-side. Quizzes live in a **separate
-file**, `content/quizzes/<slug>.yml`, *not* in node frontmatter: the ten-field
+file**, `content/sociology/quizzes/<slug>.yml`, *not* in node frontmatter: the ten-field
 budget (design principle 3) is spent, so this is precisely how a whole feature
 was added with the node schema left **completely untouched**. Their format,
 field rules, and the quiz-level multi-perspective (contested-claim) rule are
@@ -125,7 +127,7 @@ status: draft
 ---
 ```
 
-This example is a copy of the live frontmatter in `content/sociological-imagination.md`; if the schema changes, update both.
+This example is a copy of the live frontmatter in `content/sociology/sociological-imagination.md`; if the schema changes, update both.
 
 ## Reserved fields
 

@@ -47,9 +47,12 @@ You do not need to install anything. The whole flow lives on github.com:
 
 1. **Fork the repository.** On the project's GitHub page, click **Fork**
    (top-right). This gives you your own copy to edit freely.
-2. **Create your file.** In your fork, open the `content/` folder, click **Add
-   file → Create new file**, and name it `your-concept-slug.md` (the slug you
-   chose in step 3 below). GitHub edits it right in the browser.
+2. **Create your file.** In your fork, open the `content/` folder and then the
+   discipline folder inside it — `sociology/` — click **Add file → Create new
+   file**, and name it `your-concept-slug.md` (the slug you chose in step 3
+   below). GitHub edits it right in the browser. (The folder is organizational:
+   your slug is the filename alone, and it must be unique across all of
+   `content/`.)
 3. **Commit.** When you have written something worth saving, scroll down, write a
    short commit message, and choose **Commit directly** to a new branch in your
    fork.
@@ -169,7 +172,7 @@ paradigm **only when the concept belongs to that paradigm** — originates in it
 is primarily meaningful within it. Do *not* tag a paradigm merely because it *has
 an opinion* about the concept; that opinion belongs in the body's Perspectives
 section, not the tags. So `moral-panic`, a concept several paradigms interpret,
-carries **no** `paradigm/` tag — while [`labeling-theory`](../content/labeling-theory.md),
+carries **no** `paradigm/` tag — while [`labeling-theory`](../content/sociology/labeling-theory.md),
 which *is* an interactionist theory, correctly carries `paradigm/interactionism`.
 
 If you miscount or use a tag that doesn't exist, the linter will tell you exactly
@@ -207,8 +210,8 @@ question, case, or puzzle — rather than a dictionary line.
 - **`## Further reading`** — 2–3 curated external resources or primary texts.
 
 Two living lessons show the whole shape at the right length:
-[`content/social-norms.md`](../content/social-norms.md) and
-[`content/labeling-theory.md`](../content/labeling-theory.md). Read them before
+[`content/sociology/social-norms.md`](../content/sociology/social-norms.md) and
+[`content/sociology/labeling-theory.md`](../content/sociology/labeling-theory.md). Read them before
 writing — imitating a real node is the fastest way to get the register right.
 
 ## 7. Perspectives, properly
@@ -230,11 +233,11 @@ Both exemplars happen to use the bullet shape; use whichever reads better.
 Two patterns, by node type:
 
 - **A concept** several paradigms interpret gives each paradigm a short reading of
-  the concept. See [`content/social-norms.md`](../content/social-norms.md).
+  the concept. See [`content/sociology/social-norms.md`](../content/sociology/social-norms.md).
 - **A theory that itself belongs to a paradigm** instead records how the *other*
   paradigms respond to, critique, or extend it — often with a one-line intro
   explaining that inversion. See
-  [`content/labeling-theory.md`](../content/labeling-theory.md).
+  [`content/sociology/labeling-theory.md`](../content/sociology/labeling-theory.md).
 
 **Lead each reading with the paradigm's name** — "Functionalist…", "Conflict…",
 "Interactionist…" / "Symbolic…" — and that card earns the paradigm's accent
@@ -263,7 +266,7 @@ The full terms are in [`LICENSE-CONTENT.md`](../LICENSE-CONTENT.md).
 
 A node may carry an optional **self-check quiz** — a few questions shown below the
 lesson, graded in the browser. It lives in its **own companion file**,
-`content/quizzes/<slug>.yml` (same slug as the node), never in the node's
+`content/sociology/quizzes/<slug>.yml` (same slug as the node), never in the node's
 frontmatter. The format — `version: 1`, a `status`, and 1–8 `choice`/`reflect`
 questions, each `choice` option carrying a `why` — is specified in full in
 [`docs/quiz-schema.md`](quiz-schema.md).

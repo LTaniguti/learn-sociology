@@ -27,7 +27,7 @@ status: draft
 <!-- ### Interactionist view -->
 <!-- For type/theory nodes that belong to a paradigm, this section instead records
      how the OTHER paradigms respond to, critique, or extend the theory.
-     See content/labeling-theory.md for the pattern. -->
+     See content/sociology/labeling-theory.md for the pattern. -->
 
 ## Examples
 

@@ -23,7 +23,7 @@ design principle 3). A quiz therefore lives in its **own file**, never in node
 frontmatter:
 
 ```
-content/quizzes/<slug>.yml
+content/sociology/quizzes/<slug>.yml
 ```
 
 `<slug>` is the node's filename ID. "The filename is the ID" (schema principle
