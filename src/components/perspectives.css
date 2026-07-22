@@ -1,0 +1,106 @@
+/* Structured Perspectives cards (Phase 4.5). Kin to the self-check and
+   prerequisite chips, not a new design island: every value references
+   docs/design/tokens.css, so all three themes follow for free. The paradigm
+   accents (--paradigm-*) and card surfaces (--paradigm-*-surface) already exist
+   in tokens.css and both theme files; this file only arranges them.
+
+   The block renders inside `.node-body`, so the section heading, intro prose,
+   and card bodies inherit the article's `.node-body` typography — this file is
+   card chrome only, never a new typography scope. */
+
+.perspectives {
+  /* The `## Perspectives` heading inside carries the same `.node-body h2`
+     margin, so the section needs none of its own. */
+  margin: 0;
+}
+
+/* Intro prose sits directly under the heading, as any paragraph would. Spacing
+   comes from `.node-body p`; a small floor before the grid keeps the cards from
+   crowding the intro when the section has one. */
+.perspectives-intro {
+  margin-bottom: var(--space-5);
+}
+
+.perspectives-grid {
+  display: grid;
+  /* Columns on wide viewports (2–3 across), collapsing to a single stacked
+     column as the container narrows. `min(100%, …)` guards against horizontal
+     overflow when the column is narrower than the track floor (390px mobile). */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}
+
+/* --- Card --- */
+.perspective-card {
+  background: var(--color-surface-sunken);
+  border: var(--border-thin) solid var(--color-border-input);
+  /* Left accent border in the paradigm colour — set per paradigm below. Neutral
+     cards keep the uniform border (no accent). */
+  border-left-width: 3px;
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+}
+
+.perspective-card.paradigm-functionalism {
+  background: var(--paradigm-func-surface);
+  border-left-color: var(--paradigm-functionalism);
+}
+
+.perspective-card.paradigm-conflict {
+  background: var(--paradigm-conflict-surface);
+  border-left-color: var(--paradigm-conflict);
+}
+
+.perspective-card.paradigm-interactionism {
+  background: var(--paradigm-inter-surface);
+  border-left-color: var(--paradigm-interactionism);
+}
+
+/* --- Paradigm name label chip --- */
+/* Reuses the 4.1 self-check attribution chip treatment (badge type, thin border,
+   xs radius) so the quiz and the article name paradigms in one visual language.
+   The hue accompanies the text; the text carries the meaning. */
+.perspective-label {
+  display: inline-block;
+  font-family: var(--type-badge-family);
+  font-size: var(--type-badge-size);
+  font-weight: var(--type-badge-weight);
+  letter-spacing: var(--type-badge-tracking);
+  text-transform: var(--type-badge-transform);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-xs);
+  padding: 3px 8px;
+  margin-bottom: var(--space-3);
+  color: var(--color-text-muted);
+}
+
+.paradigm-functionalism .perspective-label {
+  color: var(--paradigm-functionalism);
+  border-color: var(--paradigm-functionalism);
+}
+
+.paradigm-conflict .perspective-label {
+  color: var(--paradigm-conflict);
+  border-color: var(--paradigm-conflict);
+}
+
+.paradigm-interactionism .perspective-label {
+  color: var(--paradigm-interactionism);
+  border-color: var(--paradigm-interactionism);
+}
+
+/* Card body: the reading's prose. Typography is inherited from `.node-body`;
+   only the trailing-margin of the last paragraph is trimmed so the card padding
+   reads evenly. */
+.perspective-body > :last-child {
+  margin-bottom: 0;
+}
+
+/* Stacked at mobile width — one column, no overflow. The auto-fit grid already
+   collapses here, but the explicit single column is the honest floor. */
+@media (max-width: 640px) {
+  .perspectives-grid {
+    grid-template-columns: 1fr;
+  }
+}

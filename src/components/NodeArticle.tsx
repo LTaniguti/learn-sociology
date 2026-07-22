@@ -7,6 +7,7 @@ import {
 } from "../../lib/content";
 import LessonCheck from "@/components/course/LessonCheck";
 import SelfCheck from "@/components/SelfCheck";
+import Perspectives from "@/components/Perspectives";
 import LessonComments from "@/components/LessonComments";
 import TextSizeControl from "@/components/TextSizeControl";
 import NodeRail from "@/components/NodeRail";
@@ -164,10 +165,25 @@ export default async function NodeArticle({
           </aside>
         )}
 
-        <article
-          className="node-body"
-          dangerouslySetInnerHTML={{ __html: node.html }}
-        />
+        {/* When the pipeline extracted a structured Perspectives section, render
+            the body around it: htmlBefore → <Perspectives> → htmlAfter, in the
+            body's own position so the section does not migrate on the page.
+            Everything stays inside `.node-body`, so the split fragments and the
+            card prose inherit the article typography. When perspectives is null
+            (no section, or a section the parser could not structure), the single
+            `node.html` path renders exactly as pre-4.5. */}
+        {node.perspectives ? (
+          <article className="node-body">
+            <div dangerouslySetInnerHTML={{ __html: node.htmlBefore }} />
+            <Perspectives data={node.perspectives} />
+            <div dangerouslySetInnerHTML={{ __html: node.htmlAfter }} />
+          </article>
+        ) : (
+          <article
+            className="node-body"
+            dangerouslySetInnerHTML={{ __html: node.html }}
+          />
+        )}
 
         {quiz && <SelfCheck slug={node.slug} quiz={quiz} />}
 
