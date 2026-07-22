@@ -523,14 +523,25 @@ html[data-textsize="lg"] {
   background: var(--color-surface-hover);
 }
 
-/* Tracked chips (Mode 1): the LessonCheck span marks "met"; its glyph is
-   redrawn as the leading mark, the span itself is visually hidden. */
+/* Tracked chips (Mode 1): the LessonCheck span marks "met". Since 4.8 the
+   span is no longer visually hidden — it renders the drawn completion seal
+   as the chip's leading mark, closing the 4.3 scope divergence (this was the
+   last surface still drawing a text `✓`). Ink = the chip's own fill, the
+   same cut-out treatment as every other seal host. */
 .prereq-item .lesson-check {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
+  order: -1;
+  flex: none;
+  align-self: center;
+  width: 1em;
+  height: 1em;
+  line-height: 0;
+  --seal-ink: var(--state-complete-bg);
+}
+
+.prereq-item .lesson-check .completion-seal {
+  width: 100%;
+  height: 100%;
+  vertical-align: baseline;
 }
 
 .prereq-list-tracked .prereq-item:has(.lesson-check) {
@@ -540,11 +551,6 @@ html[data-textsize="lg"] {
 
 .prereq-list-tracked .prereq-item:has(.lesson-check) a {
   color: var(--state-complete-text);
-}
-
-.prereq-list-tracked .prereq-item:has(.lesson-check)::before {
-  content: "✓";
-  color: var(--state-complete-mark);
 }
 
 .prereq-list-tracked .prereq-item:has(.lesson-check)::after {
