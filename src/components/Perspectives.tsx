@@ -14,17 +14,33 @@ import "./perspectives.css";
 
 // Canonical paradigm names, matched to the 4.1 self-check attribution chip so
 // the quiz and the article speak one language. Attributed cards show this name;
-// neutral cards show the authored label verbatim.
+// neutral cards show the authored label verbatim. Exported since 4.8: the
+// right rail's Perspectives chips (NodeArticle) speak the same language.
 const PARADIGM_NAME: Record<string, string> = {
   functionalism: "Functionalism",
   conflict: "Conflict theory",
   interactionism: "Interactionism",
 };
 
+// One label derivation for every surface that names a perspective item (the
+// cards here, the rail chips in NodeArticle): attributed items take the
+// canonical paradigm name, neutral items their authored label with any
+// trailing period trimmed.
+export function perspectiveLabel(item: {
+  paradigm: string | null;
+  label: string;
+}): string {
+  return item.paradigm !== null
+    ? PARADIGM_NAME[item.paradigm] ?? item.label
+    : item.label.replace(/\s*\.\s*$/, "");
+}
+
 export default function Perspectives({ data }: { data: PerspectivesData }) {
+  // The heading's id is a stable anchor (4.8): the right rail's chips link
+  // here so a reader can jump from orientation to the section itself.
   return (
-    <section className="perspectives" aria-labelledby="perspectives-heading">
-      <h2 id="perspectives-heading">Perspectives</h2>
+    <section className="perspectives" aria-labelledby="perspectives">
+      <h2 id="perspectives">Perspectives</h2>
 
       {data.intro && (
         <div
@@ -38,9 +54,7 @@ export default function Perspectives({ data }: { data: PerspectivesData }) {
           const attributed = item.paradigm !== null;
           // Attributed: the canonical paradigm name (chip vocabulary shared with
           // the quiz). Neutral: the authored label, its trailing period trimmed.
-          const label = attributed
-            ? PARADIGM_NAME[item.paradigm as string] ?? item.label
-            : item.label.replace(/\s*\.\s*$/, "");
+          const label = perspectiveLabel(item);
           return (
             <article
               key={i}

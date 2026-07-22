@@ -7,7 +7,7 @@ import {
 } from "../../lib/content";
 import LessonCheck from "@/components/course/LessonCheck";
 import SelfCheck from "@/components/SelfCheck";
-import Perspectives from "@/components/Perspectives";
+import Perspectives, { perspectiveLabel } from "@/components/Perspectives";
 import LessonComments from "@/components/LessonComments";
 import TextSizeControl from "@/components/TextSizeControl";
 import NodeRail from "@/components/NodeRail";
@@ -226,6 +226,34 @@ export default async function NodeArticle({
                   </li>
                 );
               })}
+            </ul>
+          </section>
+        )}
+
+        {/* Perspectives chips (4.8): orientation, not content — this concept
+            is read n ways; jump to the section (the anchor is the section
+            heading's stable id). Placed after related concepts: both are
+            concept navigation, ahead of the thinkers/tags metadata. Rendered
+            only when the structured section exists — prose-fallback nodes
+            show nothing here, consistent with the section itself. */}
+        {node.perspectives && (
+          <section className="rail-section rail-perspectives">
+            <h2 className="rail-heading">Perspectives</h2>
+            <ul className="rail-persp-chips">
+              {node.perspectives.items.map((item, i) => (
+                <li key={i}>
+                  <a
+                    className={
+                      item.paradigm !== null
+                        ? `rail-persp-chip paradigm-${item.paradigm}`
+                        : "rail-persp-chip"
+                    }
+                    href="#perspectives"
+                  >
+                    {perspectiveLabel(item)}
+                  </a>
+                </li>
+              ))}
             </ul>
           </section>
         )}

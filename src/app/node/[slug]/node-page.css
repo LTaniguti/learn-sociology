@@ -789,6 +789,54 @@ html[data-textsize="lg"] {
   color: var(--color-text-body);
 }
 
+/* Perspectives chips (4.8): anchor links to the article's #perspectives
+   heading — orientation ("this concept is read three ways"), not content.
+   Chip vocabulary is the perspective-label / quiz-attribution chip (badge
+   type, thin border, xs radius): attributed chips take their paradigm's
+   accent, the same one-language rule the section cards follow; neutral chips
+   stay muted with their authored label. */
+.rail-persp-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  list-style: none;
+}
+
+.rail-persp-chip {
+  display: inline-block;
+  font-family: var(--type-badge-family);
+  font-size: var(--type-badge-size);
+  font-weight: var(--type-badge-weight);
+  letter-spacing: var(--type-badge-tracking);
+  text-transform: var(--type-badge-transform);
+  color: var(--color-text-muted);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-xs);
+  padding: 3px 8px;
+  transition: background var(--transition-fast);
+}
+
+/* House hover: the surface tints; the chip's own ink (paradigm or muted)
+   stays put — colour keeps carrying the paradigm, never the hover. */
+.rail-persp-chip:hover {
+  background: var(--color-surface-hover);
+}
+
+.rail-persp-chip.paradigm-functionalism {
+  color: var(--paradigm-functionalism);
+  border-color: var(--paradigm-functionalism);
+}
+
+.rail-persp-chip.paradigm-conflict {
+  color: var(--paradigm-conflict);
+  border-color: var(--paradigm-conflict);
+}
+
+.rail-persp-chip.paradigm-interactionism {
+  color: var(--paradigm-interactionism);
+  border-color: var(--paradigm-interactionism);
+}
+
 /* Tag chips */
 .tag-chips {
   display: flex;
