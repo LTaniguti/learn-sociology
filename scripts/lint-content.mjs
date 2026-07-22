@@ -13,6 +13,19 @@ import { load } from "js-yaml";
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONTENT = path.join(ROOT, "content");
 const DIFFICULTIES = ["intro", "intermediate", "advanced"];
+
+// Nodes live one discipline level deep (content/<discipline>/<slug>.md) since
+// Phase 4.7. Walk content/ recursively — the directory is for humans, the slug
+// (basename) is the identity. README.md is folder docs, not a node, at any depth.
+function walkNodeFiles(dir) {
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...walkNodeFiles(full));
+    else if (entry.name.endsWith(".md") && entry.name !== "README.md") out.push(full);
+  }
+  return out;
+}
 const STATUSES = ["stub", "draft", "review", "published"];
 const REQUIRED = ["title", "summary", "parent", "prerequisites", "tags", "difficulty", "status"];
 
@@ -60,12 +73,12 @@ const RESERVED_FIELDS = new Set(
 if (KNOWN_FIELDS.size === 0) errors.push("schema: could not parse the Frontmatter fields table from docs/schema.md");
 
 // --- Parse every node's frontmatter ---
-const files = fs.readdirSync(CONTENT).filter(f => f.endsWith(".md") && f !== "README.md");
-const slugs = new Set(files.map(f => f.replace(/\.md$/, "")));
+const files = walkNodeFiles(CONTENT);
+const slugs = new Set(files.map(f => path.basename(f, ".md")));
 const nodes = new Map();
 for (const file of files) {
-  const slug = file.replace(/\.md$/, "");
-  const text = fs.readFileSync(path.join(CONTENT, file), "utf8");
+  const slug = path.basename(file, ".md");
+  const text = fs.readFileSync(file, "utf8");
   const match = text.match(/^---\n([\s\S]*?)\n---\n/);
   if (!match) {
     errors.push(`${slug}: missing frontmatter block`);

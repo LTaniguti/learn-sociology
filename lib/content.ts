@@ -14,7 +14,39 @@ import type { Root, RootContent, List, Paragraph } from "mdast";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONTENT_DIR = path.join(ROOT, "content");
-const QUIZ_DIR = path.join(CONTENT_DIR, "quizzes");
+
+// ===== Recursive content discovery (Phase 4.7) =====
+// Nodes live one discipline level deep (content/<discipline>/<slug>.md) and
+// quizzes in a `quizzes/` dir sibling to their nodes. The loader walks
+// content/ recursively rather than assuming any discipline name, so a future
+// content/anthropology/ is found with zero loader changes. The directory is for
+// humans browsing the repo; the slug (basename) carries all identity and is
+// globally unique across content/ (enforced by scripts/lint-content.mjs).
+
+// Every .md node file anywhere under content/, keyed by basename slug → path.
+// README.md is folder documentation, not a node, and is skipped at any depth.
+// Cached: the filesystem does not change during a build or static generation.
+let nodePathCache: Map<string, string> | null = null;
+
+function walkFiles(dir: string, predicate: (file: string) => boolean): string[] {
+  const out: string[] = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...walkFiles(full, predicate));
+    else if (predicate(entry.name)) out.push(full);
+  }
+  return out;
+}
+
+function getNodePaths(): Map<string, string> {
+  if (nodePathCache !== null) return nodePathCache;
+  const map = new Map<string, string>();
+  for (const file of walkFiles(CONTENT_DIR, (f) => f.endsWith(".md") && f !== "README.md")) {
+    map.set(path.basename(file, ".md"), file);
+  }
+  nodePathCache = map;
+  return map;
+}
 
 export type NodeFrontmatter = {
   title: string;
@@ -226,7 +258,8 @@ export type CourseModule = { title: string; nodes: string[] };
 export type Course = { course: string; modules: CourseModule[] };
 
 // ===== Self-check quizzes (companion files; see docs/quiz-schema.md) =====
-// Quizzes live in content/quizzes/<slug>.yml, never in node frontmatter — the
+// Quizzes live in a quizzes/ dir sibling to their node (e.g.
+// content/sociology/quizzes/<slug>.yml), never in node frontmatter — the
 // ten-field frontmatter budget is spent. The schema is validated by
 // scripts/lint-quizzes.mjs; these types mirror the shapes it enforces.
 
@@ -251,12 +284,7 @@ export type TreeNode = { slug: string; title: string; children: TreeNode[] };
 // ===== Slugs =====
 
 export function getAllSlugs(): string[] {
-  const files = fs
-    .readdirSync(CONTENT_DIR)
-    .filter((f) => f.endsWith(".md") && f !== "README.md")
-    .map((f) => f.replace(/\.md$/, ""))
-    .sort();
-  return files;
+  return [...getNodePaths().keys()].sort();
 }
 
 // ===== Single Node =====
@@ -264,9 +292,9 @@ export function getAllSlugs(): string[] {
 let allNodesCache: ConceptNode[] | null = null;
 
 export async function getNode(slug: string): Promise<ConceptNode> {
-  const filePath = path.join(CONTENT_DIR, `${slug}.md`);
+  const filePath = getNodePaths().get(slug);
 
-  if (!fs.existsSync(filePath)) {
+  if (!filePath) {
     throw new Error(`Node not found: ${slug}`);
   }
 
@@ -341,7 +369,12 @@ export async function getAllNodes(): Promise<ConceptNode[]> {
 // A `published` quiz on a `stub` node is a lint error (scripts/lint-quizzes.mjs),
 // so that case cannot reach a build.
 export function getQuiz(slug: string): Quiz | null {
-  const filePath = path.join(QUIZ_DIR, `${slug}.yml`);
+  // The quiz sits in a `quizzes/` dir sibling to the node's own file, so a quiz
+  // is resolved relative to wherever its node lives — no discipline name is
+  // hardcoded. No node → no quiz.
+  const nodePath = getNodePaths().get(slug);
+  if (!nodePath) return null;
+  const filePath = path.join(path.dirname(nodePath), "quizzes", `${slug}.yml`);
   if (!fs.existsSync(filePath)) return null;
 
   const quiz = load(fs.readFileSync(filePath, "utf8")) as Quiz;

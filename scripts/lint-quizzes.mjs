@@ -1,4 +1,5 @@
-// Quiz lint: validates every content/quizzes/*.yml companion file against the
+// Quiz lint: validates every quiz companion file under content/ (they live in a
+// quizzes/ dir beside their node, e.g. content/sociology/quizzes/<slug>.yml) against the
 // quiz schema v1 (docs/quiz-schema.md). Runs after lint-content.mjs under
 // `npm run lint:content`. Kept as a separate script — quizzes are a distinct
 // file family with their own schema — but merged into the one command so a
@@ -14,7 +15,21 @@ import { load } from "js-yaml";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONTENT = path.join(ROOT, "content");
-const QUIZZES = path.join(CONTENT, "quizzes");
+
+// Since Phase 4.7 nodes and their quizzes live one discipline level deep
+// (content/<discipline>/<slug>.md and content/<discipline>/quizzes/<slug>.yml).
+// Walk content/ recursively — a quiz must match a node *somewhere* under
+// content/ (slug existence), not in a hardcoded directory. README.md is folder
+// docs, not a node; course.yaml is .yaml, so a .yml walk finds only quizzes.
+function walkFiles(dir, ext) {
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...walkFiles(full, ext));
+    else if (entry.name.endsWith(ext) && entry.name !== "README.md") out.push(full);
+  }
+  return out;
+}
 
 const PARADIGMS = ["functionalism", "conflict-theory", "symbolic-interactionism"];
 const FILE_KEYS = ["version", "status", "adapted_from", "questions"];
@@ -28,9 +43,9 @@ const errors = [];
 // Needed for the slug-resolution and stub-node rules. Mirrors lint-content's
 // frontmatter read rather than importing it, so the two scripts stay independent.
 const nodeStatus = new Map();
-for (const file of fs.readdirSync(CONTENT).filter(f => f.endsWith(".md") && f !== "README.md")) {
-  const slug = file.replace(/\.md$/, "");
-  const text = fs.readFileSync(path.join(CONTENT, file), "utf8");
+for (const file of walkFiles(CONTENT, ".md")) {
+  const slug = path.basename(file, ".md");
+  const text = fs.readFileSync(file, "utf8");
   const match = text.match(/^---\n([\s\S]*?)\n---\n/);
   if (!match) continue; // lint-content already reports missing frontmatter
   try {
@@ -42,19 +57,18 @@ for (const file of fs.readdirSync(CONTENT).filter(f => f.endsWith(".md") && f !=
 
 const isString = v => typeof v === "string" && v.trim() !== "";
 
-if (!fs.existsSync(QUIZZES)) {
-  console.log("lint:quizzes — no content/quizzes directory; nothing to check");
+const files = walkFiles(CONTENT, ".yml");
+if (files.length === 0) {
+  console.log("lint:quizzes — no quiz files under content/; nothing to check");
   process.exit(0);
 }
 
-const files = fs.readdirSync(QUIZZES).filter(f => f.endsWith(".yml"));
-
 for (const file of files) {
-  const slug = file.replace(/\.yml$/, "");
-  const at = `quizzes/${file}`;
+  const slug = path.basename(file, ".yml");
+  const at = path.relative(ROOT, file);
   let quiz;
   try {
-    quiz = load(fs.readFileSync(path.join(QUIZZES, file), "utf8"));
+    quiz = load(fs.readFileSync(file, "utf8"));
   } catch (e) {
     errors.push(`${at}: YAML parse error: ${e.message.split("\n")[0]}`);
     continue;
