@@ -221,12 +221,12 @@ Focus movement pans the focused node into view — pan only, never zoom, and onl
 
 ---
 
-## Article panel — prose measure & breakout grid (4.8, reconciled 4.9)
+## Article panel — prose measure & breakout grid (4.8, reconciled 4.9, overhang widened 5.0)
 
 `.node-main` (both hosts: `/node` and the course lesson view) is a named-track
 grid: `[breakout-start] minmax(24px, 1fr) [prose-start] minmax(0, 75ch)
 [prose-end] minmax(24px, 1fr) [breakout-end]`, horizontal padding `--space-4`,
-`max-width: calc(75ch + 2×9ch + 32px)` (799.25px at default — see *the panel
+`max-width: calc(75ch + 2×12ch + 32px)` (848.75px at default — see *the panel
 bound* below), and `margin-inline: auto`, centred in its layout column always.
 
 - **The measure (design anchor, moved 4.9):** body prose reads best at roughly
@@ -240,24 +240,27 @@ bound* below), and `margin-inline: auto`, centred in its layout column always.
   body-size font, so the A−/A/A+ text-size steps scale the column with the
   type (562.5 / 618.75 / 675px) and CPL holds. The prose column is
   *load-bearing readability*: it is never widened to "fill" a viewport.
-- **The panel bound (4.9):** the breakout cap stopped being a free-standing
-  pixel value (4.8's 864px panel / 832px content — the course view's article
-  column at 1440) and became a **function of the measure**: panel content =
-  prose measure + a symmetric **9ch overhang** per side → **93ch = 767.25px**
-  at default (`.node-main` max-width = that + the 16px×2 padding). A
-  systematic relationship is what makes the prose/panel width difference read
-  as intentional. Both in ch, so the panel scales with the text steps
-  alongside the prose (697.5 / 767.25 / 837px content) — no fixed-px panel at
-  any step. 9ch was the target and it stands: at the cap the in-grid gutters
-  resolve to 9ch (74.25px) each, comfortably above their 24px floor. The 4.8
-  rule that **both hosts share one panel bound** stands; the fixed 288px
-  rails and the layout-column gutters absorb the difference (the 4.8
-  rail-width audit is untouched).
+- **The panel bound (4.9, overhang widened 5.0):** the breakout cap stopped
+  being a free-standing pixel value (4.8's 864px panel / 832px content — the
+  course view's article column at 1440) and became a **function of the
+  measure**: panel content = prose measure + a symmetric overhang per side.
+  4.9 shipped a 9ch overhang (93ch = 767.25px content) from its brief's
+  8–10ch range; **5.0 widened it to 12ch per side** (owner-approved follow-up)
+  → **99ch = 816.75px** content at default (`.node-main` max-width = that +
+  the 16px×2 padding). **12ch is the outer edge — no future pass widens past
+  it.** A systematic relationship is what makes the prose/panel width
+  difference read as intentional. Both in ch, so the panel scales with the
+  text steps alongside the prose (742.5 / 816.75 / 891px content) — no
+  fixed-px panel at any step. At the cap the in-grid gutters resolve to 12ch
+  (99px) each, comfortably above their 24px floor. The 4.8 rule that **both
+  hosts share one panel bound** stands; the fixed 288px rails and the
+  layout-column gutters absorb the difference (the 4.8 rail-width audit is
+  untouched).
 - **Breakout (design anchor):** wide elements — cards, tables, multi-column
   sections — aren't prose and don't obey the prose measure. They opt out with
   `grid-column: breakout` (today: the Perspectives section; future wide
   elements reuse the same assignment). Breakout spans the panel minus its
-  16px padding: max 93ch of content.
+  16px padding: max 99ch of content.
 - A split article (`.node-body:has(> .perspectives)`) uses `display:
   contents` so its fragments sit in the prose track while the section spans
   breakout; the edge margins the old block flow collapsed are re-pinned
@@ -374,17 +377,17 @@ dropped):
   band's edge would crop above the fold). Prose-fallback nodes render no
   section and therefore no band (verified: `sociological-imagination` renders
   zero `.perspectives` elements and zero rail chips).
-- Layout (reworked 4.8, re-bounded 4.9): the section spans the article grid's
-  **breakout track** (`grid-column: breakout` — see *Article panel*), so the
-  band sizes against up to 93ch = 767.25px (default step) and the card grid
-  against that minus the band's 16px×2 padding and 1px×2 hairline — up to
-  **733.25px**. Tracks stay `repeat(auto-fit, minmax(min(100%, 220px),
-  1fr))` — the paradigm trio sits **three-across at desktop** (1440:
-  **233.75px cards, both hosts** — the hosts now agree at desktop because
-  the shared bound caps both; 768: 223.33px — the 220px readability floor
-  untouched), collapsing to a single stacked column at ≤640px (explicit
-  `1fr`); the `min(100%, …)` guard prevents horizontal overflow at 390px
-  (band 358px wide, cards 324px).
+- Layout (reworked 4.8, re-bounded 4.9, widened 5.0): the section spans the
+  article grid's **breakout track** (`grid-column: breakout` — see *Article
+  panel*), so the band sizes against up to 99ch = 816.75px (default step; 4.9
+  shipped 93ch) and the card grid against that minus the band's 16px×2
+  padding and 1px×2 hairline — up to **782.75px**. Tracks stay
+  `repeat(auto-fit, minmax(min(100%, 220px), 1fr))` — the paradigm trio sits
+  **three-across at desktop** (1440: **≈250px cards, both hosts** — the hosts
+  agree at desktop because the shared bound caps both; 768: 223.33px — the
+  220px readability floor untouched), collapsing to a single stacked column
+  at ≤640px (explicit `1fr`); the `min(100%, …)` guard prevents horizontal
+  overflow at 390px (band 358px wide, cards 324px).
 - **Wrap thresholds (re-derived 4.9, pinned live — correct behaviour, not
   defects).** The trio needs 3×220 + 2×16 = 692px of grid, i.e. a **758px
   article column** (692 + band padding 32 + hairline 2 + panel padding 32;
@@ -409,8 +412,8 @@ dropped):
 - Two-item sections (theory nodes): the grid box is capped at `2×43ch + gap`
   and centred (4.9; was `2×360px + gap` — the comfort cap re-expressed in the
   measure's unit, **354.75px per card at default**, so it scales with the
-  text steps and always fits inside the 93ch panel bound: 2×43ch + 16px <
-  93ch at every step). The cap never changes *where* two-across wraps to one
+  text steps and always fits inside the 99ch panel bound: 2×43ch + 16px <
+  99ch at every step). The cap never changes *where* two-across wraps to one
   (the 220px floor decides that).
 
 *Improvisations / deltas from the original (unbuilt) spec above:* v1 uses the

@@ -304,11 +304,13 @@ html[data-textsize="lg"] {
    steps. */
 .node-main {
   --prose-measure: 75ch;
-  /* Panel overhang (4.9): the breakout bound is no longer a free-standing
-     pixel value but a function of the measure — prose plus a symmetric
-     overhang per side. A systematic relationship is what makes the width
-     difference between prose and panel read as intentional. */
-  --prose-overhang: 9ch;
+  /* Panel overhang (4.9, widened 5.0): the breakout bound is no longer a
+     free-standing pixel value but a function of the measure — prose plus a
+     symmetric overhang per side. A systematic relationship is what makes the
+     width difference between prose and panel read as intentional. 12ch is
+     the owner-approved 5.0 value (was 9ch) and the OUTER EDGE — no future
+     pass widens past it. */
+  --prose-overhang: 12ch;
   /* Gutter floor: + the 16px padding = the 40px prose inset the old
      --pad-panel gave. Breakout escapes the gutters but not the padding. */
   --prose-gutter: var(--space-6);
@@ -320,14 +322,15 @@ html[data-textsize="lg"] {
     [breakout-end];
   align-content: start;
   padding: var(--space-7) var(--space-4) var(--space-8);
-  /* Breakout bound (4.9): measure + 2×overhang + the 16px×2 padding, so
-     `[breakout-start]…[breakout-end]` resolves to 93ch (767.25px at default,
-     replacing the old 864px/832px content cap). Declared in ch like the
-     measure, so the panel scales with the A−/A/A+ steps alongside the prose —
-     no fixed-px panel at any step. Both hosts still share this one bound
-     (the rule stands from 4.8); the rails and page gutters absorb the
-     difference. At the cap the in-grid gutters resolve to 9ch (74.25px),
-     comfortably above their 24px floor. */
+  /* Breakout bound (4.9, re-widened 5.0): measure + 2×overhang + the 16px×2
+     padding, so `[breakout-start]…[breakout-end]` resolves to 99ch (816.75px
+     at default; was 93ch/767.25px at the 4.9 9ch overhang). Declared in ch
+     like the measure, so the panel scales with the A−/A/A+ steps alongside
+     the prose — no fixed-px panel at any step (742.5 / 816.75 / 891px
+     content across the steps). Both hosts still share this one bound (the
+     rule stands from 4.8); the rails and page gutters absorb the difference.
+     At the cap the in-grid gutters resolve to 12ch (99px), comfortably above
+     their 24px floor. */
   max-width: calc(
     var(--prose-measure) + 2 * var(--prose-overhang) + 2 * var(--space-4)
   );

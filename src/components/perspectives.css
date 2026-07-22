@@ -60,8 +60,9 @@
      Since 4.8 the section spans the article grid's breakout track, so the
      paradigm trio lands three-across at desktop without touching the 220px
      readability floor (3×220 + 2×16 = 692px never fit the old ≤660px prose
-     width). Since 4.9 the breakout bound is 93ch (767.25px at default) — see
-     .node-main — and the trio sizes against that. */
+     width). Since 5.0 the breakout bound is 99ch (816.75px at default; 4.9
+     shipped 93ch) — see .node-main — and the trio sizes against that
+     (≈250px cards at the cap). */
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: var(--space-4);
   margin-top: var(--space-5);
@@ -71,7 +72,7 @@
    card's reading comfort. The grid box itself is capped at two 43ch tracks
    (4.9; the 4.8 comfort cap of 360px re-expressed in the measure's unit —
    354.75px at default — so it scales with the text steps and always fits
-   inside the 93ch panel bound: 2×43ch + 16px < 93ch at every step) and
+   inside the 99ch panel bound: 2×43ch + 16px < 99ch at every step) and
    centred; the tracks stay `1fr`, so the two-across → one-across wrap still
    happens where the 220px floor demands it, not where the cap does.
    Three-item sections never approach the cap (their cards land ≈234px). */
