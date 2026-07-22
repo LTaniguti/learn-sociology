@@ -73,11 +73,23 @@ const RESERVED_FIELDS = new Set(
 if (KNOWN_FIELDS.size === 0) errors.push("schema: could not parse the Frontmatter fields table from docs/schema.md");
 
 // --- Parse every node's frontmatter ---
+// Slugs are globally unique across ALL of content/ (present and future): the
+// completion invariant, both localStorage stores, prerequisites, and cross-
+// references all stand on it. A duplicate basename anywhere under content/ is an
+// error — it silently splits one slug's identity across two files. Today no
+// duplicate exists; this rule exists so the first content/anthropology/culture.md
+// collides loudly at PR time. (See docs/schema.md → content structure.)
 const files = walkNodeFiles(CONTENT);
-const slugs = new Set(files.map(f => path.basename(f, ".md")));
+const slugPaths = new Map(); // slug → repo-relative path of the first file seen
 const nodes = new Map();
 for (const file of files) {
   const slug = path.basename(file, ".md");
+  const rel = path.relative(ROOT, file);
+  if (slugPaths.has(slug)) {
+    errors.push(`duplicate slug '${slug}': ${slugPaths.get(slug)} and ${rel} — a basename must be unique across all of content/`);
+    continue;
+  }
+  slugPaths.set(slug, rel);
   const text = fs.readFileSync(file, "utf8");
   const match = text.match(/^---\n([\s\S]*?)\n---\n/);
   if (!match) {
@@ -90,6 +102,7 @@ for (const file of files) {
     errors.push(`${slug}: YAML parse error: ${e.message.split("\n")[0]}`);
   }
 }
+const slugs = new Set(slugPaths.keys());
 
 // --- Registry coverage: files and concept-list rows must match 1:1 ---
 for (const slug of registry.keys()) if (!slugs.has(slug)) errors.push(`registry: no file for concept-list slug ${slug}`);

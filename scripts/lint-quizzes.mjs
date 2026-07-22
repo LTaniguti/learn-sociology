@@ -63,9 +63,18 @@ if (files.length === 0) {
   process.exit(0);
 }
 
+// Slugs (quiz basenames too) are globally unique across content/ — a duplicate
+// quiz basename splits one node's self-check across two files. Flag it loudly.
+const quizPaths = new Map();
+
 for (const file of files) {
   const slug = path.basename(file, ".yml");
   const at = path.relative(ROOT, file);
+  if (quizPaths.has(slug)) {
+    errors.push(`duplicate quiz '${slug}': ${quizPaths.get(slug)} and ${at} — a quiz basename must be unique across all of content/`);
+    continue;
+  }
+  quizPaths.set(slug, at);
   let quiz;
   try {
     quiz = load(fs.readFileSync(file, "utf8"));
