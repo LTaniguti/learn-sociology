@@ -293,14 +293,22 @@ html[data-textsize="lg"] {
    reading measure; wide elements (the Perspectives cards) stop pretending to
    be prose and span breakout instead.
 
-   The prose track is the recorded measure: 70ch at body size. The 4.8 audit
-   found the old 660px cap ≈ 80ch / ~88 real characters per line — past the
-   60–75 range body prose reads best at — so the measure came DOWN, never
-   widened to "fill" the viewport. `ch` resolves against this container's
-   font (the body serif), so the text-size control scales the column with the
-   type and characters-per-line holds across steps. */
+   The prose track is the recorded measure: 75ch at body size (4.9; was 70ch).
+   The 4.8 audit found the old 660px cap ≈ 80ch / ~88 real characters per
+   line — past the 60–75 range body prose reads best at — so the measure came
+   DOWN to 70ch; 4.9 moved it to the TOP of that range (owner preference for a
+   fuller column). 75ch is the ceiling — future passes do not widen further,
+   and the column is never widened to "fill" the viewport. `ch` resolves
+   against this container's font (the body serif), so the text-size control
+   scales the column with the type and characters-per-line holds across
+   steps. */
 .node-main {
-  --prose-measure: 70ch;
+  --prose-measure: 75ch;
+  /* Panel overhang (4.9): the breakout bound is no longer a free-standing
+     pixel value but a function of the measure — prose plus a symmetric
+     overhang per side. A systematic relationship is what makes the width
+     difference between prose and panel read as intentional. */
+  --prose-overhang: 9ch;
   /* Gutter floor: + the 16px padding = the 40px prose inset the old
      --pad-panel gave. Breakout escapes the gutters but not the padding. */
   --prose-gutter: var(--space-6);
@@ -312,9 +320,17 @@ html[data-textsize="lg"] {
     [breakout-end];
   align-content: start;
   padding: var(--space-7) var(--space-4) var(--space-8);
-  /* Breakout bound: the course view's article column at 1440 (1440 − 2×288
-     chrome columns), so both hosts share one panel maximum. */
-  max-width: 864px;
+  /* Breakout bound (4.9): measure + 2×overhang + the 16px×2 padding, so
+     `[breakout-start]…[breakout-end]` resolves to 93ch (767.25px at default,
+     replacing the old 864px/832px content cap). Declared in ch like the
+     measure, so the panel scales with the A−/A/A+ steps alongside the prose —
+     no fixed-px panel at any step. Both hosts still share this one bound
+     (the rule stands from 4.8); the rails and page gutters absorb the
+     difference. At the cap the in-grid gutters resolve to 9ch (74.25px),
+     comfortably above their 24px floor. */
+  max-width: calc(
+    var(--prose-measure) + 2 * var(--prose-overhang) + 2 * var(--space-4)
+  );
   width: 100%;
   /* Centered in its column always (was: only when the rail collapsed — the
      audit's 412px /node dead gap and the course view's 124px gap). The

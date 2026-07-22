@@ -221,29 +221,43 @@ Focus movement pans the focused node into view — pan only, never zoom, and onl
 
 ---
 
-## Article panel — prose measure & breakout grid (4.8)
+## Article panel — prose measure & breakout grid (4.8, reconciled 4.9)
 
 `.node-main` (both hosts: `/node` and the course lesson view) is a named-track
-grid: `[breakout-start] minmax(24px, 1fr) [prose-start] minmax(0, 70ch)
+grid: `[breakout-start] minmax(24px, 1fr) [prose-start] minmax(0, 75ch)
 [prose-end] minmax(24px, 1fr) [breakout-end]`, horizontal padding `--space-4`,
-`max-width: 864px` — the course view's article column at 1440 (1440 − 2×288
-chrome columns), so both hosts share one panel maximum — and `margin-inline:
-auto`, centred in its layout column always.
+`max-width: calc(75ch + 2×9ch + 32px)` (799.25px at default — see *the panel
+bound* below), and `margin-inline: auto`, centred in its layout column always.
 
-- **The measure (design anchor):** body prose reads best at roughly **60–75
-  characters per line**. The 4.8 audit measured the previous 660px cap at
-  **80ch / ~88 real characters per line** — past the range, contradicting the
-  assumption that it sat near the low end — so the recorded measure came
-  **down** to **70ch** (577.5px at the 16.5px body size; ~77 CPL incl.
-  spaces). The track is declared in `ch` against the panel's body-size font,
-  so the A−/A/A+ text-size steps scale the column with the type and CPL
-  holds. The prose column is *load-bearing readability*: it is never widened
-  to "fill" a viewport.
+- **The measure (design anchor, moved 4.9):** body prose reads best at roughly
+  **60–75 characters per line**. The 4.8 audit measured the previous 660px cap
+  at **80ch / ~88 real characters per line** — past the range — so the
+  recorded measure came **down** to 70ch (~77 real CPL incl. spaces). 4.9
+  moved it to **75ch** (618.75px at the 16.5px body size; **~82 real CPL
+  incl. spaces**, measured live) — the **top** of the documented range, per
+  owner preference for a fuller column. **75ch is the ceiling**: future passes
+  do not widen further. The track is declared in `ch` against the panel's
+  body-size font, so the A−/A/A+ text-size steps scale the column with the
+  type (562.5 / 618.75 / 675px) and CPL holds. The prose column is
+  *load-bearing readability*: it is never widened to "fill" a viewport.
+- **The panel bound (4.9):** the breakout cap stopped being a free-standing
+  pixel value (4.8's 864px panel / 832px content — the course view's article
+  column at 1440) and became a **function of the measure**: panel content =
+  prose measure + a symmetric **9ch overhang** per side → **93ch = 767.25px**
+  at default (`.node-main` max-width = that + the 16px×2 padding). A
+  systematic relationship is what makes the prose/panel width difference read
+  as intentional. Both in ch, so the panel scales with the text steps
+  alongside the prose (697.5 / 767.25 / 837px content) — no fixed-px panel at
+  any step. 9ch was the target and it stands: at the cap the in-grid gutters
+  resolve to 9ch (74.25px) each, comfortably above their 24px floor. The 4.8
+  rule that **both hosts share one panel bound** stands; the fixed 288px
+  rails and the layout-column gutters absorb the difference (the 4.8
+  rail-width audit is untouched).
 - **Breakout (design anchor):** wide elements — cards, tables, multi-column
   sections — aren't prose and don't obey the prose measure. They opt out with
   `grid-column: breakout` (today: the Perspectives section; future wide
   elements reuse the same assignment). Breakout spans the panel minus its
-  16px padding: max 832px of content.
+  16px padding: max 93ch of content.
 - A split article (`.node-body:has(> .perspectives)`) uses `display:
   contents` so its fragments sit in the prose track while the section spans
   breakout; the edge margins the old block flow collapsed are re-pinned
@@ -353,10 +367,12 @@ dropped):
   two-across; below a 640px viewport, one. (In the course view the column
   crosses 724px at ≈1012px viewport while the rail is stacked, and again at
   ≈1300px once the rail returns inline at >1150px.)
-- Two-item sections (theory nodes): the grid box is capped at `2×360px + gap`
-  and centred, so cards stop at 360px instead of stretching to 408px at full
-  breakout; the cap never changes *where* two-across wraps to one (the 220px
-  floor decides that).
+- Two-item sections (theory nodes): the grid box is capped at `2×43ch + gap`
+  and centred (4.9; was `2×360px + gap` — the comfort cap re-expressed in the
+  measure's unit, **354.75px per card at default**, so it scales with the
+  text steps and always fits inside the 93ch panel bound: 2×43ch + 16px <
+  93ch at every step). The cap never changes *where* two-across wraps to one
+  (the 220px floor decides that).
 
 *Improvisations / deltas from the original (unbuilt) spec above:* v1 uses the
 mono `.node-body h2` heading (the brief's "same article, not a widget" goal)
