@@ -57,6 +57,8 @@ self-assessment, not a test.
 
 Sociology's major paradigms are competing lenses, not settled facts. Contested topics must present each major paradigm's reading fairly — functionalist, conflict, and interactionist at minimum where they differ — and **no single framing may be presented as neutral fact**.
 
+Lead each Perspectives subsection (`###`) or bullet (`- **…**`) with the paradigm's name — "Functionalist…", "Conflict…", "Interactionist…"/"Symbolic…" — and it earns that paradigm's accent in the rendered cards; any other lead still renders, just as a neutral (unaccented) card.
+
 ## Licensing
 
 By contributing **content** (anything in `content/`), you agree it is licensed under [CC BY 4.0](LICENSE-CONTENT.md). **Code** contributions are licensed under [MIT](LICENSE.md).

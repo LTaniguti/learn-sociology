@@ -246,12 +246,70 @@ Pill, `--type-badge-*`, radius `--radius-pill`, padding `5px 12px`, border `--bo
   - **Met (complete):** `✓` `--state-complete-mark`; bg `--state-complete-bg`; border `--state-complete-border`; label `--state-complete-text`; trailing "complete" caption `--state-complete-label`.
   - **Unmet (incomplete):** `○` `--state-unmet-mark`; bg `--state-unmet-bg`; border `--state-unmet-border`; label `--state-unmet-text`; trailing "incomplete →" `--state-unmet-label`; the chip is a link to that lesson. *Hover:* border `--color-border-accent`, bg `--color-surface-hover`.
 
-## Perspectives section (the multi-lens signature)
-- Serif heading (`--type-h2-serif-*`, `--color-text-strong`) + mono count "3 paradigms · 1 concept" (`--color-text-muted`) + italic serif subhead.
-- **Desktop:** three equal columns (`grid`, gap `--space-4`), each a card with a `--border-accent` **top** bar in its paradigm colour, tinted surface (`--paradigm-*-surface`), radius `0 0 --radius-md --radius-md`. Column eyebrow = paradigm name in its colour (`--font-mono` 10.5px uppercase).
-  - The concept's **home** paradigm (here Interactionism) is emphasised: inset ring `--color-accent-ring`, a "HOME" badge (mono 8.5px, `--color-surface` text on `--color-accent`), and slightly brighter body text.
-- **Mobile:** the three become stacked cards with a `--border-accent` **left** bar instead of top; same colours, same home emphasis.
-- Order is always functionalism → conflict → interactionism, regardless of which is home. Never collapse to a single narrative.
+## Perspectives section (the multi-lens signature) — shipped 4.5
+
+The `## Perspectives` body section is extracted at build time (`lib/content.ts`)
+and rendered as paradigm-accented cards by `Perspectives.tsx`. It renders
+*inside* the `.node-body` article, between `htmlBefore` and `htmlAfter`, in the
+body's own position — so its heading, intro prose, and card bodies inherit the
+article's typography and the reader perceives a designed passage of the same
+lesson, not a bolt-on widget. Static, printable, server-rendered; no
+interactivity, tabs, or per-paradigm filtering in v1.
+
+**Extraction — two authoring shapes (both recognized):**
+- **`###` subsection** — heading text is the item label, subsection body the
+  item html. (The concept-node "three readings" pattern; `docs/schema.md`.)
+- **bold-led bullet** — `- **Functionalist response.** …`; the bold lead is the
+  label, the remainder the item html. A bullet list is only treated as items
+  when *every* bullet is bold-led (a half-bold list stays prose). Paragraphs
+  between the heading and the first item become the `intro`.
+
+**Alias table** (`lib/content.ts`, matched case-insensitively as a substring of
+the label): `functionalis` → functionalism · `conflict` → conflict ·
+`interaction` → interactionism · `symbolic` → interactionism. No match →
+`paradigm: null` (a **neutral card**). The table is deliberately tiny and
+explicit: a future paradigm (a feminist reading, say) arrives as a neutral card
+with **zero code change**, and earns its own accent only when the taxonomy
+formally grows and a row is added.
+
+**Fallback ladder** (never the reason a content PR breaks; author text is never
+dropped):
+1. No `## Perspectives` heading → `perspectives: null`; the single full-body
+   `html` path renders untouched (byte-identical to pre-4.5).
+2. Heading present but no item parses → `perspectives: null` too; the whole
+   section stays in the body prose, exactly as today.
+3. Items parse but odd content precedes/follows → structure what parses; leading
+   (and any rare trailing) nodes fold into `intro`, never discarded.
+
+**Card anatomy:**
+- Section heading: a plain `<h2>` — inherits the article's `.node-body h2` mono
+  eyebrow register. Intro: plain prose (`.perspectives-intro`).
+- Attributed card: tinted surface `--paradigm-*-surface`, a **3px left accent
+  border** in the paradigm colour (`--paradigm-*`), and a name-label chip reusing
+  the 4.1 self-check attribution chip treatment (`--type-badge-*`, thin border,
+  `--radius-xs`) in the paradigm colour. The chip text is the canonical paradigm
+  name — Functionalism / Conflict theory / Interactionism — so the quiz and the
+  article name paradigms in **one vocabulary**. *The label carries the meaning;
+  the hue only accompanies it* (house CVD rule).
+- Neutral card: `--color-surface-sunken`, **no** accent (the left border matches
+  the uniform `--color-border-input`), muted chip, label rendered **as authored**
+  (trailing period trimmed).
+- Card bodies inherit `.node-body` prose (links, bold, inline code) — the card is
+  a container, not a new typography scope.
+- Layout: `grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr))`
+  — **2–3 columns on wide viewports**, collapsing to a **single stacked column**
+  at ≤640px (explicit `1fr`); the `min(100%, …)` guard prevents horizontal
+  overflow at 390px.
+
+*Improvisations / deltas from the original (unbuilt) spec above:* v1 uses the
+mono `.node-body h2` heading (the brief's "same article, not a widget" goal)
+rather than a serif heading + "3 paradigms · 1 concept" count + subhead; a **left**
+accent on every viewport (not top-on-desktop); **authored order** is preserved
+(not forced func→conflict→interactionism), since a theory node records other
+paradigms' responses in the author's sequence; and there is **no HOME-paradigm
+badge/emphasis** — deferred, and inapplicable to theory nodes whose section is
+about the *other* paradigms. Zero token or theme-file work: the accents and
+surfaces already existed in all three themes.
 
 ## Related-links list
 - Eyebrow "Related concepts" (`--type-eyebrow-*`, `--color-text-muted`).
