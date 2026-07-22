@@ -46,6 +46,8 @@ Further out:
 - Stub nodes for more interdisciplinary subjects and in the far future other social sciences added to network view 
 - Sound & motion pass — subtle animation and optional sound design to make completing lessons more satisfying and the interface more dynamic
 - Settings panel — motion and sound preferences (layered over OS-level reduced-motion, never replacing it), plus clearing device-local data: course progress, quiz attempts, and saved preferences
+- End-of-unit tests — module-level assessments for completing course units, paired with the sound & motion pass so finishing a unit feels like something
+- Homepage redesign — a proper front door that orients new visitors, surfaces the navigation modes, and shows a returning learner their progress at a glance
 
 ## Contributing
 
