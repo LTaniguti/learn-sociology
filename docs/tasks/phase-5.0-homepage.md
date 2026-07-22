@@ -25,6 +25,10 @@
 
 Standing rules apply in full: no new hex anywhere in the diff; static export; no new dependencies; no client component unless something genuinely needs interactivity (nothing on this page does — the Shell brings its own).
 
+## Item 0 — Perspectives cards wider (owner-approved 4.9 follow-up)
+
+Panel overhang goes **9ch → 12ch per side**: `.node-main` bound becomes `calc(75ch + 2×12ch + 32px)` (panel content 99ch = 816.75px at default; cards ≈250px at the cap). The measure stays 75ch; the measure+overhang relationship, ch-scaling across A−/A/A+, gutter floors, 220px card floor, and the 43ch two-card cap are all unchanged. Amend the recorded 8–10ch overhang range in `components.md` to note 12ch as the shipped value and **the outer edge — no future pass widens past it**. Wrap thresholds are set by the 220px floor and should not move — verify, don't assume. Verify both hosts share the new bound, gutters ≥ their 24px floor at 1024/1440, boundaries hold, 390 untouched. Own commit before the homepage work: `Design: Perspectives panel overhang to 12ch — cards ~250px at cap (5.0)`.
+
 ## Item 1 — Page structure
 
 Replace the Step 2.5 landing body in `src/app/page.tsx` with the new page: Shell, hero, modes grid, contribute band, footer. The old `.landing` styles in `node-page.css` are removed or replaced; where the homepage styles live (extend the existing stylesheet's landing section vs. a dedicated file) follows whatever convention `components.md` records for per-frame styles — executor judges, records. Heading order is sane (one `h1` in the hero; section headings `h2`), sections are landmarks or labeled regions per the existing pages' pattern.
@@ -71,6 +75,7 @@ Top hairline divider. Left: the **official GitHub mark** (the octocat path — t
 
 ## Verification
 
+0. Item 0: panel 99ch content at default on both hosts, ≈250px three-across cards at the cap, thresholds unmoved, steps scale (expect 742.5 / 816.75 / 891px panel content across A−/A/A+), 390 unchanged.
 1. All three themes, all of: 390, 768, 1024, 1440 — geometry evidence per the standing substitution rule where screenshots fail; no horizontal overflow anywhere.
 2. Hero snapshot: identical SVG output across two consecutive builds (diff the emitted markup — the determinism gate); node dots match the tree's paradigm mapping on spot-checked slugs; panel navigates to `/network` by click and by keyboard; focus ring visible.
 3. All three live cards navigate correctly (click + keyboard); the Sociologists card is skipped by tab order and announces nothing interactive.
@@ -92,4 +97,4 @@ One feature commit — `Feature: real homepage — hero with live network snapsh
 
 ## Report back
 
-The translation-table decisions as implemented (hairline choice, radii, hero type, CTA treatments); the snapshot mechanism, its determinism evidence, and the dot-mapping source; the derived concept count; the contribute-band copy as shipped; per-theme verification; improvisations.
+Item 0's measured card widths and per-step panel widths with threshold confirmation; the translation-table decisions as implemented (hairline choice, radii, hero type, CTA treatments); the snapshot mechanism, its determinism evidence, and the dot-mapping source; the derived concept count; the contribute-band copy as shipped; per-theme verification; improvisations.
