@@ -37,7 +37,7 @@ The proof of concept is live with Modes 1, 2 and 3. The current focus is **conte
 ## Roadmap
 
 Near term:
-- Content push — stub nodes → published lessons ready for peer review 
+- Content push — stub nodes → published lessons + quizzes ready for peer review 
 - Structured "Perspectives" rendering — paradigm columns driven by content-pipeline hooks
 - Mode 4: sociologist profiles and citation network
 
