@@ -25,10 +25,25 @@
   display: grid;
   /* Columns on wide viewports (2–3 across), collapsing to a single stacked
      column as the container narrows. `min(100%, …)` guards against horizontal
-     overflow when the column is narrower than the track floor (390px mobile). */
+     overflow when the column is narrower than the track floor (390px mobile).
+     Since 4.8 the section spans the article grid's breakout track, so the
+     paradigm trio lands three-across at desktop without touching the 220px
+     readability floor (3×220 + 2×16 = 692px never fit the old ≤660px prose
+     width). */
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: var(--space-4);
   margin-top: var(--space-5);
+}
+
+/* Two-item sections (theory nodes) at breakout width would stretch to 408px
+   cards — past any card's reading comfort. The grid box itself is capped at
+   two 360px tracks and centred; the tracks stay `1fr`, so the two-across →
+   one-across wrap still happens where the 220px floor demands it, not where
+   the cap does. Three-item sections never hit 360 (832px breakout ÷ 3 = 266). */
+.perspectives-grid:has(> .perspective-card:nth-child(2):last-child) {
+  max-width: calc(2 * 360px + var(--space-4));
+  margin-inline: auto;
+  width: 100%;
 }
 
 /* --- Card --- */

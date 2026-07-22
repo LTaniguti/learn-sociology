@@ -343,6 +343,34 @@ html[data-textsize="lg"] {
   margin-bottom: 0;
 }
 
+/* Breakout (4.8): when the article carries a structured Perspectives section,
+   the article wrapper dissolves into the panel grid (`display: contents`) so
+   its fragments can be placed per track — prose fragments in the prose track,
+   the card section spanning breakout. A no-perspectives article stays a
+   normal prose-track item and its innerHTML flow is untouched. */
+.node-body:has(> .perspectives) {
+  display: contents;
+}
+
+/* The lifted fragments hold the reading measure… */
+.node-body > * {
+  grid-column: prose;
+}
+
+/* …and the wide element takes the full span. This assignment is the breakout
+   opt-in: future wide elements (tables, figures) reuse it by sitting at this
+   level with `grid-column: breakout`. */
+.node-body > .perspectives {
+  grid-column: breakout;
+}
+
+/* With the wrapper dissolved, the fragment above the section is its own grid
+   item: its trailing margin no longer collapses into the section heading's
+   34px, so it is zeroed the same way the article edges are. */
+.node-body > div:first-of-type > :last-child {
+  margin-bottom: 0;
+}
+
 /* Breadcrumb */
 .breadcrumb {
   font-family: var(--type-breadcrumb-family);
