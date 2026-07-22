@@ -221,6 +221,50 @@ Focus movement pans the focused node into view — pan only, never zoom, and onl
 
 ---
 
+## Article panel — prose measure & breakout grid (4.8)
+
+`.node-main` (both hosts: `/node` and the course lesson view) is a named-track
+grid: `[breakout-start] minmax(24px, 1fr) [prose-start] minmax(0, 70ch)
+[prose-end] minmax(24px, 1fr) [breakout-end]`, horizontal padding `--space-4`,
+`max-width: 864px` — the course view's article column at 1440 (1440 − 2×288
+chrome columns), so both hosts share one panel maximum — and `margin-inline:
+auto`, centred in its layout column always.
+
+- **The measure (design anchor):** body prose reads best at roughly **60–75
+  characters per line**. The 4.8 audit measured the previous 660px cap at
+  **80ch / ~88 real characters per line** — past the range, contradicting the
+  assumption that it sat near the low end — so the recorded measure came
+  **down** to **70ch** (577.5px at the 16.5px body size; ~77 CPL incl.
+  spaces). The track is declared in `ch` against the panel's body-size font,
+  so the A−/A/A+ text-size steps scale the column with the type and CPL
+  holds. The prose column is *load-bearing readability*: it is never widened
+  to "fill" a viewport.
+- **Breakout (design anchor):** wide elements — cards, tables, multi-column
+  sections — aren't prose and don't obey the prose measure. They opt out with
+  `grid-column: breakout` (today: the Perspectives section; future wide
+  elements reuse the same assignment). Breakout spans the panel minus its
+  16px padding: max 832px of content.
+- A split article (`.node-body:has(> .perspectives)`) uses `display:
+  contents` so its fragments sit in the prose track while the section spans
+  breakout; the edge margins the old block flow collapsed are re-pinned
+  explicitly (see node-page.css comments).
+- Gutters `minmax(24px, 1fr)`: with the 16px padding they reproduce the old
+  40px prose inset when space is tight and grow symmetrically when it isn't
+  — space that frames the reading column is doing a job. At ≤640px the
+  gutter floor drops to 0 and mobile keeps its pre-4.8 geometry (358px prose
+  at 390).
+- **Course view band fix:** the node rail stacks below the article at
+  ≤1150px when inside `.course-main` (course.css) — the audit's dead band
+  (900–1150) held both 288px chrome columns with mobile-scale prose between
+  them. `/node` keeps its 900px threshold. The syllabus and rail stay 288px
+  fixed: the audit showed both are content-earned (widest related row ≈263px
+  + padding; syllabus rows wrap at a readable width).
+- **Headline before → after (4.8 audit, social-norms):** /node 1440: 412px
+  one-sided dead gap → symmetric 144px framing · course 1024 prose: 368px /
+  44.6ch → 577.5px / 70ch · course 950 prose: 294px / 35.6ch → 577.5px /
+  70ch · course 1440 article→rail dead 124px → 0 (the panel fills its
+  column; in-grid gutters frame the prose).
+
 ## Breadcrumb
 - `--type-breadcrumb-*`; colour `--color-text-muted`; separators " / ". Final (current) crumb in `--color-accent`. On the node page: "Sociology / Deviance / **Labeling Theory**".
 
@@ -243,7 +287,7 @@ Pill, `--type-badge-*`, radius `--radius-pill`, padding `5px 12px`, border `--bo
 ## "Before this lesson" prerequisites callout
 - Container: border `--border-thin var(--color-border-input)`; background `--color-surface-sunken`; radius `--radius-lg`; eyebrow "Before this lesson" (`--type-eyebrow-*`, `--color-text-muted`).
 - Each prerequisite is a chip carrying **its own** completion state:
-  - **Met (complete):** `✓` `--state-complete-mark`; bg `--state-complete-bg`; border `--state-complete-border`; label `--state-complete-text`; trailing "complete" caption `--state-complete-label`.
+  - **Met (complete):** the drawn **[completion seal](#completion-seal-43)** leads (1em, via the chip's `LessonCheck` span, `--seal-ink` = the chip fill `--state-complete-bg`); bg `--state-complete-bg`; border `--state-complete-border`; label `--state-complete-text`; trailing "complete" caption `--state-complete-label`. *(4.8: was a text `✓` in `--state-complete-mark` — the 4.3 scope divergence, now closed.)*
   - **Unmet (incomplete):** `○` `--state-unmet-mark`; bg `--state-unmet-bg`; border `--state-unmet-border`; label `--state-unmet-text`; trailing "incomplete →" `--state-unmet-label`; the chip is a link to that lesson. *Hover:* border `--color-border-accent`, bg `--color-surface-hover`.
 
 ## Perspectives section (the multi-lens signature) — shipped 4.5
@@ -296,10 +340,23 @@ dropped):
   (trailing period trimmed).
 - Card bodies inherit `.node-body` prose (links, bold, inline code) — the card is
   a container, not a new typography scope.
-- Layout: `grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr))`
-  — **2–3 columns on wide viewports**, collapsing to a **single stacked column**
-  at ≤640px (explicit `1fr`); the `min(100%, …)` guard prevents horizontal
-  overflow at 390px.
+- Layout (reworked 4.8): the section spans the article grid's **breakout
+  track** (`grid-column: breakout` — see *Article panel*), so the grid sizes
+  against up to 832px instead of the old ≤660px prose width, where
+  3×220 + 2×16 = 692px could never fit and the trio always wrapped
+  two-over-one. Tracks stay `repeat(auto-fit, minmax(min(100%, 220px), 1fr))`
+  — the paradigm trio sits **three-across at desktop** (1440: 266px cards;
+  1024: 224px — the 220px readability floor untouched), collapsing to a
+  single stacked column at ≤640px (explicit `1fr`); the `min(100%, …)` guard
+  prevents horizontal overflow at 390px. **Wrap thresholds (correct
+  behaviour, not defects):** below a 724px article column the trio renders
+  two-across; below a 640px viewport, one. (In the course view the column
+  crosses 724px at ≈1012px viewport while the rail is stacked, and again at
+  ≈1300px once the rail returns inline at >1150px.)
+- Two-item sections (theory nodes): the grid box is capped at `2×360px + gap`
+  and centred, so cards stop at 360px instead of stretching to 408px at full
+  breakout; the cap never changes *where* two-across wraps to one (the 220px
+  floor decides that).
 
 *Improvisations / deltas from the original (unbuilt) spec above:* v1 uses the
 mono `.node-body h2` heading (the brief's "same article, not a widget" goal)
@@ -317,6 +374,30 @@ surfaces already existed in all three themes.
   - Colour-tag shape is tokenised as a small swatch: bar (4×16, `--radius-xs`), dot (9×9 circle), or pill (22×10) — see Tweaks `relatedTagShape`; default **bar**.
   - *Hover:* label → `--color-accent-hover`; `→` fades in (`--transition-fast`).
 - Thinkers list (Howard Becker, Edwin Lemert) sits below as **plain serif text, not links** (`--color-text-body`), with a mono caption "plain text — links arrive with Mode 4".
+
+## Rail — Perspectives chips (4.8)
+
+- Rendered **only when `node.perspectives` is non-null** (the 4.5 extraction)
+  — no empty block, no placeholder; prose-fallback nodes (e.g.
+  `sociological-imagination`) show nothing, consistent with the section
+  itself.
+- **Position in the rail's anatomy:** after Related concepts, before Thinkers
+  — concept navigation ahead of metadata.
+- Eyebrow "Perspectives" (`--type-eyebrow-*`); one chip per item in the
+  perspective-label vocabulary (`--type-badge-*`, `--border-thin
+  var(--color-border-input)`, `--radius-xs`, 3px 8px padding): **attributed**
+  chips carry the canonical paradigm name with their `--paradigm-*` accent as
+  text + border colour (the one-language rule the quiz chips and section
+  cards follow); **neutral** chips carry their authored label (trailing
+  period trimmed), muted. Label derivation is shared with the cards
+  (`perspectiveLabel`, Perspectives.tsx).
+- Each chip is an **anchor** to the section heading's stable
+  `id="perspectives"` — the rail's job is orientation: *this concept is read
+  three ways; jump there.* No smooth-scroll behaviour added. *Hover:* surface
+  tint `--color-surface-hover` only — the ink keeps carrying the paradigm,
+  never the hover.
+- Chips wrap (`flex-wrap`, `--space-2` gap); the block adds no width demands
+  to the 288px rail.
 
 ## Mini-tree locator ("In the map")
 - Card: border `--border-thin var(--color-border)`; background `--color-surface`; radius `--radius-lg`; padding `--space-4`.
@@ -506,12 +587,12 @@ completion cue — the CVD rule) was right; the glyph was the defect.
   ring; × amber lineage path. The **midnight faint-tint** finding from 4.2 stands
   as flagged — the seal carrying the meaning where the tint is faint is **by
   design**; the token is deliberately not patched in this phase.
-- **Scope divergence (recorded).** The prerequisite chips in the "Before this
-  lesson" callout (`node-page.css`) were **out of 4.3 scope** and still draw a
-  text `✓` via their own `::before`. `LessonCheck` renders the seal into its span
-  on every surface, but that span stays visually hidden in the prereq context, so
-  the prereq mark is unchanged. A future phase may bring the prereq chip onto the
-  seal for full consistency.
+- **Scope divergence (recorded 4.3, closed 4.8).** The prerequisite chips in
+  the "Before this lesson" callout were out of 4.3 scope and kept a text `✓`
+  via their own `::before`. As of 4.8 the chip's `LessonCheck` span is no
+  longer visually hidden: it renders the seal as the chip's leading mark
+  (`order: -1`, 1em, `--seal-ink` = the chip fill `--state-complete-bg`) and
+  the `✓` rule is gone. Every completion surface now draws the one seal.
 - **`aria-hidden`** on every seal; the surrounding markup carries the spoken
   state (the syllabus `.lesson-check` span's `aria-label="completed"`, the
   button's "Completed" text, the canvas node's label). Paint only — feeds no
