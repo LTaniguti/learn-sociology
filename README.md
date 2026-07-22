@@ -38,13 +38,14 @@ The proof of concept is live with Modes 1, 2 and 3. The current focus is **conte
 
 Near term:
 - Content push — stub nodes → published lessons + quizzes ready for peer review 
-- Structured "Perspectives" rendering — paradigm columns driven by content-pipeline hooks
 - Mode 4: sociologist profiles and citation network
 
 Further out:
 - Interdisciplinary gateway nodes — periphery concepts bridging into adjacent social sciences, opening future branches beyond sociology
 - Expanding Sociology stubs from the current starter set of 53
 - Stub nodes for more interdisciplinary subjects and in the far future other social sciences added to network view 
+- Sound & motion pass — subtle animation and optional sound design to make completing lessons more satisfying and the interface more dynamic
+- Settings panel — motion and sound preferences (layered over OS-level reduced-motion, never replacing it), plus clearing device-local data: course progress, quiz attempts, and saved preferences
 
 ## Contributing
 
