@@ -221,6 +221,92 @@ Focus movement pans the focused node into view — pan only, never zoom, and onl
 
 ---
 
+## Homepage (5.0)
+
+The real homepage, replacing the Step 2.5 structure-only landing (its `.landing`
+styles are retired from node-page.css; homepage styles live in
+`src/app/home.css` — a per-frame stylesheet, the post-2.9 convention). A Claude
+Design mockup set the direction; the shipped page is its translation into the
+token system (the mockup's own nav, palette, radii, and seeded fake graph were
+all discarded per the 5.0 translation table). Server-rendered throughout — no
+client component; the Shell brings the page's only interactivity.
+
+**Anatomy:** `<Shell />` unchanged, no active tab → hero (h1 + lede + two CTAs
+| network snapshot panel) → modes grid ("Four ways in") → contribute band →
+footer. One `h1`; sections are labeled regions (`aria-label` /
+`aria-labelledby`); card titles are `h3` under the sections' `h2`.
+
+- **Hero type — new token (5.0):** the 38px `--type-title` read undersized at
+  hero scale on desktop, so the scale grew by a **`--type-display-*`** role
+  (serif, 46px, 1.1, 700) — type tokens are the sanctioned growth path (hex is
+  not). Mobile (≤640) drops the h1 to `--type-title-size-mobile`. Lede in the
+  `--type-lede` role. **The concept count in the lede is derived**
+  (`getAllNodes().length`), never hardcoded — the sentence stays true as the
+  corpus grows.
+- **CTAs:** primary "Start the course" → `/course` reuses the landing's
+  first-link treatment (the screen's one amber action: `--color-accent` fill,
+  `--color-surface` label, mono `--type-tab-size`, `--radius-sm`); secondary
+  "Explore the concept map" → `/network` is the quiet outline register (mono,
+  `--color-text-meta-warm`, `--color-border-input` hairline; hover
+  `--color-surface-hover` + `--color-border-accent`).
+- **Network snapshot (the hero's right column).** Real data at build time:
+  `layoutNetwork()` + `buildGraph()` are **imported unmodified** with the same
+  inputs the `/network` page assembles, in a server component
+  (`src/components/home/NetworkSnapshot.tsx`); the settled geometry renders as
+  a **static inline SVG** — tree edges (`--color-edge`) and idle cross-links
+  (`--color-edge-faint`) as 1px hairlines (`vector-effect:
+  non-scaling-stroke`), nodes as r=20-user-unit dots (~3px on screen), no
+  labels, full extent in frame. **Determinism is inherited** from
+  `layoutNetwork` (no randomness added; the mockup's seeded jitter was not
+  ported) — verified by diffing the emitted SVG across two builds
+  (byte-identical). **Dot mapping** = the hierarchy tree's paradigm→dot
+  mapping: `paradigm/*`-tagged nodes take `--paradigm-*`, everything else the
+  tree's neutral `--tree-badge-border`. The framed panel (`--color-surface`,
+  `--color-border-input` hairline, `--radius-xl`, `--space-4` padding) is
+  **one `Link` to `/network`** with `aria-label` "Explore the concept
+  network"; the SVG is `aria-hidden`. Hover: surface tint + accent border;
+  focus: the global ring. Stacks under the hero text ≤900px.
+- **Framed-container language (precedent):** every framed surface on the page
+  — snapshot panel, mode cards, contribute band — uses the
+  **`--color-border-input`** hairline (the prereq-callout/4.9-band frame);
+  the footer divider uses `--color-border` (the attribution-footer rule).
+  Radius roles: `--radius-xl` main panels (snapshot, band), `--radius-lg`
+  cards, `--radius-md` glyph chips.
+- **Modes grid:** eyebrow "Four ways in" in the `--type-h2-mono` set. Four
+  cards, `repeat(auto-fit, minmax(min(100%, 220px), 1fr))`. Three live cards
+  (Course / Hierarchy / Network) — the **whole card is the link**; anatomy:
+  glyph chip (a `--paradigm-*-surface` tint carrying a 20×20 stroke glyph in
+  the paradigm ink — trio order func/conflict/inter, the site's standing
+  order), serif title (`--type-card-title-size`, 600), serif body
+  (`--type-card-summary-size`, `--color-text-muted`). **Sociologists is
+  honest-disabled**, mirroring the Shell tab (the "advertise the roadmap"
+  principle): a non-interactive `div` (no link semantics, skipped by tab
+  order), muted text, neutral chip (`--color-surface-sunken` +
+  `--color-text-faint`), and a "planned" marker in the `--type-badge` mono
+  treatment.
+- **Contribute band:** the framed-band container two-column (1.5fr/1fr,
+  stacking ≤900). Left: serif `--type-h2-serif` heading "Built in the open";
+  two body paragraphs sourced from CONTRIBUTING.md (OpenStax CC BY 4.0 / MIT /
+  public repo; stubs-await-authors + browser-only workflow — the document
+  remains the source of truth and is linked, not duplicated); two external
+  links (mono, standard link amber) → CONTRIBUTING.md and
+  docs/writing-a-lesson.md on GitHub. Right: three marker rows
+  (`--paradigm-dot-size` dots + serif `--type-related-size` labels). **The
+  dots take `--color-accent`, not the paradigm trio** — the mockup used its
+  accent set decoratively, and direction rule 4 makes the paradigm colours
+  semantic-only, so the accent token is the compliant reading of
+  "paradigm/accent token dots".
+- **Footer:** `--color-border` top hairline. Left: the official GitHub mark
+  (octocat path verbatim, monochrome via `currentColor` so it themes by
+  inversion — no recolouring, per GitHub's usage rules) linking to the repo
+  with an `aria-label`, beside the repo path in muted mono. Right: the
+  license line — "MIT code · CC BY 4.0 content · adapted from OpenStax
+  Introduction to Sociology 3e. Changes were made to the original." — mono
+  `--type-tag-size` muted, source title in `--color-text-meta-warm` (the
+  attribution footer's vocabulary). Wraps cleanly at 390.
+
+---
+
 ## Article panel — prose measure & breakout grid (4.8, reconciled 4.9, overhang widened 5.0)
 
 `.node-main` (both hosts: `/node` and the course lesson view) is a named-track

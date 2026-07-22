@@ -1,5 +1,7 @@
-/* Open Commons styling (Step 2.9) — shared shell, node page, landing.
-   Every value references docs/design/tokens.css (imported in layout.tsx). */
+/* Open Commons styling (Step 2.9) — shared shell + node page.
+   Every value references docs/design/tokens.css (imported in layout.tsx).
+   The Step 2.5 landing styles this file carried were retired in 5.0; the
+   real homepage's styles live in src/app/home.css. */
 
 /* ============================================================
    Shared shell (components.md, "Top bar")
@@ -877,70 +879,6 @@ html[data-textsize="lg"] {
 .tag-chip-paradigm {
   color: var(--color-accent);
   border-color: var(--color-border-accent);
-}
-
-/* ============================================================
-   Landing page (no mockup — direction.md rules of thumb only)
-   ============================================================ */
-
-.landing {
-  flex: 1;
-  width: 100%;
-  max-width: 660px; /* rule 9 */
-  margin: 0 auto;
-  padding: var(--space-10) var(--space-6);
-}
-
-.landing h1 {
-  font-family: var(--type-title-family);
-  font-size: var(--type-title-size);
-  line-height: var(--type-title-line);
-  font-weight: var(--type-title-weight);
-  color: var(--color-text-strong);
-  margin-bottom: var(--space-5);
-}
-
-.landing > p {
-  font-family: var(--type-lede-family);
-  font-size: var(--type-lede-size);
-  line-height: var(--type-lede-line);
-  font-weight: var(--type-lede-weight);
-  color: var(--color-text-lede);
-  margin-bottom: var(--space-8);
-}
-
-.landing-links {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-/* Single amber action (rule 3): the first link is the one CTA */
-.landing-links li:first-child a {
-  display: inline-block;
-  background: var(--color-accent);
-  color: var(--color-surface);
-  font-family: var(--font-mono);
-  font-size: var(--type-tab-size);
-  padding: var(--space-3) var(--space-5);
-  border-radius: var(--radius-sm);
-  transition: background var(--transition-fast);
-}
-
-.landing-links li:first-child a:hover {
-  background: var(--color-accent-hover);
-  color: var(--color-surface);
-}
-
-.landing-links li:not(:first-child) a {
-  font-family: var(--font-mono);
-  font-size: var(--type-tab-size);
-  color: var(--color-text-meta-warm);
-}
-
-.landing-links li:not(:first-child) a:hover {
-  color: var(--color-accent-hover);
 }
 
 /* ============================================================

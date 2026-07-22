@@ -164,6 +164,15 @@
          role: font-family | size | line-height | weight | tracking
      ---------------------------------------------------------- */
 
+  /* Display title (homepage hero — added 5.0). At hero scale the 38px page
+     title reads undersized against the snapshot panel; the scale grows by a
+     type token (the sanctioned growth path — hex may not grow). Mobile drops
+     to the title's own mobile size. */
+  --type-display-family:     var(--font-serif);
+  --type-display-size:       46px;   /* mobile: --type-title-size-mobile */
+  --type-display-line:       1.1;
+  --type-display-weight:     700;
+
   /* Page title (h1) */
   --type-title-family:       var(--font-serif);
   --type-title-size:         38px;   /* course view uses 34px; mobile 28px */

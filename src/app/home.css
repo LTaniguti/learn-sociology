@@ -1,0 +1,424 @@
+/* ============================================================
+   Homepage (Phase 5.0) — replaces the Step 2.5 landing styles
+   that lived in node-page.css. Every value is a token; the
+   framed-container language (surface fill + --color-border-input
+   hairline) and radius roles follow components.md: --radius-xl
+   for main panels (snapshot frame, contribute band), --radius-lg
+   for cards, --radius-md for glyph chips.
+   ============================================================ */
+
+.home {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--space-9) var(--space-6) var(--space-6);
+}
+
+.home > section {
+  margin-bottom: var(--space-10);
+}
+
+/* ---- Hero ---- */
+
+.home-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: var(--space-9);
+  align-items: center;
+}
+
+.home-title {
+  font-family: var(--type-display-family);
+  font-size: var(--type-display-size);
+  line-height: var(--type-display-line);
+  font-weight: var(--type-display-weight);
+  color: var(--color-text-strong);
+  margin-bottom: var(--space-5);
+}
+
+.home-lede {
+  font-family: var(--type-lede-family);
+  font-size: var(--type-lede-size);
+  line-height: var(--type-lede-line);
+  font-weight: var(--type-lede-weight);
+  color: var(--color-text-lede);
+  margin-bottom: var(--space-7);
+}
+
+.home-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+/* Primary CTA — the landing's first-link treatment (the page's one amber
+   action, rule 3). */
+.home-cta-primary {
+  display: inline-block;
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-family: var(--font-mono);
+  font-size: var(--type-tab-size);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.home-cta-primary:hover {
+  background: var(--color-accent-hover);
+  color: var(--color-surface);
+}
+
+/* Secondary CTA — the quiet outline register (canvas-control language at CTA
+   scale): mono, muted warm ink, input hairline. */
+.home-cta-secondary {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: var(--type-tab-size);
+  color: var(--color-text-meta-warm);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-5);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.home-cta-secondary:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-accent);
+  color: var(--color-text-meta-warm);
+}
+
+/* The snapshot panel: the framed-band container language (surface fill,
+   input hairline, --radius-xl, space-token padding). The whole panel is one
+   link to /network; hover takes the standing tint. */
+.home-snapshot {
+  display: block;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.home-snapshot:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-accent);
+}
+
+.home-snapshot-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* Snapshot inks. Tree edges take the muted connector token, cross-links the
+   idle-overlay token — the same two-layer read as the network canvas, minus
+   the labels. Hairlines stay 1px on screen via non-scaling stroke (set on
+   the elements). */
+.home-snapshot-tree-edge {
+  fill: none;
+  stroke: var(--color-edge);
+  stroke-width: var(--border-thin);
+}
+
+.home-snapshot-cross-edge {
+  stroke: var(--color-edge-faint);
+  stroke-width: var(--border-thin);
+}
+
+/* Node dots: the hierarchy tree's paradigm→dot mapping (leaf paradigm dots),
+   untagged nodes on the same neutral the tree's fallback uses. */
+.home-snapshot-dot {
+  fill: var(--tree-badge-border);
+}
+
+.home-snapshot-dot-functionalism {
+  fill: var(--paradigm-functionalism);
+}
+
+.home-snapshot-dot-conflict {
+  fill: var(--paradigm-conflict);
+}
+
+.home-snapshot-dot-interactionism {
+  fill: var(--paradigm-interactionism);
+}
+
+/* ---- Modes grid ---- */
+
+.home-eyebrow {
+  font-family: var(--type-h2-mono-family);
+  font-size: var(--type-h2-mono-size);
+  line-height: var(--type-h2-mono-line);
+  font-weight: var(--type-h2-mono-weight);
+  letter-spacing: var(--type-h2-mono-tracking);
+  text-transform: var(--type-h2-mono-transform);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+}
+
+.home-modes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  gap: var(--space-4);
+}
+
+/* Card language: surface, input hairline, card radius, space-token padding.
+   The whole card is the link. */
+.home-card {
+  display: block;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  color: var(--color-text-body);
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+a.home-card:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-accent);
+  color: var(--color-text-body);
+}
+
+/* Glyph chip: paradigm-token fills — the tinted paradigm surface under a
+   glyph drawn in the paradigm ink. Neutral (Sociologists) keeps the sunken
+   surface + faint ink, consistent with its disabled state. */
+.home-card-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-9);
+  height: var(--space-9);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-sunken);
+  color: var(--color-text-faint);
+  margin-bottom: var(--space-4);
+}
+
+.home-card-chip svg {
+  width: var(--space-5);
+  height: var(--space-5);
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: currentColor;
+}
+
+.home-card-chip-functionalism {
+  background: var(--paradigm-func-surface);
+  color: var(--paradigm-functionalism);
+}
+
+.home-card-chip-conflict {
+  background: var(--paradigm-conflict-surface);
+  color: var(--paradigm-conflict);
+}
+
+.home-card-chip-interactionism {
+  background: var(--paradigm-inter-surface);
+  color: var(--paradigm-interactionism);
+}
+
+.home-card-title {
+  font-family: var(--font-serif);
+  font-size: var(--type-card-title-size);
+  font-weight: 600;
+  color: var(--color-text-heading);
+  margin-bottom: var(--space-2);
+}
+
+.home-card-body {
+  font-family: var(--font-serif);
+  font-size: var(--type-card-summary-size);
+  line-height: var(--type-body-line);
+  color: var(--color-text-muted);
+}
+
+/* Sociologists — honest-disabled (the Shell tab's principle): muted, not
+   interactive, advertised rather than hidden. */
+.home-card-disabled {
+  cursor: default;
+}
+
+.home-card-disabled .home-card-title {
+  color: var(--color-text-muted);
+}
+
+.home-card-disabled .home-card-body {
+  color: var(--color-text-faint);
+}
+
+.home-card-planned {
+  font-family: var(--type-badge-family);
+  font-size: var(--type-badge-size);
+  font-weight: var(--type-badge-weight);
+  letter-spacing: var(--type-badge-tracking);
+  text-transform: var(--type-badge-transform);
+  color: var(--color-text-faint);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-xs);
+  padding: 2px var(--space-2);
+  margin-left: var(--space-2);
+  vertical-align: middle;
+}
+
+/* ---- Contribute band ---- */
+
+.home-contribute {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: var(--space-9);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+}
+
+.home-contribute-title {
+  font-family: var(--type-h2-serif-family);
+  font-size: var(--type-h2-serif-size);
+  line-height: var(--type-h2-serif-line);
+  font-weight: var(--type-h2-serif-weight);
+  color: var(--color-text-strong);
+  margin-bottom: var(--space-4);
+}
+
+.home-contribute-main {
+  max-width: 75ch; /* prose stays inside the recorded measure */
+}
+
+.home-contribute-main p {
+  font-family: var(--type-body-family);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  color: var(--color-text-body);
+  margin-bottom: var(--space-4);
+}
+
+.home-contribute-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) var(--space-6);
+}
+
+.home-contribute-links a {
+  font-family: var(--font-mono);
+  font-size: var(--type-tab-size);
+}
+
+/* Marker rows — the mockup's dot-list anatomy on the accent token (the
+   paradigm trio is semantic-only per direction rule 4, so the dots take the
+   accent instead). */
+.home-contribute-steps {
+  list-style: none;
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.home-contribute-steps li {
+  font-family: var(--font-serif);
+  font-size: var(--type-related-size);
+  color: var(--color-text-body);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.home-contribute-steps li::before {
+  content: "";
+  flex: none;
+  width: var(--paradigm-dot-size);
+  height: var(--paradigm-dot-size);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  align-self: center;
+}
+
+/* ---- Footer ---- */
+
+.home-footer {
+  border-top: var(--border-thin) solid var(--color-border);
+  padding-top: var(--space-6);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-6);
+}
+
+.home-footer-repo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.home-footer-mark {
+  display: inline-flex;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-xs);
+  transition: color var(--transition-fast);
+}
+
+.home-footer-mark:hover {
+  color: var(--color-text-heading);
+}
+
+.home-footer-mark svg {
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
+.home-footer-path,
+.home-footer-license {
+  font-family: var(--font-mono);
+  font-size: var(--type-tag-size);
+  color: var(--color-text-muted);
+}
+
+.home-footer-source {
+  color: var(--color-text-meta-warm);
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 900px) {
+  .home-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-7);
+  }
+
+  .home-contribute {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+    padding: var(--space-6);
+  }
+
+  .home-contribute-steps {
+    align-self: start;
+  }
+}
+
+@media (max-width: 640px) {
+  .home {
+    padding: var(--space-7) var(--space-4) var(--space-6);
+  }
+
+  .home > section {
+    margin-bottom: var(--space-8);
+  }
+
+  .home-title {
+    font-size: var(--type-title-size-mobile);
+  }
+}
