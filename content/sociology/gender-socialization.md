@@ -6,7 +6,7 @@ prerequisites: [sex-and-gender, socialization]
 related: []
 tags: [discipline/sociology, level/micro, type/concept, subfield/gender-sexuality, subfield/socialization]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

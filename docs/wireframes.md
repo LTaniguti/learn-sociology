@@ -46,11 +46,11 @@ Canvas controls are minimal: expand all / collapse all and zoom. Cross-cutting e
 
 ## Frame 3 — Node page (`node-page.svg`)
 
-The destination of every navigation action, shown populated with `labeling-theory` — chosen because it exercises the most schema features at once (a theory node with a paradigm tag, two prerequisites in different branches, thinkers, and OpenStax attribution).
+The destination of every navigation action, shown populated with `labeling-theory` — chosen because it exercises the most schema features at once (a theory node with a paradigm tag, two prerequisites in different branches, people, and OpenStax attribution).
 
 Top to bottom: a **breadcrumb** walking the `parent` chain (`sociology / deviance / labeling-theory`), doubling as the "you are here" link back into Mode 2; the `title` with a `difficulty` badge and — when `status` is not `published` — a maturity banner; the `summary` as a standout lede; a **prerequisites callout** listing each prerequisite with its own completion state and link; then the schema's fixed body headings (**Definition, In depth, Perspectives, Examples**), with the Perspectives section annotated to show the theory-node variant ("how the other paradigms respond") established in the stress test.
 
-A **right rail** carries the graph-adjacent metadata: `related` concepts as links, `thinkers` as plain text (explicitly annotated as Mode 4 seed data, not yet links), and `tags` as filter chips. The page footer renders `adapted_from` as a visible CC BY attribution line linking to `LICENSE-CONTENT.md` — attribution traveling with the material on screen, not only in the repo.
+A **right rail** carries the graph-adjacent metadata: `related` concepts as links, `people` as plain text (explicitly annotated as Mode 4 seed data, not yet links), and `tags` as filter chips. The page footer renders `adapted_from` as a visible CC BY attribution line linking to `LICENSE-CONTENT.md` — attribution traveling with the material on screen, not only in the repo.
 
 ## Traceability table
 
@@ -64,7 +64,7 @@ A **right rail** carries the graph-adjacent metadata: `related` concepts as link
 | Difficulty badge; preview card | `difficulty` | 2, 3 |
 | Tag chips; preview card | `tags` | 2, 3 |
 | Related-concepts rail | `related` | 3 |
-| Thinkers line (inert) | `thinkers` | 3 |
+| People line (inert) | `people` | 3 |
 | Attribution footer | `adapted_from` | 3 |
 | Draft/review banner | `status` | 3 |
 | Progress checkmarks and count | Local storage (deferred: accounts) | 1 |

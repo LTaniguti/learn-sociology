@@ -6,7 +6,7 @@ prerequisites: [scientific-method]
 related: []
 tags: [discipline/sociology, level/macro, type/method, subfield/research-methods]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

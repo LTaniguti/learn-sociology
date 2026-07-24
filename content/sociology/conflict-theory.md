@@ -6,7 +6,7 @@ prerequisites: [theoretical-paradigms]
 related: []
 tags: [discipline/sociology, level/macro, type/theory, subfield/foundations, paradigm/conflict]
 difficulty: intro
-thinkers: [Karl Marx, Max Weber]
+people: [Karl Marx, Max Weber]
 status: stub
 ---
 

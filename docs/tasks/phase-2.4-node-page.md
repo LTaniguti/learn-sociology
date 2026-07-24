@@ -28,7 +28,7 @@ Statically generated route `app/node/[slug]/page.tsx` (App Router, `output: 'exp
 4. **Lede** — `summary` as a standout paragraph.
 5. **Prerequisites callout** — each prerequisite as a link with its title (resolve via `getNode`). Completion state is a Mode 1 / localStorage concern (Step 2.5); render the list without checkmarks now, structured so 2.5 can add state without markup changes.
 6. **Body** — the rendered HTML from the pipeline. Do not re-parse Markdown here. The fixed headings (Definition / In depth / Perspectives / Examples) live in the content files themselves, not the template.
-7. **Right rail** — `related` as links to node pages; `thinkers` as plain text (annotate in a comment: Mode 4 seed data, deliberately inert); `tags` as chips (inert — filtering is deferred).
+7. **Right rail** — `related` as links to node pages; `people` as plain text (annotate in a comment: Mode 4 seed data, deliberately inert); `tags` as chips (inert — filtering is deferred).
 8. **Giscus placeholder** — an empty, clearly-commented region at the page bottom for Step 2.7. No Giscus script yet.
 9. **Attribution footer** — when `adapted_from` is present, render it as a visible CC BY line linking to `LICENSE-CONTENT.md` (match the phrasing pattern in that file's reuse template). Omit the line entirely for nodes without `adapted_from`.
 
@@ -42,7 +42,7 @@ Statically generated route `app/node/[slug]/page.tsx` (App Router, `output: 'exp
 ## Verification (report results)
 
 1. `npm run build` succeeds; static export contains 53 node pages
-2. `labeling-theory` page shows: breadcrumb `sociology / deviance-and-social-control (or actual parent chain) / labeling-theory`, two prerequisite links, thinkers text, tag chips, attribution footer
+2. `labeling-theory` page shows: breadcrumb `sociology / deviance-and-social-control (or actual parent chain) / labeling-theory`, two prerequisite links, people text, tag chips, attribution footer
 3. A node without `adapted_from` shows no attribution line
 4. Stub banner appears on all stub nodes
 5. All internal links resolve within the exported site (spot-check plus a link count vs. slug registry)

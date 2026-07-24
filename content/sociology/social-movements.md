@@ -6,7 +6,7 @@ prerequisites: [social-change, in-groups-and-out-groups]
 related: []
 tags: [discipline/sociology, level/meso, type/concept, subfield/social-change]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

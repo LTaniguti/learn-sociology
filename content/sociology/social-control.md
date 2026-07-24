@@ -6,7 +6,7 @@ prerequisites: [deviance]
 related: []
 tags: [discipline/sociology, level/macro, type/concept, subfield/deviance]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

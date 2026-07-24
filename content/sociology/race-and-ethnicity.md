@@ -6,7 +6,7 @@ prerequisites: [social-stratification, social-construction-of-reality]
 related: []
 tags: [discipline/sociology, level/macro, type/concept, subfield/race-ethnicity]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

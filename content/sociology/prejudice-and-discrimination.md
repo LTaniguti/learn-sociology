@@ -6,7 +6,7 @@ prerequisites: [race-and-ethnicity, in-groups-and-out-groups]
 related: []
 tags: [discipline/sociology, level/micro, type/concept, subfield/race-ethnicity]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

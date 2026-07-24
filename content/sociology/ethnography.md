@@ -6,7 +6,7 @@ prerequisites: [quantitative-and-qualitative-methods]
 related: []
 tags: [discipline/sociology, level/micro, type/method, subfield/research-methods]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

@@ -517,7 +517,7 @@ surfaces already existed in all three themes.
 - Each row: a **paradigm colour tag** (denoting the paradigm the related concept sits in — teal/rose/amber from `--paradigm-*`) + serif label (`--type-related-*`, `--color-text-related`), hairline divider `--border-thin var(--color-border-subtle)`, trailing `→` hidden until hover.
   - Colour-tag shape is tokenised as a small swatch: bar (4×16, `--radius-xs`), dot (9×9 circle), or pill (22×10) — see Tweaks `relatedTagShape`; default **bar**.
   - *Hover:* label → `--color-accent-hover`; `→` fades in (`--transition-fast`).
-- Thinkers list (Howard Becker, Edwin Lemert) sits below as **plain serif text, not links** (`--color-text-body`), with a mono caption "plain text — links arrive with Mode 4".
+- People list (Howard Becker, Edwin Lemert) sits below as **plain serif text, not links** (`--color-text-body`), with a mono caption "plain text — links arrive with Mode 4".
 
 ## Rail — Perspectives chips (4.8)
 
@@ -525,7 +525,7 @@ surfaces already existed in all three themes.
   — no empty block, no placeholder; prose-fallback nodes (e.g.
   `sociological-imagination`) show nothing, consistent with the section
   itself.
-- **Position in the rail's anatomy:** after Related concepts, before Thinkers
+- **Position in the rail's anatomy:** after Related concepts, before People
   — concept navigation ahead of metadata.
 - Eyebrow "Perspectives" (`--type-eyebrow-*`); one chip per item in the
   perspective-label vocabulary (`--type-badge-*`, `--border-thin

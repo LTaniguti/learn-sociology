@@ -37,7 +37,7 @@ export type NodeFrontmatter = {
   difficulty: "intro" | "intermediate" | "advanced";
   status: "stub" | "draft" | "review" | "published";
   related?: string[];
-  thinkers?: string[];
+  people?: string[];
   adapted_from?: string;      // match the actual shape in schema.md — verify before typing
 };
 

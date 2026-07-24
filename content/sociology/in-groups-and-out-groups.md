@@ -6,7 +6,7 @@ prerequisites: [social-groups]
 related: []
 tags: [discipline/sociology, level/meso, type/concept, subfield/interaction]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

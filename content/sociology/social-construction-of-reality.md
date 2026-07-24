@@ -6,7 +6,7 @@ prerequisites: [symbolic-interactionism, roles]
 related: []
 tags: [discipline/sociology, level/micro, type/theory, subfield/interaction, paradigm/interactionism]
 difficulty: intermediate
-thinkers: [Peter Berger, Thomas Luckmann]
+people: [Peter Berger, Thomas Luckmann]
 status: stub
 ---
 

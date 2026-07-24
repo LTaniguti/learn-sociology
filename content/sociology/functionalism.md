@@ -6,7 +6,7 @@ prerequisites: [theoretical-paradigms]
 related: []
 tags: [discipline/sociology, level/macro, type/theory, subfield/foundations, paradigm/functionalism]
 difficulty: intro
-thinkers: [Émile Durkheim, Talcott Parsons, Robert Merton]
+people: [Émile Durkheim, Talcott Parsons, Robert Merton]
 status: stub
 ---
 

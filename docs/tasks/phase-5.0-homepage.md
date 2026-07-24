@@ -50,7 +50,7 @@ Right column: the network snapshot, replacing the mockup's placeholder art. Requ
 Eyebrow heading "Four ways in" in the `--type-h2-mono` treatment. Grid of four cards, `auto-fit/minmax` responsive like the mockup's intent, existing card language (surface, hairline, card radius, space-token padding).
 
 - **Three live cards** — Linear course → `/course`, Concept hierarchy → `/hierarchy`, Concept network → `/network`. The **whole card is the link** (one `Link` per card), hover tint + focus ring per the global rules. Card anatomy: small glyph chip (paradigm-token fills, one per card, matching the trio order the site already uses), serif title, short body. Mockup body copy is approved as the base; tighten freely, no marketing fluff.
-- **Fourth card: Sociologists — honest-disabled**, mirroring the Shell's disabled tab (the recorded "advertise the roadmap honestly" principle): rendered muted, not interactive, no link semantics, with a small "planned" marker in the mono-label treatment. Replace the mockup's literal "Placeholder text:" body with real copy — e.g. profiles of the thinkers behind the concepts, linked into the graph where their ideas appear — phrased as forthcoming. Neutral/muted chip, not a paradigm accent.
+- **Fourth card: Sociologists — honest-disabled**, mirroring the Shell's disabled tab (the recorded "advertise the roadmap honestly" principle): rendered muted, not interactive, no link semantics, with a small "planned" marker in the mono-label treatment. Replace the mockup's literal "Placeholder text:" body with real copy — e.g. profiles of the people behind the concepts, linked into the graph where their ideas appear — phrased as forthcoming. Neutral/muted chip, not a paradigm accent.
 
 ## Item 4 — Contribute band
 

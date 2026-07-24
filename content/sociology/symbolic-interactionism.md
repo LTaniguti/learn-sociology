@@ -6,7 +6,7 @@ prerequisites: [theoretical-paradigms, levels-of-analysis]
 related: []
 tags: [discipline/sociology, level/micro, type/theory, subfield/foundations, paradigm/interactionism]
 difficulty: intro
-thinkers: [George Herbert Mead, Herbert Blumer]
+people: [George Herbert Mead, Herbert Blumer]
 status: stub
 ---
 

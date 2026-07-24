@@ -12,7 +12,7 @@
 |---|---|---|---|
 | 1 | **Breaking** | Schema has no `parent` field, but Mode 2 requires one | Add `parent` to the schema (see Amendment A) |
 | 2 | Docs bug | Schema's example frontmatter is invalid against the taxonomy and concept list | Replace the example (see Amendment B) |
-| 3 | Docs drift | `thinkers` (schema) vs. `theorists` (concept-list deferred section) | Standardize on `thinkers` (see Amendment C) |
+| 3 | Docs drift | `people` (schema) vs. `theorists` (concept-list deferred section) | Standardize on `people` (see Amendment C) |
 | 4 | Template gap | `Perspectives` semantics are undefined for `type/theory` nodes | Clarify in template comment (see Amendment D) |
 | 5 | Deferred | No automated validation of slugs, tags, or required fields | Open a GitHub Issue for a Phase 1 lint script |
 
@@ -35,9 +35,9 @@ The example in `docs/schema.md` predates the taxonomy and concept list, and now 
 
 **Fix:** replace the example with the real, validated frontmatter from `content/sociological-imagination.md` (Amendment B). The example should always be a copy of a real node so it can never drift again.
 
-### Finding 3 — field-name drift: `thinkers` vs. `theorists` (docs drift)
+### Finding 3 — field-name drift: `people` vs. `theorists` (docs drift)
 
-The schema defines the field as `thinkers`; the "Deliberately deferred" section of `docs/concept-list.md` refers to "the `theorists` frontmatter field." One word, but slugs and field names are contracts — Mode 4 will eventually parse this field programmatically. The sample nodes use `thinkers`, matching the schema.
+The schema defines the field as `people`; the "Deliberately deferred" section of `docs/concept-list.md` refers to "the `theorists` frontmatter field." One word, but slugs and field names are contracts — Mode 4 will eventually parse this field programmatically. The sample nodes use `people`, matching the schema.
 
 **Fix:** one-word edit in `docs/concept-list.md` (Amendment C).
 
@@ -102,7 +102,7 @@ prerequisites: [sociology]
 related: [levels-of-analysis, society, social-change]
 tags: [level/macro, type/concept, subfield/foundations]
 difficulty: intro
-thinkers: [C. Wright Mills]
+people: [C. Wright Mills]
 adapted_from: "OpenStax Introduction to Sociology 3e, Section 1.1"
 status: draft
 ---
@@ -110,9 +110,9 @@ status: draft
 
 Add one line beneath it: *"This example is a copy of the live frontmatter in `content/sociological-imagination.md`; if the schema changes, update both."*
 
-### Amendment C — fix `theorists` → `thinkers` in `docs/concept-list.md`
+### Amendment C — fix `theorists` → `people` in `docs/concept-list.md`
 
-In the "Deliberately deferred" section, change "the `theorists` frontmatter field" to "the `thinkers` frontmatter field."
+In the "Deliberately deferred" section, change "the `theorists` frontmatter field" to "the `people` frontmatter field."
 
 ### Amendment D — clarify Perspectives in `templates/node-template.md`
 

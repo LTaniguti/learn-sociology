@@ -6,7 +6,7 @@ prerequisites: [culture, values-and-beliefs]
 related: [deviance, social-control, subcultures-and-countercultures, symbols-and-language]
 tags: [discipline/sociology, level/macro, type/concept, subfield/culture]
 difficulty: intro
-thinkers: [William Graham Sumner]
+people: [William Graham Sumner]
 adapted_from: "OpenStax Introduction to Sociology 3e, Section 3.2"
 status: draft
 ---

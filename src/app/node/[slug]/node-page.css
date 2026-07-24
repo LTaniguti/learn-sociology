@@ -803,8 +803,8 @@ html[data-textsize="lg"] {
   opacity: 1;
 }
 
-/* Thinkers — inert serif text */
-.rail-thinkers p:first-of-type {
+/* People — inert serif text */
+.rail-people p:first-of-type {
   font-family: var(--type-related-family);
   font-size: var(--type-related-size);
   color: var(--color-text-body);

@@ -99,7 +99,7 @@ Every lesson is a Markdown file with YAML frontmatter in this repository. The re
 | 1 | **Course** — a linear, university-style path with progress tracking | Live |
 | 2 | **Hierarchy** — a collapsible concept tree from core to niche | Live |
 | 3 | **Network** — a navigable graph of how concepts interrelate | Planned |
-| 4 | **Sociologists** — a citation-weighted network of thinkers and their work | Planned |
+| 4 | **Sociologists** — a citation-weighted network of people and their work | Planned |
 
 The two planned modes appear in the interface as visible, disabled tabs on purpose: the roadmap is part of the project's identity.
 

@@ -6,7 +6,7 @@ prerequisites: [social-institutions, socialization]
 related: []
 tags: [discipline/sociology, level/meso, type/concept, subfield/education]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

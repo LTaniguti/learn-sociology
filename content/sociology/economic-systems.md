@@ -6,7 +6,7 @@ prerequisites: [social-institutions, social-class]
 related: []
 tags: [discipline/sociology, level/macro, type/concept, subfield/politics-economy]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

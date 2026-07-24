@@ -6,7 +6,7 @@ prerequisites: [socialization, symbolic-interactionism]
 related: []
 tags: [discipline/sociology, level/micro, type/concept, subfield/socialization, paradigm/interactionism]
 difficulty: intro
-thinkers: [Charles Horton Cooley, George Herbert Mead]
+people: [Charles Horton Cooley, George Herbert Mead]
 status: stub
 ---
 

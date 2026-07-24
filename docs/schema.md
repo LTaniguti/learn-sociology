@@ -26,9 +26,14 @@ Nodes are grouped by discipline one folder deep — `content/sociology/<slug>.md
 | `related` | list of node IDs | no | **Powers Mode 3**, the concept network: non-hierarchical "these ideas connect" edges. Distinct from prerequisites — relation is not dependence. |
 | `tags` | list (from `docs/taxonomy.md`) | yes | Powers filtering and the tag-based network view; tag counts drive node centrality in force-directed layouts. Values must come from the controlled taxonomy (Stage 0 step 4) — free-form tags fragment the graph. Every node carries exactly one `discipline/` tag (currently always `discipline/sociology`), scoping the node for future multi-discipline expansion. |
 | `difficulty` | `intro` \| `intermediate` \| `advanced` | yes | Lets learners self-filter and lets graph views visually distinguish depth. Three values only; finer scales invite endless debate. |
-| `thinkers` | list of names | no | Seeds **Mode 4**, the sociologist network, later. Cheap to record now, expensive to backfill. |
+| `people` | list of names | no | Seeds **Mode 4**, the People view. Values are **display names**, not slugs, and each must resolve to exactly one entry in the person registry (`content/people/`) by its `name` or one of its `aliases`. Still optional and frequently empty — cheap to record now, expensive to backfill. |
 | `adapted_from` | string (source + section) | when applicable | **License compliance.** CC BY 4.0 requires attribution to travel with the material, not just live in `LICENSE-CONTENT.md`. Format: `"OpenStax Introduction to Sociology 3e, Section 1.2"`. If a node draws on two sections, comma-separate them within the string. Omit only for fully original nodes. |
 | `status` | `stub` \| `draft` \| `review` \| `published` | yes | Scaffolds the future peer-review workflow: pull requests move nodes from `stub` to `draft` to `review` to `published`. A `stub` has complete, valid frontmatter and a real `summary`, but no lesson body yet. Until then, it honestly signals maturity to readers. |
+
+`people` carried a different name through v0.2 and was renamed in Phase 6.0:
+"thinker" strains for practitioners, and for disciplines whose canon is not
+person-organized. The field count is unchanged — this is a rename, not an
+addition, and the ten-field budget stays spent.
 
 ## Where Mode 1's course order lives
 
@@ -121,7 +126,7 @@ prerequisites: [sociology]
 related: [levels-of-analysis, society, social-change]
 tags: [discipline/sociology, level/macro, type/concept, subfield/foundations]
 difficulty: intro
-thinkers: [C. Wright Mills]
+people: [C. Wright Mills]
 adapted_from: "OpenStax Introduction to Sociology 3e, Section 1.1"
 status: draft
 ---

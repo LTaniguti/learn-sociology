@@ -6,7 +6,7 @@ prerequisites: []
 related: []
 tags: []
 difficulty: intro
-thinkers: []
+people: []
 adapted_from: ""
 status: draft
 ---

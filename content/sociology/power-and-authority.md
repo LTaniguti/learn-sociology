@@ -6,7 +6,7 @@ prerequisites: [social-institutions, conflict-theory]
 related: []
 tags: [discipline/sociology, level/macro, type/concept, subfield/politics-economy]
 difficulty: intro
-thinkers: [Max Weber]
+people: [Max Weber]
 status: stub
 ---
 

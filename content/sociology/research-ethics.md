@@ -6,7 +6,7 @@ prerequisites: [sociological-research]
 related: []
 tags: [discipline/sociology, level/meso, type/method, subfield/research-methods]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

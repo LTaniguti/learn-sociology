@@ -109,7 +109,7 @@ prerequisites: [deviance]
 related: [labeling-theory, social-control, social-movements]
 tags: [discipline/sociology, level/macro, type/concept, subfield/deviance]
 difficulty: intermediate
-thinkers: [Stanley Cohen]
+people: [Stanley Cohen]
 adapted_from: "OpenStax Introduction to Sociology 3e, Section 7.1"
 status: draft
 ---
@@ -137,8 +137,10 @@ Field by field — *what it does in the product*, then the rule:
   proximity, and the paradigm accents. Covered in full in the next section.
 - **`difficulty`** — `intro` | `intermediate` | `advanced`, nothing finer. Lets
   learners self-filter.
-- **`thinkers`** — a list of names, seeding the future Sociologists view. Cheap
-  now, expensive to backfill. `[Stanley Cohen]`.
+- **`people`** — a list of display names, seeding the future People view. Each name
+  must resolve to exactly one entry in the person registry (`content/people/`), and
+  the linter enforces it — if the person is new, add their file first. Cheap now,
+  expensive to backfill. `[Stanley Cohen]`.
 - **`adapted_from`** — attribution, required whenever you draw on a source. See
   section 8.
 - **`status`** — set it to `draft`. Always.

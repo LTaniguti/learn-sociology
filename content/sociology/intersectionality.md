@@ -6,7 +6,7 @@ prerequisites: [race-and-ethnicity, sex-and-gender, social-class]
 related: []
 tags: [discipline/sociology, level/macro, type/theory, subfield/stratification, paradigm/conflict]
 difficulty: intermediate
-thinkers: [Kimberlé Crenshaw]
+people: [Kimberlé Crenshaw]
 status: stub
 ---
 

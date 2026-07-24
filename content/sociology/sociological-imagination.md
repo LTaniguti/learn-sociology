@@ -6,7 +6,7 @@ prerequisites: [sociology]
 related: [levels-of-analysis, society, social-change]
 tags: [discipline/sociology, level/macro, type/concept, subfield/foundations]
 difficulty: intro
-thinkers: [C. Wright Mills]
+people: [C. Wright Mills]
 adapted_from: "OpenStax Introduction to Sociology 3e, Section 1.1"
 status: draft
 ---

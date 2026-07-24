@@ -6,7 +6,7 @@ prerequisites: [culture, social-norms]
 related: []
 tags: [discipline/sociology, level/meso, type/concept, subfield/culture]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

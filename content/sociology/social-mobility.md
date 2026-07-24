@@ -6,7 +6,7 @@ prerequisites: [social-class]
 related: []
 tags: [discipline/sociology, level/macro, type/concept, subfield/stratification]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

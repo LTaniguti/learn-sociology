@@ -159,7 +159,7 @@ These OpenStax chapters are excluded from the seed set to keep the graph dense a
 - Ch. 19 — Health and Medicine
 - Ch. 20 — Population, Urbanization, and the Environment
 - Deeper children under each institution hub (e.g., hidden curriculum, secularization, marriage patterns, political systems)
-- All of Mode 4 (sociologist network) scaffolding — the `thinkers` frontmatter field will accumulate this data passively as nodes are written
+- All of Mode 4 (sociologist network) scaffolding — the `people` frontmatter field will accumulate this data passively as nodes are written
 
 ## Statistics
 

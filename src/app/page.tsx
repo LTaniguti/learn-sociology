@@ -132,7 +132,7 @@ export default async function Home() {
                 Sociologists <span className="home-card-planned">planned</span>
               </h3>
               <p className="home-card-body">
-                Profiles of the thinkers behind these concepts, linked into the
+                Profiles of the people behind these concepts, linked into the
                 graph where their ideas appear.
               </p>
             </div>

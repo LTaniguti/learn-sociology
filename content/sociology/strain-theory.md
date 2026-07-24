@@ -6,7 +6,7 @@ prerequisites: [deviance, functionalism]
 related: []
 tags: [discipline/sociology, level/macro, type/theory, subfield/deviance, paradigm/functionalism]
 difficulty: intermediate
-thinkers: [Robert Merton]
+people: [Robert Merton]
 status: stub
 ---
 

@@ -6,7 +6,7 @@ prerequisites: [socialization]
 related: []
 tags: [discipline/sociology, level/meso, type/concept, subfield/socialization]
 difficulty: intro
-thinkers: [Erving Goffman]
+people: [Erving Goffman]
 status: stub
 ---
 

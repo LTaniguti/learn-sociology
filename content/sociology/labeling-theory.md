@@ -6,7 +6,7 @@ prerequisites: [deviance, symbolic-interactionism]
 related: [social-control, strain-theory, social-construction-of-reality]
 tags: [discipline/sociology, level/micro, type/theory, subfield/deviance, paradigm/interactionism]
 difficulty: intermediate
-thinkers: [Howard Becker, Edwin Lemert]
+people: [Howard Becker, Edwin Lemert]
 adapted_from: "OpenStax Introduction to Sociology 3e, Section 7.2"
 status: draft
 ---

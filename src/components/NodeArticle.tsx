@@ -233,7 +233,7 @@ export default async function NodeArticle({
         {/* Perspectives chips (4.8): orientation, not content — this concept
             is read n ways; jump to the section (the anchor is the section
             heading's stable id). Placed after related concepts: both are
-            concept navigation, ahead of the thinkers/tags metadata. Rendered
+            concept navigation, ahead of the people/tags metadata. Rendered
             only when the structured section exists — prose-fallback nodes
             show nothing here, consistent with the section itself. */}
         {node.perspectives && (
@@ -258,11 +258,11 @@ export default async function NodeArticle({
           </section>
         )}
 
-        {(node.thinkers?.length ?? 0) > 0 && (
-          <section className="rail-section rail-thinkers">
-            <h2 className="rail-heading">Thinkers</h2>
+        {(node.people?.length ?? 0) > 0 && (
+          <section className="rail-section rail-people">
+            <h2 className="rail-heading">People</h2>
             {/* Mode 4 seed data — deliberately inert plain text, not links. */}
-            <p>{node.thinkers!.join(", ")}</p>
+            <p>{node.people!.join(", ")}</p>
             <p className="rail-note">plain text — links arrive with Mode 4</p>
           </section>
         )}

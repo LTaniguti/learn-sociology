@@ -91,7 +91,7 @@ Values mirror the chapter structure of OpenStax *Introduction to Sociology 3e*, 
 
 ## Deliberately excluded (for now)
 
-- **Theorist tags** — covered by the `thinkers` frontmatter field; duplicating them as tags would double-count edges in Mode 3.
+- **Theorist tags** — covered by the `people` frontmatter field; duplicating them as tags would double-count edges in Mode 3.
 - **Difficulty tags** — covered by the `difficulty` frontmatter field.
 - **Region/era tags** (e.g., `era/classical`, `region/global-south`) — plausible future additions once content exists to justify them; premature at 50 nodes.
 

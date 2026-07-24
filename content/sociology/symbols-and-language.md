@@ -6,7 +6,7 @@ prerequisites: [culture]
 related: []
 tags: [discipline/sociology, level/micro, type/concept, subfield/culture]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

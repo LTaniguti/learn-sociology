@@ -6,7 +6,7 @@ prerequisites: [society, theoretical-paradigms]
 related: []
 tags: [discipline/sociology, level/macro, type/concept, subfield/social-change]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 

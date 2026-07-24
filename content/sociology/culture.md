@@ -6,7 +6,7 @@ prerequisites: [sociological-imagination]
 related: []
 tags: [discipline/sociology, level/macro, type/concept, subfield/culture]
 difficulty: intro
-thinkers: []
+people: []
 status: stub
 ---
 
