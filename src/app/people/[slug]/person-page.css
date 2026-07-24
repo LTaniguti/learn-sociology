@@ -49,6 +49,19 @@
   list-style: none;
 }
 
+/* Cross-discipline mark (6.1) — a quiet trailing mono label, rendered only
+   when the person's concepts span more than one discipline. Right-aligned so
+   the marks form a readable column against a ragged list of titles; muted,
+   because the mark is a comparison, not an emphasis. */
+.person-concept-discipline {
+  margin-left: auto;
+  flex: none;
+  font-family: var(--type-tag-family);
+  font-size: var(--type-tag-size);
+  font-weight: var(--type-tag-weight);
+  color: var(--color-text-muted);
+}
+
 /* Honest empty state rather than a hidden section: a person no lesson names is
    a real state of the corpus, not an error. */
 .person-concepts-empty {

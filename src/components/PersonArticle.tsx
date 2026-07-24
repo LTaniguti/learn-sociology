@@ -28,12 +28,38 @@ const PERSON_STATUS_BANNERS: Record<Person["status"], string | null> = {
   published: null,
 };
 
+// A node's single `discipline/` tag, bare (`discipline/sociology` →
+// `sociology`). The prefix is identical on every row, so the mark carries only
+// the part that can differ.
+function disciplineOf(tags: string[]): string | null {
+  const tag = tags.find((t) => t.startsWith("discipline/"));
+  return tag ? tag.slice("discipline/".length) : null;
+}
+
 export default async function PersonArticle({ slug }: { slug: string }) {
   const person = await getPerson(slug);
   // Derived, never stored (docs/person-schema.md rule 1): every concept here
   // comes from inverting nodes' `people:` at build time.
   const concepts = await getConceptsForPerson(slug);
   const banner = PERSON_STATUS_BANNERS[person.status];
+
+  // Cross-discipline marking (6.1). The mark is COMPARATIVE: it renders only
+  // when the derived concepts span more than one discipline, because a
+  // `sociology` label on every row of every profile today would be pure noise.
+  //
+  // Read from the NODES' tags, never from `person.disciplines` — schema.md is
+  // explicit that cross-discipline relationships are derived from data that
+  // already exists, and a node's single `discipline/` tag is that data. The
+  // person's own list is authored and may legitimately disagree.
+  //
+  // There is no "primary discipline" for a person (person-schema.md gives an
+  // unordered list), so no row is ever marked as "outside their home
+  // discipline". Grouping the list under discipline subheadings is deferred
+  // until a real second discipline exists to look at.
+  const disciplines = new Set(
+    concepts.flatMap((c) => c.tags.filter((t) => t.startsWith("discipline/")))
+  );
+  const marksCrossDiscipline = disciplines.size > 1;
   const traditions = person.traditions ?? [];
   const works = person.works ?? [];
 
@@ -90,6 +116,7 @@ export default async function PersonArticle({ slug }: { slug: string }) {
             <ul className="person-concepts">
               {concepts.map((concept) => {
                 const paradigm = paradigmOf(concept.tags);
+                const discipline = disciplineOf(concept.tags);
                 return (
                   <li
                     key={concept.slug}
@@ -100,6 +127,11 @@ export default async function PersonArticle({ slug }: { slug: string }) {
                     }
                   >
                     <Link href={`/node/${concept.slug}`}>{concept.title}</Link>
+                    {marksCrossDiscipline && discipline && (
+                      <span className="person-concept-discipline">
+                        {discipline}
+                      </span>
+                    )}
                   </li>
                 );
               })}

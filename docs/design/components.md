@@ -619,6 +619,40 @@ keep their accent for free. Then *Works* when present, as a plain list in the
 related-row type (`.person-works`; a title has nothing to link to). `aliases`
 is resolution machinery and is **never rendered**.
 
+### Cross-discipline mark (6.1)
+
+The interdisciplinary claim has to be visible somewhere, and the profile is the
+only surface where two disciplines can meet.
+
+**The rule:** let `D` be the set of `discipline/` tags across the person's
+derived concepts. When **`|D| > 1`**, every concept row carries its discipline
+as a small mono label (`.person-concept-discipline`: `--type-tag-*`,
+`--color-text-muted`, right-aligned via `margin-left: auto` so the marks form a
+column against ragged titles). When **`|D| == 1`, no marks render at all.**
+
+The mark is **comparative** — it carries information only when there is
+something to compare, and a `sociology` label on every row of every profile
+today would be pure noise. The label shows the bare value (`sociology`, not
+`discipline/sociology`): the prefix is identical on every row, so only the part
+that can differ is shown.
+
+Two constraints, both load-bearing:
+
+- It reads **only node `tags`**, never the person's own `disciplines` list.
+  `schema.md` is explicit that cross-discipline relationships are derived from
+  data that already exists, and a node's single `discipline/` tag is that data.
+  The person's list is authored and may legitimately disagree.
+- There is **no "primary discipline"** for a person — `person-schema.md` gives
+  an unordered list. The first entry is not primary, and no row is ever marked
+  as "outside their home discipline".
+
+Grouping the list under discipline subheadings is **deferred**: a flat list
+plus a per-row mark is the smallest thing that cannot be wrong, and the
+grouping decision is better made when a real second discipline exists to look
+at. As shipped, `discipline/sociology` is the only taxonomy value, so no mark
+renders on any of the 16 profiles; the rule was verified against a scratch
+taxonomy value and a retagged node, then fully reverted.
+
 **Not on this page, each by decision:** no Giscus (`LessonComments` is
 per-lesson; whether people get threads is unmade), no search entries (6.4), and
 **no completion or progress UI of any kind** — a person is not completable
