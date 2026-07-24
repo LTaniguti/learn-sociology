@@ -116,7 +116,13 @@
      ---------------------------------------------------------- */
   --paradigm-functionalism:  #6fae9f;  /* teal  */
   --paradigm-conflict:       #c77b9a;  /* rose  */
-  --paradigm-interactionism: #e08a3c;  /* amber (== brand accent) */
+  --paradigm-interactionism: #e08a3c;  /* amber */
+
+  /* Interactionism's amber is the same literal as --color-accent (#e08a3c) in
+     every theme. That identity is coincidental and deliberately NOT inherited:
+     never write `var(--color-accent)` here. A future discipline override layer
+     moves the brand accent per discipline; interactionism is a paradigm colour
+     and must not follow it. Either value may change without the other. */
 
   /* Alternate palettes (see Tweaks: paradigmPalette) — trio order = func,conflict,inter
      rust : #b98a5a #c0603f #e2933f

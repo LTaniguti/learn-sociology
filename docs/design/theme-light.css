@@ -92,7 +92,7 @@
   /* Paradigm trio — darkened for paper contrast, still recognizably teal/rose/amber */
   --paradigm-functionalism:  #256a59;
   --paradigm-conflict:       #a3486d;
-  --paradigm-interactionism: #8a4a15;
+  --paradigm-interactionism: #8a4a15;  /* == --color-accent by coincidence; never inherit it (tokens.css) */
 
   --paradigm-func-surface:   #eef2ee;
   --paradigm-conflict-surface:#f6eef1;
