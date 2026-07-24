@@ -1,7 +1,11 @@
 # Person Schema
 
-**Status:** v1 — Phase 6.0. The registry ships as 16 stub entries seeded from the
-names already in the corpus; nothing renders yet.
+**Status:** v1 — Phase 6.0, rendering as of 6.1. The registry ships as 16 stub
+entries seeded from the names already in the corpus, and each one renders as a
+profile page at `/people/<slug>`, reachable by direct URL. The profile's concept
+list is derived by inverting nodes' `people:` (rule 1 below); no field here
+changed to make the page possible. Entry points from the lesson page and a
+People surface in the top bar are later phases.
 
 **Docs-sync:** any phase that changes this file, `docs/schema.md`,
 `docs/taxonomy.md`, or `docs/quiz-schema.md` must check

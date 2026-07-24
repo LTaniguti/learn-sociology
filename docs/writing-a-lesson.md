@@ -139,9 +139,12 @@ Field by field — *what it does in the product*, then the rule:
   proximity, and the paradigm accents. Covered in full in the next section.
 - **`difficulty`** — `intro` | `intermediate` | `advanced`, nothing finer. Lets
   learners self-filter.
-- **`people`** — a list of display names, seeding the future People view. Each name
-  must resolve to exactly one entry in the person registry (`content/people/`), and
-  the linter enforces it — if the person is new, add their file first. Cheap now,
+- **`people`** — a list of display names. Each name must resolve to exactly one
+  entry in the person registry (`content/people/`), and the linter enforces it —
+  if the person is new, add their file first. The name resolves to that person's
+  profile page at `/people/<slug>`, which lists your lesson among the concepts
+  they cover; the list is derived from this field, so naming someone here is the
+  only edit needed — you never edit their entry to add your lesson. Cheap now,
   expensive to backfill. `[Stanley Cohen]`.
 - **`adapted_from`** — attribution, required whenever you draw on a source. See
   section 8.
