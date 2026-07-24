@@ -309,8 +309,8 @@ footer. One `h1`; sections are labeled regions (`aria-label` /
 
 ## Article panel — prose measure & breakout grid (4.8, reconciled 4.9, overhang widened 5.0)
 
-`.node-main` (both hosts: `/node` and the course lesson view) is a named-track
-grid: `[breakout-start] minmax(24px, 1fr) [prose-start] minmax(0, 75ch)
+`.node-main` (three hosts as of 6.1: `/node`, the course lesson view, and the
+person profile page) is a named-track grid: `[breakout-start] minmax(24px, 1fr) [prose-start] minmax(0, 75ch)
 [prose-end] minmax(24px, 1fr) [breakout-end]`, horizontal padding `--space-4`,
 `max-width: calc(75ch + 2×12ch + 32px)` (848.75px at default — see *the panel
 bound* below), and `margin-inline: auto`, centred in its layout column always.
@@ -338,10 +338,12 @@ bound* below), and `margin-inline: auto`, centred in its layout column always.
   difference read as intentional. Both in ch, so the panel scales with the
   text steps alongside the prose (742.5 / 816.75 / 891px content) — no
   fixed-px panel at any step. At the cap the in-grid gutters resolve to 12ch
-  (99px) each, comfortably above their 24px floor. The 4.8 rule that **both
-  hosts share one panel bound** stands; the fixed 288px rails and the
-  layout-column gutters absorb the difference (the 4.8 rail-width audit is
-  untouched).
+  (99px) each, comfortably above their 24px floor. The 4.8 rule that **every
+  host shares one panel bound** stands unchanged as the third host arrives
+  in 6.1; the fixed 288px rails and the layout-column gutters absorb the
+  difference (the 4.8 rail-width audit is untouched). Measured on a profile
+  page: prose 618.75px, panel content 816.75px, scaling 562.5/618.75/675 and
+  742.5/816.75/891 across A−/A/A+ — identical to the node page.
 - **Breakout (design anchor):** wide elements — cards, tables, multi-column
   sections — aren't prose and don't obey the prose measure. They opt out with
   `grid-column: breakout` (today: the Perspectives section; future wide
@@ -513,6 +515,13 @@ about the *other* paradigms. Zero token or theme-file work: the accents and
 surfaces already existed in all three themes.
 
 ## Related-links list
+
+A row vocabulary, used in **two places** as of 6.1: the node rail's *Related
+concepts* (below) and the person profile's main-column *Concepts they cover*.
+Both are "a concept, reachable from here"; the rows are identical and only the
+container differs (`.rail-related ul` scopes the rail's list reset, so the
+profile declares its own `.person-concepts`).
+
 - Eyebrow "Related concepts" (`--type-eyebrow-*`, `--color-text-muted`).
 - Each row: a **paradigm colour tag** (denoting the paradigm the related concept sits in — teal/rose/amber from `--paradigm-*`) + serif label (`--type-related-*`, `--color-text-related`), hairline divider `--border-thin var(--color-border-subtle)`, trailing `→` hidden until hover.
   - Colour-tag shape is tokenised as a small swatch: bar (4×16, `--radius-xs`), dot (9×9 circle), or pill (22×10) — see Tweaks `relatedTagShape`; default **bar**.
@@ -550,6 +559,71 @@ surfaces already existed in all three themes.
 ## CC BY attribution footer (required)
 - Top border `--border-thin var(--color-border)`; `--font-mono` 11px `--color-text-muted`; source title in `--color-text-meta-warm`, "CC BY 4.0" in `--color-accent`.
 - Copy (verbatim): "Adapted from OpenStax Introduction to Sociology 3e, §7.2 — CC BY 4.0. Changes were made. See LICENSE-CONTENT.md." Always present on content screens; never hidden.
+
+## Person profile page (6.1)
+
+The second content entity's only surface: `/people/[slug]`, statically
+generated one page per registry entry, rendered by `PersonArticle.tsx` — a
+sibling to `NodeArticle`, not a variant of it. It reuses the article panel
+(`.node-main`, third host), the rail, and the prose measure verbatim; the
+route's `person-page.css` declares **only** what the shell does not already
+carry.
+
+Reachable by direct URL only in 6.1. There is no `/people` index, no nav
+entry and no link into it from anywhere in the UI — 6.2 wires the lesson-page
+entry points and 6.3 decides the tab.
+
+**Anatomy** (top to bottom in `.node-main`):
+
+1. **Toolbar** — `.article-toolbar`, `TextSizeControl` on the right. On the
+   left, a mono eyebrow reading "People" in the breadcrumb vocabulary
+   (`--type-breadcrumb-*`, `--color-text-muted`, `.person-eyebrow`). **Not a
+   link and not a breadcrumb:** `/people` does not exist, and a crumb pointing
+   nowhere is a dead link. 6.3 owns promoting it.
+2. **Status banner** — the same `.status-banner` frame and the same rule
+   (`published` hides it, the only status that does), with **person copy**
+   from `PERSON_STATUS_BANNERS`, kept separate from the lesson map rather than
+   generalised: stub → "This profile is a stub — the entry is valid, but no
+   biography has been written yet."; draft → "This profile is a draft — it has
+   not yet passed review."; review → "This profile is in review — content may
+   change."
+3. **Title block** — `.title-block` + `.node-title` with `name`, **diacritics
+   intact**; the folded slug never appears on screen. No badge: a person has no
+   difficulty.
+4. **Life line** — `.person-life`, mono (`--type-tag-*`,
+   `--color-text-meta-warm`): `lived`, then `· active <active>` when present.
+   Deliberately **not a pill** — the badge vocabulary belongs to
+   controlled-vocabulary states, and `lived` is free text so `c. 1820–1895`
+   renders as written.
+5. **Lede** — `summary` in `.lede`, unchanged.
+6. **Body** — `.node-body`, rendered **only when the body is non-empty**. A
+   stub emits no empty `<article>`.
+7. **Concepts they cover** — heading in the article `h2` vocabulary
+   (`.person-concepts-heading` joins the `.node-body h2` selector list, the way
+   `.lesson-comments h2` did), then the derived concepts as
+   [related-links rows](#related-links-list) in a `.person-concepts` list. **In
+   the main column, not the rail:** "one person, many concepts" is the payoff
+   that cannot be assembled anywhere else, and for a stub — every entry today —
+   the rail placement would leave the main column empty. Empty list → one
+   honest line, "No lesson in the corpus names this person yet.", never a
+   hidden section. Order is flattened `course.yaml` order.
+8. **Sources footer** — the `.attribution` vocabulary (top hairline, mono,
+   muted) with a "Sources" eyebrow, `sources` as a list, and the standing CC BY
+   line linking to `LICENSE-CONTENT.md`. Sources are this entry's attribution
+   surface — the reason the schema requires them — so they belong at the page
+   foot with the licence line, not in the rail.
+
+**Rail** (`NodeRail`, unchanged): *Disciplines*, then *Traditions* when
+non-empty, as `.tag-chip` lists — the node page's chips, so `paradigm/*` values
+keep their accent for free. Then *Works* when present, as a plain list in the
+related-row type (`.person-works`; a title has nothing to link to). `aliases`
+is resolution machinery and is **never rendered**.
+
+**Not on this page, each by decision:** no Giscus (`LessonComments` is
+per-lesson; whether people get threads is unmade), no search entries (6.4), and
+**no completion or progress UI of any kind** — a person is not completable
+(`docs/person-schema.md`), so there is no progress key, no rollup, no seal and
+no `LessonCheck` on the concept rows.
 
 ## Reserved discussion region (deferred — do not build)
 - A dashed placeholder below Examples: border `--border-thin dashed var(--color-border-input)`, radius `--radius-md`, mono `--color-text-disabled` note "// reserved — lesson discussion (Giscus, deferred)". Holds the space; ships empty.

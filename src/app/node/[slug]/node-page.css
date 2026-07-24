@@ -602,9 +602,13 @@ html[data-textsize="lg"] {
   color: var(--state-unmet-label);
 }
 
-/* Article body (rendered markdown) */
+/* Article body (rendered markdown). The selector list is how a non-body
+   section joins this vocabulary — .lesson-comments did it first, and 6.1's
+   person-profile concepts heading is the third host; one declaration, no
+   duplicated type block, and the node page's pixels are untouched. */
 .node-body h2,
-.lesson-comments h2 {
+.lesson-comments h2,
+.person-concepts-heading {
   font-family: var(--type-h2-mono-family);
   font-size: var(--type-h2-mono-size);
   line-height: var(--type-h2-mono-line);

@@ -1,0 +1,95 @@
+/* Person profile page (6.1) — see docs/design/components.md, "Person profile
+   page". Only the selectors the article shell does not already carry live
+   here: the panel grid, the status banner, the title block, the lede, the
+   article body, the related-row vocabulary, the attribution footer, the rail
+   and the tag chips are all imported verbatim from the /node route's
+   node-page.css. Every value references docs/design/tokens.css. */
+
+/* Toolbar eyebrow — the breadcrumb's type vocabulary and spacing, in a plain
+   <p>. Deliberately not a link and not a `.breadcrumb`: /people does not exist
+   until 6.3, and a crumb pointing nowhere is a dead link. */
+.person-eyebrow {
+  font-family: var(--type-breadcrumb-family);
+  font-size: var(--type-breadcrumb-size);
+  line-height: var(--type-breadcrumb-line);
+  font-weight: var(--type-breadcrumb-weight);
+  letter-spacing: var(--type-breadcrumb-tracking);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-5);
+}
+
+/* Life line — mono metadata, not a pill. The difficulty badge's pill
+   vocabulary belongs to controlled-vocabulary states; `lived` is free text by
+   design (docs/person-schema.md), so `c. 1820–1895` renders as written. Sits
+   under the title block, which already carries the title's bottom margin. */
+.person-life {
+  font-family: var(--type-tag-family);
+  font-size: var(--type-tag-size);
+  font-weight: var(--type-tag-weight);
+  color: var(--color-text-meta-warm);
+  margin-top: calc(-1 * var(--space-3));
+  margin-bottom: var(--space-5);
+}
+
+/* Concepts they cover — the derived list, in the MAIN column. The rows reuse
+   `.related-item` verbatim (paradigm colour tag + serif label + hover →); only
+   the container needs declaring, since `.rail-related ul` scopes the rail's
+   list reset. */
+/* No margin on the section itself: the heading carries the article's own
+   `--space-8` top rhythm, exactly as a body `## heading` does, and doubling it
+   here would open a gap the node page never has. On a stub — every entry
+   today — the section follows the lede directly, and the lede's own bottom
+   margin is already the gap, so the heading's top margin is zeroed the same
+   way `.node-body > :first-child`'s is. */
+.lede + .person-concepts-section .person-concepts-heading {
+  margin-top: 0;
+}
+
+.person-concepts {
+  list-style: none;
+}
+
+/* Honest empty state rather than a hidden section: a person no lesson names is
+   a real state of the corpus, not an error. */
+.person-concepts-empty {
+  font-family: var(--type-caption-family);
+  font-size: var(--type-caption-size);
+  line-height: var(--type-caption-line);
+  color: var(--color-text-muted);
+}
+
+/* Sources — the attribution footer's own mono/muted vocabulary, so the list
+   reads as part of the licence block rather than as page content. */
+.person-sources-heading {
+  display: block;
+  font-family: var(--type-eyebrow-family);
+  font-size: var(--type-eyebrow-size);
+  font-weight: var(--type-eyebrow-weight);
+  letter-spacing: var(--type-eyebrow-tracking);
+  text-transform: var(--type-eyebrow-transform);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-3);
+}
+
+.person-sources {
+  list-style: none;
+  margin-bottom: var(--space-4);
+}
+
+.person-sources li {
+  margin-bottom: var(--space-1);
+}
+
+/* Rail — works, in the related-row type but plain text, matching the rail's
+   People section (a title is not a link here; there is nothing to link to). */
+.person-works {
+  list-style: none;
+}
+
+.person-works li {
+  font-family: var(--type-related-family);
+  font-size: var(--type-related-size);
+  line-height: var(--type-related-line);
+  color: var(--color-text-body);
+  margin-bottom: var(--space-3);
+}

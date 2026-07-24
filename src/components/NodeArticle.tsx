@@ -11,6 +11,7 @@ import Perspectives, { perspectiveLabel } from "@/components/Perspectives";
 import LessonComments from "@/components/LessonComments";
 import TextSizeControl from "@/components/TextSizeControl";
 import NodeRail from "@/components/NodeRail";
+import { paradigmOf } from "@/lib/paradigm";
 
 // The Frame 3 article (docs/wireframes.md): breadcrumb → title block → lede →
 // prerequisites → body → right rail → Giscus placeholder → attribution.
@@ -46,13 +47,6 @@ function getAncestors(
     current = parent;
   }
   return chain;
-}
-
-// Paradigm colour classes derive from the paradigm/* tag (direction.md rule
-// 4: the trio is semantic, never decorative). Pure styling hook — no new data.
-function paradigmOf(tags: string[]): string | null {
-  const tag = tags.find((t) => t.startsWith("paradigm/"));
-  return tag ? tag.slice("paradigm/".length) : null;
 }
 
 function resolve(
