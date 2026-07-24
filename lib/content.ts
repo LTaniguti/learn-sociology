@@ -14,6 +14,7 @@ import type { Root, RootContent, List, Paragraph } from "mdast";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CONTENT_DIR = path.join(ROOT, "content");
+const PEOPLE_DIR = path.join(CONTENT_DIR, "people");
 
 // ===== Recursive content discovery (Phase 4.7) =====
 // Nodes live one discipline level deep (content/<discipline>/<slug>.md) and
@@ -473,4 +474,168 @@ export async function getTree(): Promise<TreeNode> {
   }
 
   return buildTree(root.slug);
+}
+
+// ===== People (the second entity type; see docs/person-schema.md) =====
+// Person entries live flat under content/people/, a NON_NODE_DIR the node
+// walkers skip — this section is the loader that claims that directory. The
+// node schema is untouched: `people:` on a node is a list of display names, and
+// everything else the platform knows about a person lives in the entry.
+
+// Every .md person file, keyed by basename slug → path. README.md is folder
+// documentation, not a person. Cached for the same reason nodePathCache is: the
+// filesystem does not change during a build or static generation.
+let personPathCache: Map<string, string> | null = null;
+
+function getPersonPaths(): Map<string, string> {
+  if (personPathCache !== null) return personPathCache;
+  const map = new Map<string, string>();
+  // Flat by contract — a directory under content/people/ is a lint error
+  // (scripts/lint-people.mjs), so there is nothing to recurse into.
+  const entries = fs.existsSync(PEOPLE_DIR)
+    ? fs.readdirSync(PEOPLE_DIR, { withFileTypes: true })
+    : [];
+  for (const entry of entries) {
+    if (!entry.isFile()) continue;
+    if (!entry.name.endsWith(".md") || entry.name === "README.md") continue;
+    map.set(path.basename(entry.name, ".md"), path.join(PEOPLE_DIR, entry.name));
+  }
+  personPathCache = map;
+  return map;
+}
+
+// The ten fields of docs/person-schema.md's table, which is also the lint
+// allowlist. `status` reuses the node ladder exactly, with the same meanings.
+export type PersonFrontmatter = {
+  name: string; // display form, diacritics intact — the slug folds them, this does not
+  aliases: string[]; // every OTHER string a node's `people:` may use; never repeats `name`
+  summary: string;
+  lived: string; // free text by design: `c. 1820–1895` must survive as written
+  active?: string;
+  disciplines: string[]; // one or more discipline/ values (a node carries exactly one)
+  traditions?: string[]; // zero or more paradigm/ values; empty is common and correct
+  works?: string[];
+  sources: string[];
+  status: "stub" | "draft" | "review" | "published";
+};
+
+// A person has no Perspectives split: that section is a lesson body structure,
+// so extractPerspectives is not called here. A stub's empty body yields "".
+export type Person = PersonFrontmatter & { slug: string; html: string };
+
+export function getAllPersonSlugs(): string[] {
+  return [...getPersonPaths().keys()].sort();
+}
+
+let allPeopleCache: Person[] | null = null;
+
+export async function getPerson(slug: string): Promise<Person> {
+  const filePath = getPersonPaths().get(slug);
+
+  if (!filePath) {
+    throw new Error(`Person not found: ${slug}`);
+  }
+
+  const content = fs.readFileSync(filePath, "utf8");
+  const { data, content: body } = matter(content);
+
+  const fm = data as PersonFrontmatter;
+
+  // Required-field presence, matching getNode's posture: lint is the authoring
+  // gate, the loader is the build gate, and the slug is always in the message.
+  // `active`, `traditions` and `works` are optional (docs/person-schema.md).
+  const required: (keyof PersonFrontmatter)[] = [
+    "name",
+    "aliases",
+    "summary",
+    "lived",
+    "disciplines",
+    "sources",
+    "status",
+  ];
+  for (const field of required) {
+    if (!(field in fm) || fm[field] === undefined || fm[field] === null) {
+      throw new Error(`${slug}: missing required field '${field}'`);
+    }
+  }
+
+  const renderedHtml = await mdProcessor.process(body);
+
+  return { ...fm, slug, html: renderedHtml.toString() };
+}
+
+export async function getAllPeople(): Promise<Person[]> {
+  if (allPeopleCache !== null) {
+    return allPeopleCache;
+  }
+
+  const people: Person[] = [];
+  for (const slug of getAllPersonSlugs()) {
+    people.push(await getPerson(slug));
+  }
+
+  allPeopleCache = people;
+  return people;
+}
+
+// Every string a node's `people:` may legitimately use → the person it names:
+// a person's `name` first, then each of their `aliases`. Mirrors the `claims`
+// table in scripts/lint-people.mjs — keep the two in sync, exactly as the
+// NON_NODE_DIRS pair above is kept in sync. The linter is the authoring gate
+// and reports every violation at once; this map is the build gate and throws on
+// the first, so a name that resolves here resolves there and vice versa.
+export async function resolvePeople(): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  for (const person of await getAllPeople()) {
+    for (const form of [person.name, ...(person.aliases ?? [])]) {
+      const claimed = map.get(form);
+      if (claimed !== undefined) {
+        throw new Error(
+          `people: '${form}' is claimed by ${claimed} and ${person.slug} — a name or alias must identify exactly one person`
+        );
+      }
+      map.set(form, person.slug);
+    }
+  }
+  return map;
+}
+
+// The concepts a person covers, DERIVED by inverting every node's `people:`
+// (docs/person-schema.md rule 1: there is no `concepts:` field and must not be
+// one — the edge is authored once, on the node). Nothing here is stored,
+// cached to disk, or written to a manifest.
+//
+// Order is the flattened course.yaml sequence, falling back to alphabetical for
+// nodes outside the manifest — the same comparator getTree's child sort uses.
+// Course order is the one way this project expresses a pedagogical sequence.
+export async function getConceptsForPerson(slug: string): Promise<ConceptNode[]> {
+  const people = await resolvePeople();
+  const nodes = await getAllNodes();
+
+  const covered: ConceptNode[] = [];
+  for (const node of nodes) {
+    for (const name of node.people ?? []) {
+      const resolved = people.get(name);
+      if (resolved === undefined) {
+        // lint:people passes today, so reaching this means the loader and the
+        // linter disagree — a real defect, not a lenient-fallback case.
+        throw new Error(
+          `${node.slug}: people: '${name}' matches no person in content/people/`
+        );
+      }
+      if (resolved === slug) {
+        covered.push(node);
+        break;
+      }
+    }
+  }
+
+  const courseOrder = getCourse().modules.flatMap((m) => m.nodes);
+  const orderMap = new Map(courseOrder.map((s, i) => [s, i]));
+  return covered.sort((a, b) => {
+    const orderA = orderMap.get(a.slug) ?? Infinity;
+    const orderB = orderMap.get(b.slug) ?? Infinity;
+    if (orderA !== orderB) return orderA - orderB;
+    return a.slug.localeCompare(b.slug);
+  });
 }
