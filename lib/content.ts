@@ -28,12 +28,23 @@ const CONTENT_DIR = path.join(ROOT, "content");
 // Cached: the filesystem does not change during a build or static generation.
 let nodePathCache: Map<string, string> | null = null;
 
-function walkFiles(dir: string, predicate: (file: string) => boolean): string[] {
+// Directory names under content/ that hold a *different entity type*, not concept
+// nodes: quizzes (docs/quiz-schema.md) and people (docs/person-schema.md). The
+// node walkers skip them entirely and each sibling type's own loader claims its
+// directory. Keep in sync with NON_NODE_DIRS in scripts/lint-content.mjs — two
+// small literals rather than a shared import, because scripts/ is plain Node and
+// lib/ is TypeScript, and cross-importing a two-element list costs more than it
+// saves.
+const NON_NODE_DIRS = new Set(["quizzes", "people"]);
+
+function walkNodeFiles(dir: string, predicate: (file: string) => boolean): string[] {
   const out: string[] = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...walkFiles(full, predicate));
-    else if (predicate(entry.name)) out.push(full);
+    if (entry.isDirectory()) {
+      if (NON_NODE_DIRS.has(entry.name)) continue;
+      out.push(...walkNodeFiles(full, predicate));
+    } else if (predicate(entry.name)) out.push(full);
   }
   return out;
 }
@@ -41,7 +52,7 @@ function walkFiles(dir: string, predicate: (file: string) => boolean): string[] 
 function getNodePaths(): Map<string, string> {
   if (nodePathCache !== null) return nodePathCache;
   const map = new Map<string, string>();
-  for (const file of walkFiles(CONTENT_DIR, (f) => f.endsWith(".md") && f !== "README.md")) {
+  for (const file of walkNodeFiles(CONTENT_DIR, (f) => f.endsWith(".md") && f !== "README.md")) {
     map.set(path.basename(file, ".md"), file);
   }
   nodePathCache = map;

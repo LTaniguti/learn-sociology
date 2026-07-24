@@ -17,12 +17,21 @@ const DIFFICULTIES = ["intro", "intermediate", "advanced"];
 // Nodes live one discipline level deep (content/<discipline>/<slug>.md) since
 // Phase 4.7. Walk content/ recursively — the directory is for humans, the slug
 // (basename) is the identity. README.md is folder docs, not a node, at any depth.
+// Directory names under content/ that hold a *different entity type*, not concept
+// nodes: quizzes (docs/quiz-schema.md) and people (docs/person-schema.md). Without
+// this, content/people/*.md would be ingested as malformed nodes and fail every
+// per-node check. Keep in sync with NON_NODE_DIRS in lib/content.ts — duplicated
+// deliberately, since scripts/ is plain Node and lib/ is TypeScript.
+const NON_NODE_DIRS = new Set(["quizzes", "people"]);
+
 function walkNodeFiles(dir) {
   const out = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...walkNodeFiles(full));
-    else if (entry.name.endsWith(".md") && entry.name !== "README.md") out.push(full);
+    if (entry.isDirectory()) {
+      if (NON_NODE_DIRS.has(entry.name)) continue;
+      out.push(...walkNodeFiles(full));
+    } else if (entry.name.endsWith(".md") && entry.name !== "README.md") out.push(full);
   }
   return out;
 }

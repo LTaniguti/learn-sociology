@@ -21,15 +21,25 @@ const CONTENT = path.join(ROOT, "content");
 // Walk content/ recursively — a quiz must match a node *somewhere* under
 // content/ (slug existence), not in a hardcoded directory. README.md is folder
 // docs, not a node; course.yaml is .yaml, so a .yml walk finds only quizzes.
-function walkFiles(dir, ext) {
+//
+// `skipDirs` names directories holding a different entity type (see NON_NODE_DIRS
+// in lib/content.ts and scripts/lint-content.mjs). The *node* walk below passes it
+// so content/people/*.md is not mistaken for a node — that would let a quiz named
+// after a person resolve against the person's file. The *quiz* walk must not pass
+// it: quizzes are exactly what lives in `quizzes/`.
+function walkFiles(dir, ext, skipDirs = new Set()) {
   const out = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) out.push(...walkFiles(full, ext));
-    else if (entry.name.endsWith(ext) && entry.name !== "README.md") out.push(full);
+    if (entry.isDirectory()) {
+      if (skipDirs.has(entry.name)) continue;
+      out.push(...walkFiles(full, ext, skipDirs));
+    } else if (entry.name.endsWith(ext) && entry.name !== "README.md") out.push(full);
   }
   return out;
 }
+
+const NON_NODE_DIRS = new Set(["quizzes", "people"]);
 
 const PARADIGMS = ["functionalism", "conflict-theory", "symbolic-interactionism"];
 const FILE_KEYS = ["version", "status", "adapted_from", "questions"];
@@ -43,7 +53,7 @@ const errors = [];
 // Needed for the slug-resolution and stub-node rules. Mirrors lint-content's
 // frontmatter read rather than importing it, so the two scripts stay independent.
 const nodeStatus = new Map();
-for (const file of walkFiles(CONTENT, ".md")) {
+for (const file of walkFiles(CONTENT, ".md", NON_NODE_DIRS)) {
   const slug = path.basename(file, ".md");
   const text = fs.readFileSync(file, "utf8");
   const match = text.match(/^---\n([\s\S]*?)\n---\n/);
