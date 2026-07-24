@@ -37,8 +37,8 @@ work as `draft`.** A maintainer moves it onward to `review` and then `published`
 you never set those yourself. The ladder exists precisely so nothing has to be
 perfect on arrival.
 
-The exact rules for every field, tag, and quiz live in the three contracts named
-in the box above. Keep them open in another tab as you go — this tutorial tells
+The exact rules for every field, tag, quiz, and person entry live in the four
+contracts named in the box above. Keep them open in another tab as you go — this tutorial tells
 you *what to do*; they tell you *exactly what is allowed*.
 
 ## 2. Set up in the browser
@@ -52,7 +52,9 @@ You do not need to install anything. The whole flow lives on github.com:
    file**, and name it `your-concept-slug.md` (the slug you chose in step 3
    below). GitHub edits it right in the browser. (The folder is organizational:
    your slug is the filename alone, and it must be unique across all of
-   `content/`.)
+   `content/` — including `content/people/`, whose person entries share the one
+   slug namespace with lessons. Two folders are *not* for lessons: `quizzes/`
+   holds self-check companions and `people/` holds the person registry.)
 3. **Commit.** When you have written something worth saving, scroll down, write a
    short commit message, and choose **Commit directly** to a new branch in your
    fork.
