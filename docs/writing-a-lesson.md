@@ -9,9 +9,9 @@ content was built exactly this way.
 > **The contracts govern; this tutorial only teaches.** Where the steps below
 > paraphrase a rule to make it followable, the specifications are authoritative:
 > **on any conflict, [`docs/schema.md`](schema.md), [`docs/taxonomy.md`](taxonomy.md),
-> and [`docs/quiz-schema.md`](quiz-schema.md) win.** This page is deliberately not
-> a second rulebook — it links each contract at the moment you need it and never
-> restates one in full.
+> [`docs/quiz-schema.md`](quiz-schema.md), and [`docs/person-schema.md`](person-schema.md)
+> win.** This page is deliberately not a second rulebook — it links each contract at
+> the moment you need it and never restates one in full.
 
 ---
 

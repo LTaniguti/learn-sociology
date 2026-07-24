@@ -4,10 +4,11 @@
 (`sociological-imagination`, `labeling-theory`); findings for a future v1.1 are
 recorded at the end of this file.
 
-**Docs-sync:** any phase that changes this file, `docs/schema.md`, or
-`docs/taxonomy.md` must check [`docs/writing-a-lesson.md`](writing-a-lesson.md)
-for staleness **in the same commit** — the contributor tutorial paraphrases these
-three contracts for teachability and rots if they drift.
+**Docs-sync:** any phase that changes this file, `docs/schema.md`,
+`docs/taxonomy.md`, or `docs/person-schema.md` must check
+[`docs/writing-a-lesson.md`](writing-a-lesson.md) for staleness **in the same
+commit** — the contributor tutorial paraphrases these four contracts for
+teachability and rots if they drift.
 
 A **self-check quiz** is an optional companion to a concept node: a small set of
 questions rendered below the lesson body, graded client-side with immediate
