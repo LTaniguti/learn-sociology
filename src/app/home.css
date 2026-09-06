@@ -188,9 +188,17 @@ a.home-card:hover {
   color: var(--color-text-body);
 }
 
-/* Glyph chip: paradigm-token fills — the tinted paradigm surface under a
-   glyph drawn in the paradigm ink. Neutral (Sociologists) keeps the sunken
-   surface + faint ink, consistent with its disabled state. */
+/* Glyph chip: paradigm-token fills — the tinted paradigm surface under a glyph
+   drawn in the paradigm ink, applied by the three modifiers below.
+
+   The BASE is the neutral register (sunken surface, muted ink) and no modifier
+   is how a card says it carries no paradigm. People (6.3) is that card: the
+   trio is spent on the three above it in the site's standing order, and colour
+   means school of thought (docs/people-mode-roadmap.md §4), which a mode is
+   not. Its ink was promoted out of the disabled register here
+   (--color-text-faint → --color-text-muted) when the card went live. Not
+   --color-accent and not an accent wash: the page's one amber action is the
+   primary CTA. */
 .home-card-chip {
   display: inline-flex;
   align-items: center;
@@ -199,7 +207,7 @@ a.home-card:hover {
   height: var(--space-9);
   border-radius: var(--radius-md);
   background: var(--color-surface-sunken);
-  color: var(--color-text-faint);
+  color: var(--color-text-muted);
   margin-bottom: var(--space-4);
 }
 
@@ -228,6 +236,7 @@ a.home-card:hover {
   color: var(--paradigm-interactionism);
 }
 
+
 .home-card-title {
   font-family: var(--font-serif);
   font-size: var(--type-card-title-size);
@@ -243,33 +252,11 @@ a.home-card:hover {
   color: var(--color-text-muted);
 }
 
-/* Sociologists — honest-disabled (the Shell tab's principle): muted, not
-   interactive, advertised rather than hidden. */
-.home-card-disabled {
-  cursor: default;
-}
-
-.home-card-disabled .home-card-title {
-  color: var(--color-text-muted);
-}
-
-.home-card-disabled .home-card-body {
-  color: var(--color-text-faint);
-}
-
-.home-card-planned {
-  font-family: var(--type-badge-family);
-  font-size: var(--type-badge-size);
-  font-weight: var(--type-badge-weight);
-  letter-spacing: var(--type-badge-tracking);
-  text-transform: var(--type-badge-transform);
-  color: var(--color-text-faint);
-  border: var(--border-thin) solid var(--color-border-input);
-  border-radius: var(--radius-xs);
-  padding: 2px var(--space-2);
-  margin-left: var(--space-2);
-  vertical-align: middle;
-}
+/* `.home-card-disabled` and `.home-card-planned` lived here from 5.0 to 6.2 and
+   were deleted in 6.3, when the fourth card went live and the honest-disabled
+   pattern retired with the Shell tab it mirrored. The "planned" badge treatment
+   was re-homed, not lost: `.person-card-status` in people-index.css carries the
+   same --type-badge register for the status word on a person card. */
 
 /* ---- Contribute band ---- */
 

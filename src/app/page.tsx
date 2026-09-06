@@ -10,11 +10,15 @@ import "./home.css";
 const REPO_URL = "https://github.com/LTaniguti/learn-sociology";
 
 // Real homepage (Phase 5.0) — replaces the Step 2.5 structure-only landing.
-// Hero with a live build-time network snapshot, the four modes as cards
-// (Sociologists honest-disabled, mirroring the Shell tab), a contribute band
-// sourced from CONTRIBUTING.md, and a repo/license footer. Server component
-// throughout — nothing on this page needs interactivity beyond what the Shell
-// brings.
+// Hero with a live build-time network snapshot, the four modes as cards, a
+// contribute band sourced from CONTRIBUTING.md, and a repo/license footer.
+// Server component throughout — nothing on this page needs interactivity beyond
+// what the Shell brings.
+//
+// All four cards are live as of 6.3. The fourth was honest-disabled from 5.0 to
+// 6.2, mirroring the Shell's disabled tab; that pattern retired with the tab
+// when People shipped (see Shell.tsx and docs/design/components.md → Mode
+// tabs).
 export default async function Home() {
   const nodes = await getAllNodes();
   // The concept count is derived from the content pipeline, never hardcoded —
@@ -118,24 +122,28 @@ export default async function Home() {
                 the ideas connect.
               </p>
             </Link>
-            {/* Honest-disabled, mirroring the Shell's Sociologists tab: the
-                roadmap is advertised, not hidden — muted, no link semantics,
-                skipped by tab order. */}
-            <div className="home-card home-card-disabled">
+            {/* Live as of 6.3, same anatomy as the three above. The chip keeps
+                the NEUTRAL fill: the paradigm trio is spent on the first three
+                cards in the site's standing order, and colour means school of
+                thought (docs/people-mode-roadmap.md §4), which People is not.
+                Only the ink is promoted out of the disabled register —
+                --color-text-faint → --color-text-muted — which is the same
+                "neutral for everything outside the encoded set" rule the
+                roadmap precedents. Deliberately NOT --color-accent or an accent
+                wash: the homepage's one amber action is the primary CTA. */}
+            <Link href="/people" className="home-card">
               <span className="home-card-chip" aria-hidden="true">
                 <svg viewBox="0 0 20 20" focusable="false">
                   <circle cx="10" cy="7" r="3" />
                   <path d="M4.5 16.5c0-3 2.5-4.8 5.5-4.8s5.5 1.8 5.5 4.8" fill="none" />
                 </svg>
               </span>
-              <h3 className="home-card-title">
-                Sociologists <span className="home-card-planned">planned</span>
-              </h3>
+              <h3 className="home-card-title">People</h3>
               <p className="home-card-body">
-                Profiles of the people behind these concepts, linked into the
-                graph where their ideas appear.
+                Profiles of the people behind these concepts, and every lesson
+                that names them.
               </p>
-            </div>
+            </Link>
           </div>
         </section>
 

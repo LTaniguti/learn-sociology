@@ -274,17 +274,27 @@ footer. One `h1`; sections are labeled regions (`aria-label` /
   Radius roles: `--radius-xl` main panels (snapshot, band), `--radius-lg`
   cards, `--radius-md` glyph chips.
 - **Modes grid:** eyebrow "Four ways in" in the `--type-h2-mono` set. Four
-  cards, `repeat(auto-fit, minmax(min(100%, 220px), 1fr))`. Three live cards
-  (Course / Hierarchy / Network) — the **whole card is the link**; anatomy:
-  glyph chip (a `--paradigm-*-surface` tint carrying a 20×20 stroke glyph in
-  the paradigm ink — trio order func/conflict/inter, the site's standing
-  order), serif title (`--type-card-title-size`, 600), serif body
-  (`--type-card-summary-size`, `--color-text-muted`). **Sociologists is
-  honest-disabled**, mirroring the Shell tab (the "advertise the roadmap"
-  principle): a non-interactive `div` (no link semantics, skipped by tab
-  order), muted text, neutral chip (`--color-surface-sunken` +
-  `--color-text-faint`), and a "planned" marker in the `--type-badge` mono
-  treatment.
+  cards, `repeat(auto-fit, minmax(min(100%, 220px), 1fr))`, **all live as of
+  6.3** — the **whole card is the link**; anatomy: glyph chip (a 20×20 stroke
+  glyph), serif title (`--type-card-title-size`, 600), serif body
+  (`--type-card-summary-size`, `--color-text-muted`).
+  - **Chip colour.** Course / Hierarchy / Network take the paradigm trio as a
+    `--paradigm-*-surface` tint under ink in the paradigm colour, in the site's
+    standing order func/conflict/inter. **People takes no paradigm colour**: the
+    trio is spent, and colour means school of thought
+    (`docs/people-mode-roadmap.md` §4), which a mode is not. It keeps the chip's
+    neutral base — `--color-surface-sunken` under `--color-text-muted` — which
+    is the same "neutral for everything outside the encoded set" rule the
+    roadmap precedents. No modifier class **is** the neutral register.
+    Deliberately not `--color-accent` and not an accent wash: the page's one
+    amber action is the primary CTA.
+  - **The fourth card was honest-disabled from 5.0 to 6.2** — a non-interactive
+    `div`, muted text, faint chip ink, and a "planned" marker — mirroring the
+    Shell tab. **6.3 made it a `Link` to `/people`** and retired the pattern
+    alongside the tab (see [Mode tabs](#mode-tabs)); `.home-card-disabled` and
+    `.home-card-planned` were deleted with their last consumer. The badge
+    treatment was re-homed rather than lost: `.person-card-status` on the
+    [people index](#people-index-63) carries the same `--type-badge` register.
 - **Contribute band:** the framed-band container two-column (1.5fr/1fr,
   stacking ≤900). Left: serif `--type-h2-serif` heading "Built in the open";
   two body paragraphs sourced from CONTRIBUTING.md (OpenStax CC BY 4.0 / MIT /
