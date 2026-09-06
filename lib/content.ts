@@ -639,3 +639,126 @@ export async function getConceptsForPerson(slug: string): Promise<ConceptNode[]>
     return a.slug.localeCompare(b.slug);
   });
 }
+
+// ===== The people index (6.3) =====
+// Everything /people renders, derived at build time from content/people/*.md.
+// No new frontmatter field, no manifest, no ordering file: person-schema.md
+// rule 1 ("derived, never stored") extends past `concepts` — the band a person
+// falls in and the letter they sort under are both computable from `lived` and
+// `name`, so neither is authored.
+//
+// Both orderings are precomputed HERE so the client component never sorts:
+// ordering rules live in exactly one server-side place, and the toggle on
+// /people only selects one of two prepared lists.
+
+// The card is a DOORWAY, not a summary of the profile. `aliases` (resolution
+// machinery), `sources`, `works`, `active` and `disciplines` are deliberately
+// absent — the profile already renders what belongs on the profile, and
+// `disciplines` in particular is one value across the whole roster today, which
+// is a chip that says nothing (people-mode-roadmap.md §3: no inert facets). It
+// returns when a second discipline exists.
+export type PersonCard = {
+  slug: string;
+  name: string;
+  summary: string;
+  lived: string;
+  status: Person["status"];
+  traditions: string[];
+};
+
+export type PeopleIndex = {
+  cards: Record<string, PersonCard>;
+  byEra: { band: string; slugs: string[] }[]; // non-empty bands only, in table order
+  alphabetical: string[]; // surname order
+};
+
+// Mirrored from docs/person-schema.md → "Era bands (derived)", which is the
+// governing document for the boundaries: they are editorial and permanently
+// ours to defend, so they are recorded in prose once and reflected here.
+// `until` is the last birth year in the band; the final band is open-ended.
+const ERA_BANDS: { band: string; until: number | null }[] = [
+  { band: "Classical", until: 1879 },
+  { band: "Twentieth century", until: 1929 },
+  { band: "Contemporary", until: null },
+];
+
+// The first four-digit run in `lived`: `1858–1917` → 1858, `b. 1959` → 1959,
+// `c. 1820–1895` → 1820. `lived` is free text by design (docs/person-schema.md)
+// and stays that way — this reads a year out of it without ever rewriting it.
+//
+// No four-digit year is a BUILD GATE, not a lenient fallback: a person with no
+// parseable birth year has no band, and a card in no band would silently vanish
+// from the index. The lint carries the same check so authors hit it first.
+export function birthYearOf(lived: string, slug: string): number {
+  const match = lived.match(/(?<!\d)(\d{4})(?!\d)/);
+  if (!match) {
+    throw new Error(
+      `${slug}: lived '${lived}' has no four-digit year — see docs/person-schema.md`
+    );
+  }
+  return Number(match[1]);
+}
+
+// The last whitespace-separated token of `name`: `C. Wright Mills` → Mills,
+// `George Herbert Mead` → Mead. Deliberately not clever — a name that breaks
+// this rule (a suffix, a particle, a mononym) is a stop-and-report for the
+// phase that adds it, not a special case bolted on in advance.
+export function surnameOf(name: string): string {
+  const tokens = name.trim().split(/\s+/);
+  return tokens[tokens.length - 1];
+}
+
+export async function getPeopleIndex(): Promise<PeopleIndex> {
+  const people = await getAllPeople();
+
+  const cards: Record<string, PersonCard> = {};
+  const sortable = people.map((person) => {
+    cards[person.slug] = {
+      slug: person.slug,
+      name: person.name,
+      summary: person.summary,
+      lived: person.lived,
+      status: person.status,
+      traditions: person.traditions ?? [],
+    };
+    return {
+      slug: person.slug,
+      name: person.name,
+      birth: birthYearOf(person.lived, person.slug),
+      surname: surnameOf(person.name),
+    };
+  });
+
+  // Diacritics must not reorder: base sensitivity puts Émile under E, where a
+  // reader looking for Durkheim will look.
+  const bySurname = (a: (typeof sortable)[number], b: (typeof sortable)[number]) => {
+    const surname = a.surname.localeCompare(b.surname, "en", {
+      sensitivity: "base",
+    });
+    if (surname !== 0) return surname;
+    return a.name.localeCompare(b.name, "en", { sensitivity: "base" });
+  };
+
+  // The bands are ordered and exhaustive, so the first one a birth year fits
+  // is the one it belongs to; the open-ended last band catches everyone else.
+  const bandOf = (birth: number) =>
+    ERA_BANDS.find((b) => b.until === null || birth <= b.until)!.band;
+
+  // Within a band: birth year ascending, then surname — chronology is the
+  // spine, and surname only breaks ties (Cooley and Weber, both 1864).
+  //
+  // An empty band is OMITTED, never rendered as a heading over nothing: the
+  // registry grows at contributor pace, and a gap in the chronology is a fact
+  // about coverage rather than a section of the page.
+  const byEra = ERA_BANDS.map(({ band }) => ({
+    band,
+    slugs: sortable
+      .filter((p) => bandOf(p.birth) === band)
+      .sort((a, b) => (a.birth !== b.birth ? a.birth - b.birth : bySurname(a, b)))
+      .map((p) => p.slug),
+  })).filter((band) => band.slugs.length > 0);
+
+  const alphabetical = [...sortable].sort(bySurname).map((p) => p.slug);
+
+  return { cards, byEra, alphabetical };
+}

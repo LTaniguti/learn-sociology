@@ -48,7 +48,7 @@ enforces this against every node slug as well as every other person's.
 | `name` | string | yes | Display name, diacritics intact (`Émile Durkheim`). The canonical form; everything else is an alias. |
 | `aliases` | list of strings | yes | Every *other* string a node's `people:` may use, plus obvious variants (`Durkheim`, `E. Durkheim`). **Never repeats `name`** — resolution checks `name` first, then `aliases`, so a repeat adds nothing and invites drift. May be an empty list when no node uses a variant. |
 | `summary` | string (1–2 sentences) | yes | Card blurb, preview, and search-result text. Forces every entry to be sayable briefly, exactly as a node's `summary` does. |
-| `lived` | string | yes | `1858–1917` (en dash) for the dead, `b. 1959` for the living. A string, not two date fields: dates in the history of ideas are frequently approximate, and a string holds `c. 1820–1895` without inventing precision. Drives era banding later. |
+| `lived` | string | yes | `1858–1917` (en dash) for the dead, `b. 1959` for the living. A string, not two date fields: dates in the history of ideas are frequently approximate, and a string holds `c. 1820–1895` without inventing precision. Drives era banding on the `/people` index — see *Era bands (derived)* below, the one constraint this otherwise-free-text field carries. |
 | `active` | string | no | Period of principal work, **only when it diverges sharply from the lifespan** — e.g. someone who published for a decade of an eighty-year life. Omit otherwise; a redundant `active` is noise. |
 | `disciplines` | list (from `docs/taxonomy.md`) | yes | One **or more** `discipline/` values. See *One node, one discipline; one person, many* below. |
 | `traditions` | list (from `docs/taxonomy.md`) | no | Zero or more `paradigm/` values. Empty is common and correct — tag only where the person is genuinely of that tradition, mirroring the taxonomy's rule for `paradigm/` tags on nodes. |
@@ -146,6 +146,46 @@ health, family, employment disputes, politics, or anything a reader would
 reasonably consider private. `sources` is required on every entry partly for this
 reason — an unsourced sentence about a living person is the failure mode this rule
 exists to prevent. When in doubt, write less; a shorter entry is not a defect.
+
+## Era bands (derived)
+
+The `/people` index groups profiles into three era bands. Nothing here is
+authored: the band is computed from `lived` at build time
+(`getPeopleIndex()` in `lib/content.ts`, which cites this section), exactly as
+`concepts` is computed by inverting nodes' `people:`. There is no `era:` field
+and there must not be one.
+
+| Band | Birth year | Today |
+|---|---|---|
+| Classical | before 1880 | Marx, Sumner, Durkheim, Mead, Cooley, Weber (6) |
+| Twentieth century | 1880–1929 | Blumer, Parsons, Merton, Lemert, Mills, Goffman, Luckmann, Becker, Berger (9) |
+| Contemporary | 1930 onward | Crenshaw (1) |
+
+Banding is by **birth** year because it is the one date every entry has in a
+parseable form: `active` is optional and sparse (`docs/people-mode-roadmap.md`
+§3), so it cannot drive grouping. The bands describe **when people were born,
+not when ideas were superseded** — classical theory is live, not historical, and
+the index's own lede says so.
+
+The birth year is the **first four-digit run** in `lived`: `1858–1917` → 1858,
+`b. 1959` → 1959, `c. 1820–1895` → 1820. A `lived` value with no four-digit run
+fails the build, naming the slug — `scripts/lint-people.mjs` carries the same
+check so an author hits it before the build does. This is the one constraint the
+otherwise-free-text `lived` carries, and it is why the field's examples all lead
+with a year.
+
+The boundaries are **editorial and permanently ours to defend**; they are
+recorded here, in prose, so that defending them is a documented decision rather
+than a number found in a component. Alphabetical ordering — the index's one
+alternate view — sorts on the **last whitespace-separated token** of `name`
+(`C. Wright Mills` → Mills), compared with base sensitivity so diacritics do not
+reorder. A name whose last token is not the surname (a suffix, a particle, a
+mononym) is a stop-and-report for the phase that adds it, not a special case to
+anticipate.
+
+The "Today" column is an **illustration and is expected to go stale** — it is
+the current roster, not a rule. The rule is the middle column. Do not treat a
+mismatch between the two as a defect in anything but this table.
 
 ## Deliberately absent
 

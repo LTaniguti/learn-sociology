@@ -154,6 +154,15 @@ for (const [slug, fm] of people) {
   if ("lived" in fm && !isString(fm.lived)) errors.push(`${slug}: lived must be a non-empty string, e.g. '1858–1917' or 'b. 1959' (docs/person-schema.md)`);
   if ("active" in fm && !isString(fm.active)) errors.push(`${slug}: active, when present, must be a non-empty string (docs/person-schema.md)`);
 
+  // A birth year must be readable out of `lived`: the /people index bands by it
+  // (docs/person-schema.md → Era bands (derived)), and a person with no
+  // parseable year has no band. lib/content.ts throws on the same condition —
+  // this is the authoring gate, that is the build gate, and both point at the
+  // same section. The field stays free text; only a four-digit run is required.
+  if (isString(fm.lived) && !/(?<!\d)\d{4}(?!\d)/.test(fm.lived)) {
+    errors.push(`${slug}: lived '${fm.lived}' has no four-digit year — era banding reads the birth year out of it (docs/person-schema.md → Era bands (derived))`);
+  }
+
   for (const field of ["aliases", "disciplines", "traditions", "works", "sources"]) {
     if (field in fm && fm[field] !== null && !isStringList(fm[field])) {
       errors.push(`${slug}: ${field} must be a list of non-empty strings (docs/person-schema.md)`);
