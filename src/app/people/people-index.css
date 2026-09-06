@@ -1,0 +1,172 @@
+/* People index (6.3) — see docs/design/components.md, "People index". A
+   per-frame stylesheet (the post-2.9 convention); the Shell, the tag chips,
+   `.node-title` and `.lede` come from the /node route's node-page.css, which
+   the route imports. Every value is a token.
+
+   The page has ONE control and no filter rail, so there is no sidebar geometry
+   here — the main column runs the page width, like the homepage. */
+
+.people-page {
+  flex: 1;
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: var(--space-9) var(--space-6) var(--space-6);
+}
+
+.people-head {
+  margin-bottom: var(--space-6);
+}
+
+/* The lede's own bottom margin is the gap to the sort toggle, so the block
+   below it does not add a second one. */
+.people-head .lede {
+  margin-bottom: 0;
+  max-width: 62ch;
+}
+
+/* ---- Sort toggle: the page's only control ---- */
+
+/* Tab-chip vocabulary — the same mono size, radius and active/idle treatment
+   as `.shell-tab`, reusing its TOKENS rather than its class: these are buttons
+   in a `role="group"`, not navigation, and the mode tabs must stay free to
+   change without dragging this control with them. */
+.people-sort {
+  display: flex;
+  gap: var(--space-1);
+  margin-bottom: var(--space-7);
+}
+
+.people-sort-option {
+  font-family: var(--type-tag-family);
+  font-size: var(--type-tab-size);
+  color: var(--tab-idle-text);
+  background: none;
+  padding: var(--space-2) 13px;
+  border-radius: var(--radius-sm);
+  border: var(--border-thin) solid transparent;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.people-sort-option:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-accent);
+}
+
+.people-sort-option.is-active,
+.people-sort-option.is-active:hover {
+  background: var(--tab-active-bg);
+  color: var(--tab-active-text);
+  border-color: transparent;
+}
+
+/* ---- Bands and grid ---- */
+
+.people-band {
+  margin-bottom: var(--space-8);
+}
+
+/* The rail's eyebrow vocabulary: a band label is metadata about the group
+   below it, not a title competing with the page's h1. */
+.people-band-heading {
+  font-family: var(--type-eyebrow-family);
+  font-size: var(--type-eyebrow-size);
+  font-weight: var(--type-eyebrow-weight);
+  letter-spacing: var(--type-eyebrow-tracking);
+  text-transform: var(--type-eyebrow-transform);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
+}
+
+/* The homepage modes-grid mechanism, at the card's own minimum: three columns
+   at 1280, one at 390, with no breakpoint of its own. Built so a filter rail
+   can arrive beside it later without the cards being re-specified. */
+.people-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: var(--space-4);
+}
+
+/* ---- Card ---- */
+
+/* The whole card is the link (the homepage live-card precedent), in the
+   framed-container language: surface fill, input hairline, card radius. */
+.person-card {
+  display: block;
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  color: var(--color-text-body);
+  transition: background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.person-card:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-accent);
+  color: var(--color-text-body);
+}
+
+.person-card-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.person-card-name {
+  font-family: var(--font-serif);
+  font-size: var(--type-card-title-size);
+  font-weight: 600;
+  color: var(--color-text-heading);
+}
+
+/* Status marker — the badge mono treatment, re-homed from the homepage's
+   `.home-card-planned`, which retires in this same phase when the fourth card
+   goes live. Same register, honest about a different thing: that marker
+   promised a mode, this one reports an entry's rung on the status ladder. */
+.person-card-status {
+  flex: none;
+  font-family: var(--type-badge-family);
+  font-size: var(--type-badge-size);
+  font-weight: var(--type-badge-weight);
+  letter-spacing: var(--type-badge-tracking);
+  text-transform: var(--type-badge-transform);
+  color: var(--color-text-faint);
+  border: var(--border-thin) solid var(--color-border-input);
+  border-radius: var(--radius-xs);
+  padding: 2px var(--space-2);
+}
+
+/* Life line — the profile's `.person-life` vocabulary: mono metadata, never a
+   pill, because `lived` is free text (docs/person-schema.md). */
+.person-card-life {
+  font-family: var(--type-tag-family);
+  font-size: var(--type-tag-size);
+  font-weight: var(--type-tag-weight);
+  color: var(--color-text-meta-warm);
+  margin-bottom: var(--space-3);
+}
+
+.person-card-summary {
+  font-family: var(--font-serif);
+  font-size: var(--type-card-summary-size);
+  line-height: var(--type-body-line);
+  color: var(--color-text-muted);
+}
+
+/* Chips sit at the card foot, below the summary — absent entirely when the
+   person carries no `traditions`, so no row of whitespace is reserved. */
+.person-card-chips {
+  margin-top: var(--space-4);
+}
+
+@media (max-width: 640px) {
+  .people-page {
+    padding: var(--space-6) var(--space-4);
+  }
+}

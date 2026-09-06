@@ -11,7 +11,7 @@ import { getAllNodes } from "../../lib/content";
 export default async function Shell({
   active,
 }: {
-  active?: "course" | "hierarchy" | "network";
+  active?: "course" | "hierarchy" | "network" | "people";
 }) {
   // Search index: every node, any status. Built here rather than plumbed
   // through each page — Shell is a server component with pipeline access, and

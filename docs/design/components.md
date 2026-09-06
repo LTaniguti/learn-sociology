@@ -566,6 +566,99 @@ rail's list reset, so the profile declares its own `.person-concepts`).
 - Top border `--border-thin var(--color-border)`; `--font-mono` 11px `--color-text-muted`; source title in `--color-text-meta-warm`, "CC BY 4.0" in `--color-accent`.
 - Copy (verbatim): "Adapted from OpenStax Introduction to Sociology 3e, §7.2 — CC BY 4.0. Changes were made. See LICENSE-CONTENT.md." Always present on content screens; never hidden.
 
+## People index (6.3)
+
+`/people` — the People mode's front door, and the page that makes People a
+**mode** rather than a set of pages reachable only by link. Server-enriches /
+client-renders, the division the hierarchy route uses: `getPeopleIndex()`
+(`lib/content.ts`) derives everything at build time and
+`src/components/people/PeopleIndex.tsx` is the route's only client component.
+Per-frame stylesheet `src/app/people/people-index.css`; the Shell, `.node-title`,
+`.lede` and the tag chips come from the node route's `node-page.css`.
+
+**Anatomy:** `<Shell active="people" />` → `<main class="people-page">` (the
+homepage's page measure: 1120px, centred, `--space-9` top padding) → header →
+sort toggle → grid. One `h1`; band labels are `h2`, card titles `h3`.
+
+- **Header** — `h1` "People" in `.node-title`, then a one-line `.lede` doing the
+  framing the mode requires: *"The people behind the concepts, grouped by when
+  they were born — earlier is not superseded, and classical theory is still in
+  use."* Chronology carries an implied progress narrative that is **wrong for
+  sociology** (`docs/people-mode-roadmap.md` §3), so the default view says so in
+  its own lede. Any count of profiles would be derived
+  (`Object.keys(cards).length`), never typed; none is shown.
+- **Sort toggle — the page's only control.** Two buttons in a
+  `role="group"` with `aria-pressed`, **By era** (default) / **A–Z**, in the tab
+  chip vocabulary (`--type-tab-size` mono, `--radius-sm`, `.shell-tab`'s
+  active/idle treatment). It reuses the tab's **tokens, not its class**: these
+  are buttons in a group, not navigation, and the mode tabs must stay free to
+  change without dragging this control along.
+  - **The state is session-only** (`useState`) — no `localStorage` key, no URL
+    hash. This is a **deliberate departure** from the rail and syllabus collapse
+    states, which do persist: those are layout preferences a reader sets once,
+    whereas this is a **view choice**, and a returning reader should land on the
+    teaching view rather than on whatever ordering they last looked a name up
+    in. Recorded here and in the component's header comment.
+- **Bands** — by era, one `section` per band with the band label as an `h2` in
+  the **rail eyebrow** vocabulary (`--type-eyebrow-*`, `--color-text-muted`): a
+  band label is metadata about the group below it, not a title competing with
+  the `h1`. Band names and boundaries are **not defined here** — see
+  *Era bands (derived)* in `docs/person-schema.md`, which governs them. Empty
+  bands are **omitted**, never rendered as a heading over nothing. A–Z is one
+  flat grid with **no headings at all**: band labels are a claim about
+  chronology and the alphabet makes no such claim.
+- **Grid** — `repeat(auto-fit, minmax(min(100%, 260px), 1fr))`, `--space-4` gap
+  (the homepage modes-grid mechanism at the card's own minimum): ≥3 columns at
+  1280, exactly 1 at 390, with no breakpoint of its own.
+- **Toggling swaps DOM order and adds no transition** — there is no motion to
+  reduce.
+
+**Card** (`.person-card`) — the **whole card is one `Link`** to
+`/people/<slug>` (the homepage live-card precedent), in the framed-container
+language: `--color-surface`, `--color-border-input` hairline, `--radius-lg`,
+`--space-5` padding; hover `--color-surface-hover` + `--color-border-accent`;
+focus the global ring. Top to bottom:
+
+1. **Name** — `h3`, serif `--type-card-title-size` 600, `--color-text-heading`,
+   **diacritics intact**.
+2. **Status marker** — trailing the name, baseline-aligned right. The
+   `--type-badge` mono treatment, `--color-text-faint` on a `--radius-xs`
+   `--color-border-input` outline. Shows the status word (`stub` on all 16
+   today); `published` is the one status that hides it, exactly as on the
+   profile and the node page. The treatment is **re-homed from the homepage's
+   retired `.home-card-planned`** — same register, honest about a different
+   thing: that marker promised a mode, this one reports an entry's rung on the
+   status ladder.
+3. **Life line** — `lived` **exactly as written**, in the profile's
+   `.person-life` vocabulary (mono `--type-tag-*`, `--color-text-meta-warm`).
+   Free text by design (`docs/person-schema.md`); never reformatted, even though
+   the band above it was derived from the same string.
+4. **Summary** — serif `--type-card-summary-size`, `--color-text-muted`.
+5. **Tradition chips** — `traditions` as `.tag-chip.tag-chip-paradigm`, the
+   rail's chips, so the `paradigm/` value keeps its accent for free.
+   **Absent when empty** — no placeholder, no em dash, no reserved row. Weber,
+   Sumner and Crenshaw show no chip row, which is the point: tradition is a
+   **chip, not a grouping axis**, because grouping by it would turn Mills and
+   Crenshaw into an "other" bucket whereas a chip can simply be absent.
+
+**Deliberately absent, each a decision** (`docs/people-mode-roadmap.md` §3):
+
+- **No filter rail, no discipline facet, no search field.** One control. A
+  discipline filter has one value today and a tradition filter is empty for half
+  the roster; the project does not ship inert controls. The grid is built so
+  facets can arrive when they would discriminate.
+- **No discipline chip on the card** — one value across the whole roster is a
+  chip that says nothing. It returns when a second discipline exists.
+- **No concept count** — a number that is 1 on twelve cards is noise.
+- **No portrait slot** — the schema has no portrait field, and this page does
+  not add one.
+- **No progress, no "visited", no seal, no count of profiles read.** People are
+  **not completable** (`docs/person-schema.md`); the index is a reference
+  surface.
+- **No true time axis** — the dates bunch, and adjacency on an axis reads as
+  influence, a causal suggestion the data does not support.
+- **Search does not index people** — 6.4.
+
 ## Person profile page (6.1)
 
 The second content entity's only surface: `/people/[slug]`, statically
