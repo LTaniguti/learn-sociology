@@ -743,14 +743,6 @@ html[data-textsize="lg"] {
   margin-bottom: var(--space-4);
 }
 
-.rail-note {
-  font-family: var(--type-caption-family);
-  font-size: var(--type-caption-size);
-  line-height: var(--type-caption-line);
-  color: var(--color-text-faint);
-  margin-top: var(--space-2);
-}
-
 /* Related concepts: paradigm colour tag + serif label, → fades in on hover */
 .rail-related ul {
   list-style: none;
@@ -807,11 +799,11 @@ html[data-textsize="lg"] {
   opacity: 1;
 }
 
-/* People — inert serif text */
-.rail-people p:first-of-type {
-  font-family: var(--type-related-family);
-  font-size: var(--type-related-size);
-  color: var(--color-text-body);
+/* People (6.2): the same related-links rows, linking into /people. Only the
+   list reset is declared — it is container-scoped by design, exactly as
+   `.rail-related ul` above and `.person-concepts` in person-page.css are. */
+.rail-people ul {
+  list-style: none;
 }
 
 /* Perspectives chips (4.8): anchor links to the article's #perspectives
