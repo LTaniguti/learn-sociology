@@ -2,8 +2,11 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import {
   getAllNodes,
+  getAllPeople,
   getQuiz,
+  resolvePeople,
   type ConceptNode,
+  type Person,
 } from "../../lib/content";
 import LessonCheck from "@/components/course/LessonCheck";
 import SelfCheck from "@/components/SelfCheck";
@@ -64,6 +67,38 @@ function resolve(
   });
 }
 
+// A node's `people:` names → their registry entries, in the node's AUTHORED
+// order. That order is the author's one editorial signal about relative weight
+// for this lesson (labeling-theory lists Becker before Lemert deliberately), so
+// it is never sorted. Deliberately unlike the profile page's concept list,
+// which IS sorted (course order) because a person has no authored order to
+// preserve — the asymmetry is correct.
+//
+// Both loaders are cached, so this is a map build per node, not I/O.
+async function resolveNodePeople(node: ConceptNode): Promise<Person[]> {
+  const names = node.people ?? [];
+  if (names.length === 0) {
+    return [];
+  }
+
+  const nameToSlug = await resolvePeople();
+  const bySlug = new Map((await getAllPeople()).map((p) => [p.slug, p]));
+
+  return names.map((name) => {
+    const personSlug = nameToSlug.get(name);
+    const person = personSlug ? bySlug.get(personSlug) : undefined;
+    if (!person) {
+      // lint:people passes today, so reaching this means the loader and the
+      // linter disagree — a real defect, not a lenient-fallback case. Same
+      // posture getConceptsForPerson takes in the other direction.
+      throw new Error(
+        `${node.slug}: people: '${name}' matches no person in content/people/`
+      );
+    }
+    return person;
+  });
+}
+
 export default async function NodeArticle({
   slug,
   beforeTitle,
@@ -88,6 +123,7 @@ export default async function NodeArticle({
   const ancestors = getAncestors(node, nodeMap);
   const prerequisites = resolve(node.prerequisites, nodeMap, "prerequisites", slug);
   const related = resolve(node.related ?? [], nodeMap, "related", slug);
+  const people = await resolveNodePeople(node);
   const banner = STATUS_BANNERS[node.status];
   // Only published quizzes come back; draft/missing quizzes return null and no
   // section renders (the filter lives in the loader, so draft content never
@@ -252,12 +288,42 @@ export default async function NodeArticle({
           </section>
         )}
 
-        {(node.people?.length ?? 0) > 0 && (
+        {/* People (6.2): the third host of the related-links row vocabulary,
+            after Related concepts above and the profile's Concepts they cover.
+            The label is the registry `name`, never the string the node
+            authored — the registry is the one place a display form is decided,
+            and a node's `people:` value is a resolution key that may
+            legitimately be an alias. Every profile is a stub today and every
+            row still links: a link to honest content is not a dead link, the
+            same contract stub nodes have had since 2.4. */}
+        {people.length > 0 && (
           <section className="rail-section rail-people">
             <h2 className="rail-heading">People</h2>
-            {/* Mode 4 seed data — deliberately inert plain text, not links. */}
-            <p>{node.people!.join(", ")}</p>
-            <p className="rail-note">plain text — links arrive with Mode 4</p>
+            <ul>
+              {people.map((person) => {
+                // The swatch denotes school of thought — the one meaning colour
+                // carries — so it renders only when the person's tradition is
+                // unambiguous. Zero or two-plus traditions take no class and
+                // the neutral bar, exactly as a concept row without a
+                // `paradigm/` tag does. The exactly-one guard lives here
+                // because paradigmOf returns the FIRST match of many.
+                const traditions = person.traditions ?? [];
+                const paradigm =
+                  traditions.length === 1 ? paradigmOf(traditions) : null;
+                return (
+                  <li
+                    key={person.slug}
+                    className={
+                      paradigm
+                        ? `related-item paradigm-${paradigm}`
+                        : "related-item"
+                    }
+                  >
+                    <Link href={`/people/${person.slug}`}>{person.name}</Link>
+                  </li>
+                );
+              })}
+            </ul>
           </section>
         )}
 

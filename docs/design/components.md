@@ -516,17 +516,23 @@ surfaces already existed in all three themes.
 
 ## Related-links list
 
-A row vocabulary, used in **two places** as of 6.1: the node rail's *Related
-concepts* (below) and the person profile's main-column *Concepts they cover*.
-Both are "a concept, reachable from here"; the rows are identical and only the
-container differs (`.rail-related ul` scopes the rail's list reset, so the
-profile declares its own `.person-concepts`).
+A row vocabulary, used in **three places** as of 6.2: the node rail's *Related
+concepts* (below), the person profile's main-column *Concepts they cover*, and
+the node rail's *People*. The first two are "a concept, reachable from here";
+the third is "a person, reachable from here". The rows are identical and only
+the container differs (`.rail-related ul` and `.rail-people ul` each scope the
+rail's list reset, so the profile declares its own `.person-concepts`).
 
 - Eyebrow "Related concepts" (`--type-eyebrow-*`, `--color-text-muted`).
 - Each row: a **paradigm colour tag** (denoting the paradigm the related concept sits in — teal/rose/amber from `--paradigm-*`) + serif label (`--type-related-*`, `--color-text-related`), hairline divider `--border-thin var(--color-border-subtle)`, trailing `→` hidden until hover.
   - Colour-tag shape is tokenised as a small swatch: bar (4×16, `--radius-xs`), dot (9×9 circle), or pill (22×10) — see Tweaks `relatedTagShape`; default **bar**.
   - *Hover:* label → `--color-accent-hover`; `→` fades in (`--transition-fast`).
-- People list (Howard Becker, Edwin Lemert) sits below as **plain serif text, not links** (`--color-text-body`), with a mono caption "plain text — links arrive with Mode 4".
+- **People** sits below: as of 6.2 the same rows, linking into `/people/<slug>`. This **reverses** the 2.4 treatment — plain serif text under a mono caption promising links in a later mode — which is retired along with the caption's CSS vocabulary, deleted with its only host. Do not restore either.
+  - **Swatch = tradition, only when unambiguous.** A row takes its `--paradigm-*` colour when the person's `traditions` has **exactly one** entry; zero or two-plus entries take no class and the neutral `--color-border-input` bar, exactly as a concept row without a `paradigm/` tag renders. Colour denotes school of thought and nothing else, so an ambiguous reading gets no colour.
+  - **Label is the registry `name`**, never the string the node authored: the registry is the one place a display form is decided (diacritics, initials), and a node's `people:` value is a resolution key that may legitimately be an alias.
+  - **Order is the node's authored order** — `people:` order is the author's editorial signal about relative weight for that lesson. Never sorted. (The profile's *Concepts they cover* IS sorted, into course order, because a person has no authored order; the asymmetry is deliberate.)
+  - **Stub profiles are linked.** Every entry is a stub today and every row still links; the landing page's status banner is honest about it, the same contract stub lessons have had since 2.4. Rows are never gated on `status`.
+  - People are **not completable** (`docs/person-schema.md`): no check, no seal, no visited state. The row is a link, nothing more.
 
 ## Rail — Perspectives chips (4.8)
 
@@ -569,9 +575,9 @@ sibling to `NodeArticle`, not a variant of it. It reuses the article panel
 route's `person-page.css` declares **only** what the shell does not already
 carry.
 
-Reachable by direct URL only in 6.1. There is no `/people` index, no nav
-entry and no link into it from anywhere in the UI — 6.2 wires the lesson-page
-entry points and 6.3 decides the tab.
+Reachable, as of 6.2, from **every lesson that names the person** — the rail's
+*People* rows on both the node page and the course view. There is still no
+`/people` index and no nav entry — 6.3 decides the tab.
 
 **Anatomy** (top to bottom in `.node-main`):
 
