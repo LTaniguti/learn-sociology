@@ -5,18 +5,11 @@
    and the tag chips are all imported verbatim from the /node route's
    node-page.css. Every value references docs/design/tokens.css. */
 
-/* Toolbar eyebrow — the breadcrumb's type vocabulary and spacing, in a plain
-   <p>. Deliberately not a link and not a `.breadcrumb`: /people does not exist
-   until 6.3, and a crumb pointing nowhere is a dead link. */
-.person-eyebrow {
-  font-family: var(--type-breadcrumb-family);
-  font-size: var(--type-breadcrumb-size);
-  line-height: var(--type-breadcrumb-line);
-  font-weight: var(--type-breadcrumb-weight);
-  letter-spacing: var(--type-breadcrumb-tracking);
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-5);
-}
+/* The toolbar crumb needs nothing here as of 6.3. It was `.person-eyebrow` —
+   the breadcrumb's type vocabulary in a plain <p>, not a link, because /people
+   did not exist and a crumb pointing nowhere is a dead link. The index shipped,
+   so the profile now renders the node route's `.breadcrumb` verbatim and the
+   local selector was deleted with its last consumer. */
 
 /* Life line — mono metadata, not a pill. The difficulty badge's pill
    vocabulary belongs to controlled-vocabulary states; `lived` is free text by

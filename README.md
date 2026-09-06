@@ -17,9 +17,7 @@ Every lesson is a Markdown file with YAML frontmatter in this repository. The re
 | 1 | **Course** — a linear, university-style path with progress tracking | Live |
 | 2 | **Hierarchy** — a node-and-edge canvas of the concept tree, from core to niche | Live |
 | 3 | **Network** — a navigable graph of how concepts interrelate | Live |
-| 4 | **Sociologists** — a citation-weighted network of people and their work | Planned |
-
-The remaining planned mode appears in the interface as a visible, disabled tab on purpose: the roadmap is part of the project's identity.
+| 4 | **People** — profiles of the people behind the concepts, and the lessons that name them | Live |
 
 ## How it works
 
@@ -38,7 +36,7 @@ The proof of concept is live with Modes 1, 2 and 3. The current focus is **conte
 
 Near term:
 - Content push — stub nodes → published lessons + quizzes ready for peer review 
-- Mode 4: sociologist profiles and citation network
+- People mode: search integration and the contributor guide for person entries
 
 Further out:
 - Interdisciplinary gateway nodes — periphery concepts bridging into adjacent social sciences, opening future branches beyond sociology

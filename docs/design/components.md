@@ -16,13 +16,14 @@ States not shown in the mockups (hover, keyboard focus, disabled) are defined he
 - "learn-sociology" · `--type-wordmark-family` / `--type-wordmark-size` / weight `--type-wordmark-weight`; colour `--color-text-heading`.
 
 ### Mode tabs
-Four tabs: **Course**, **Hierarchy**, **Network** (all live as of 3.3), **Sociologists** (disabled/future — now the only one).
+Four tabs: **Course**, **Hierarchy**, **Network** (all live as of 3.3), **People** (live as of 6.3 — the mode is People, not Sociologists; `docs/people-mode-roadmap.md` §1 cancelled the citation network the old label promised).
 - Font `--type-tag-family` 12.5px; padding `var(--space-2) 13px`; radius `--radius-sm`.
 - **Active:** background `--tab-active-bg`, text `--tab-active-text`.
 - **Idle (enabled, not current):** text `--tab-idle-text`, transparent background.
   - *Hover:* background `--color-surface-hover`, border `--border-thin var(--color-border-accent)`.
   - *Focus:* focus ring.
-- **Disabled (Sociologists only, since 3.3):** text `--tab-disabled-text`; no hover, no pointer, `cursor:default`, `aria-disabled="true"`, `title="Coming soon"`. Stays visible on purpose — advertises the roadmap. Never removed.
+- **Active state:** each mode's own routes set it. `/people` and **every `/people/[slug]` profile** highlight People — a person belongs to exactly one mode. `/node/[slug]` highlights **no** tab, because a node is reachable through Course, Hierarchy and Network alike and none of them can claim it.
+- **The honest-disabled tab is retired.** From 3.3 to 6.2 the fourth tab was a muted, non-interactive `span` (`--tab-disabled-text`, `aria-disabled`, `title="Coming soon"`, `.shell-tab-disabled`), kept visible on the principle that the roadmap is part of the project's identity. **6.3 retired the pattern** when the fourth mode shipped: every mode the interface advertises now exists, so nothing is left to advertise. The selector was deleted with its last consumer; the `--tab-disabled-text` token **stays** in the theme files, so a future planned mode can reinstate the pattern without re-deriving a colour in three themes. Nothing uses it today.
 
 ### Search box
 - Pill: background `--color-surface`; border `--border-thin var(--color-border-input)`; radius `--radius-pill`; padding `var(--space-2) 15px`; width 240px.
@@ -668,17 +669,24 @@ sibling to `NodeArticle`, not a variant of it. It reuses the article panel
 route's `person-page.css` declares **only** what the shell does not already
 carry.
 
-Reachable, as of 6.2, from **every lesson that names the person** — the rail's
-*People* rows on both the node page and the course view. There is still no
-`/people` index and no nav entry — 6.3 decides the tab.
+Reachable from **the People tab** (6.3), from **the index** at
+[`/people`](#people-index-63), and from **every lesson that names the person** —
+the rail's *People* rows on both the node page and the course view (6.2). The
+profile sets `active="people"` on the Shell: a person belongs to exactly one
+mode, unlike a node.
 
 **Anatomy** (top to bottom in `.node-main`):
 
 1. **Toolbar** — `.article-toolbar`, `TextSizeControl` on the right. On the
-   left, a mono eyebrow reading "People" in the breadcrumb vocabulary
-   (`--type-breadcrumb-*`, `--color-text-muted`, `.person-eyebrow`). **Not a
-   link and not a breadcrumb:** `/people` does not exist, and a crumb pointing
-   nowhere is a dead link. 6.3 owns promoting it.
+   left, a **real breadcrumb** as of 6.3: the node route's `.breadcrumb`
+   vocabulary verbatim, in the same slot the node crumb occupies —
+   `<a href="/people">People</a>` `/` `<span aria-current="page">{name}</span>`.
+   6.1 rendered this as a plain `.person-eyebrow` because `/people` did not
+   exist and a crumb pointing nowhere is a dead link; the index shipped, the
+   crumb was promoted, and the local selector was deleted with its last
+   consumer. The crumb shows the **name, not the slug** — a node's crumb shows
+   slugs because it is a path through the tree, whereas a person has one crumb
+   and the folded slug never appears on screen.
 2. **Status banner** — the same `.status-banner` frame and the same rule
    (`published` hides it, the only status that does), with **person copy**
    from `PERSON_STATUS_BANNERS`, kept separate from the lesson map rather than

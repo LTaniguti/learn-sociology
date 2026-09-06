@@ -37,7 +37,12 @@ export default async function PersonPage({
 
   return (
     <>
-      <Shell />
+      {/* The profile highlights the People tab, where /node/[slug] highlights
+          nothing. The asymmetry is deliberate: a person belongs to exactly one
+          mode — the registry is the only surface they have — whereas a node is
+          reachable through Course, Hierarchy and Network alike, so no single
+          tab can claim it. */}
+      <Shell active="people" />
       <PersonArticle slug={slug} />
     </>
   );

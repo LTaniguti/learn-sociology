@@ -67,13 +67,12 @@
   border-color: transparent;
 }
 
-.shell-tab-disabled,
-.shell-tab-disabled:hover {
-  color: var(--tab-disabled-text);
-  background: none;
-  border-color: transparent;
-  cursor: default;
-}
+/* `.shell-tab-disabled` lived here from 3.3 to 6.2 and was deleted in 6.3: the
+   People tab went live, every advertised mode now exists, and the selector lost
+   its only consumer. The `--tab-disabled-text` token it read STAYS in the theme
+   files — tokens are a vocabulary and an unused one is not drift the way an
+   unused selector is, so a future planned mode can reinstate the pattern
+   without re-deriving a colour in three themes. */
 
 .shell-search {
   display: flex;

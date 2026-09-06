@@ -67,11 +67,19 @@ export default async function PersonArticle({ slug }: { slug: string }) {
     <div className="node-layout">
       <main className="node-main">
         <div className="article-toolbar">
-          {/* An eyebrow, not a breadcrumb and not a link: /people does not
-              exist, and a crumb pointing nowhere is a dead link. 6.3 owns the
-              decision to promote this into a real crumb — do not "fix" it
-              before there is an index to point at. */}
-          <p className="person-eyebrow">People</p>
+          {/* A real breadcrumb as of 6.3: 6.1 rendered "People" as a plain
+              eyebrow because /people did not exist and a crumb pointing
+              nowhere is a dead link. The index exists now, so this is the node
+              page's `.breadcrumb` vocabulary in the toolbar's left slot,
+              exactly where the node crumb sits. */}
+          <nav className="breadcrumb" aria-label="Breadcrumb">
+            <Link href="/people">People</Link>
+            <span className="breadcrumb-separator"> / </span>
+            {/* The name, not the slug: the node crumb shows slugs because a
+                node's crumb is its path through the tree, whereas a person has
+                one crumb and the folded slug never appears on screen. */}
+            <span aria-current="page">{person.name}</span>
+          </nav>
           <TextSizeControl />
         </div>
 

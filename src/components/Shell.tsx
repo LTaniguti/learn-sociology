@@ -4,10 +4,18 @@ import ThemeControl from "./ThemeControl";
 import { getAllNodes } from "../../lib/content";
 
 // Shared top bar for all frames (docs/wireframes.md, "Shared shell").
-// Sociologists is rendered disabled, not hidden: the four-mode roadmap is part
-// of the project's identity and the UI advertises it honestly. It is now the
-// only honest-disabled tab.
-// Course went live with Step 2.5; Hierarchy with 2.6/3.2; Network with 3.3.
+// Course went live with Step 2.5; Hierarchy with 2.6/3.2; Network with 3.3;
+// People with 6.3.
+//
+// All four tabs are live, and the shell no longer has an honest-disabled tab.
+// That pattern — a mode advertised as a muted, non-interactive span, on the
+// principle that the roadmap is part of the project's identity — held from 3.3
+// to 6.2 and RETIRED in 6.3, because every mode the interface advertises now
+// exists. The last one it applied to promised "Sociologists", a
+// citation-weighted network that docs/people-mode-roadmap.md §1 cancelled; the
+// tab is People, and it points at a page. A future planned mode may reinstate
+// the pattern (--tab-disabled-text is still in the token set for that), but
+// nothing uses it today. See docs/design/components.md → Mode tabs.
 export default async function Shell({
   active,
 }: {
@@ -23,6 +31,7 @@ export default async function Shell({
   const courseActive = active === "course";
   const hierarchyActive = active === "hierarchy";
   const networkActive = active === "network";
+  const peopleActive = active === "people";
   return (
     <header className="shell">
       <Link href="/" className="shell-home" aria-label="learn-sociology">
@@ -99,13 +108,13 @@ export default async function Shell({
         >
           Network
         </Link>
-        <span
-          className="shell-tab shell-tab-disabled"
-          aria-disabled="true"
-          title="Coming soon"
+        <Link
+          href="/people"
+          className={peopleActive ? "shell-tab shell-tab-active" : "shell-tab"}
+          aria-current={peopleActive ? "page" : undefined}
         >
-          Sociologists
-        </span>
+          People
+        </Link>
       </nav>
       {/* Theme switcher (Step 3.1). Since 3.3 it opens the right-hand chrome
           cluster and carries the `margin-left: auto` that pushes the pair
